@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /*
  * Gera icons/icon16.png, icon32.png, icon48.png e icon128.png em Node puro.
- * Rasteriza o mesmo desenho de icons/icon.svg (quadrado claro com dois olhos de contorno
- * escuro olhando de lado e sobrancelha bronze) com antialiasing por supersampling e grava
- * o PNG RGBA na mão (zlib + CRC32). Em 16 px a sobrancelha sai e o contorno fica mais fino.
+ * Rasteriza o mesmo desenho de icons/icon.svg (quadrado amarelo com dois olhos de contorno
+ * tinta olhando de lado e sobrancelha tinta, direção "caneta" do docs/DESIGN.md) com antialiasing
+ * por supersampling e grava o PNG RGBA na mão (zlib + CRC32). Em 16 px a sobrancelha sai, o contorno
+ * fica mais fino e as pupilas crescem um pouco para não borrar.
  *
  * Uso: node scripts/make-icons.js
  */
@@ -17,39 +18,39 @@ const SIZES = [16, 32, 48, 128];
 
 // ---------- desenho ----------
 
-const BG = [0xf2, 0xef, 0xe9];
+const BG = [0xff, 0xe4, 0x5c];
 const WHITE = [255, 255, 255];
-const INK = [0x11, 0x11, 0x11];
-const BRONZE = [0xa0, 0x86, 0x72];
+const INK = [0x17, 0x14, 0x1f];
+const BROW = INK;
 
 // Coordenadas 0..128, iguais às do icon.svg.
 const GRANDE = {
   view: 128,
   corner: 30,
-  stroke: 6,
+  stroke: 7,
   eyes: [
     { cx: 41, cy: 70, rx: 20, ry: 25 },
     { cx: 89, cy: 70, rx: 20, ry: 25 }
   ],
   pupils: [
-    { cx: 51, cy: 74, r: 9 },
-    { cx: 99, cy: 74, r: 9 }
+    { cx: 49, cy: 72, r: 10 },
+    { cx: 97, cy: 72, r: 10 }
   ],
-  brow: { p0: [72, 35], c: [89, 25], p1: [107, 31], width: 6 }
+  brow: { p0: [72, 35], c: [89, 25], p1: [107, 31], width: 7 }
 };
 
-// Coordenadas 0..16 (versão de 16 px: sem sobrancelha, contorno 1,1).
+// Coordenadas 0..16 (versão de 16 px: sem sobrancelha, contorno 1,2, pupilas um pouco maiores).
 const PEQUENO = {
   view: 16,
   corner: 4,
-  stroke: 1.1,
+  stroke: 1.2,
   eyes: [
     { cx: 5.1, cy: 8.9, rx: 2.6, ry: 3.2 },
     { cx: 10.9, cy: 8.9, rx: 2.6, ry: 3.2 }
   ],
   pupils: [
-    { cx: 6.3, cy: 9.4, r: 1.25 },
-    { cx: 12.1, cy: 9.4, r: 1.25 }
+    { cx: 6.3, cy: 9.4, r: 1.45 },
+    { cx: 12.1, cy: 9.4, r: 1.45 }
   ],
   brow: null
 };
@@ -125,7 +126,7 @@ function sample(g, poly, x, y) {
     if (Math.abs(d) <= half) color = INK;
   }
   for (const p of g.pupils) if (insideCircle(p, x, y)) color = INK;
-  if (insideBrow(g, poly, x, y)) color = BRONZE;
+  if (insideBrow(g, poly, x, y)) color = BROW;
   return color;
 }
 
