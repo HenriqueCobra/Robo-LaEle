@@ -18,7 +18,7 @@ Uma camada de IA opcional (para frases sem palavra-chave) fica no roadmap. O mot
 
 - Manifest V3, JavaScript puro (sem build, sem dependências). Carrega direto em `chrome://extensions` > "Carregar sem compactação".
 - Scripts **clássicos** (não ES modules), compartilhando o namespace global `globalThis.LaEle`. Cada arquivo de `src/shared` também faz `module.exports` quando `module` existe, para os testes rodarem em Node.
-- Testes: `node --test tests/` (test runner nativo do Node, sem dependências).
+- Testes: `node --test` (test runner nativo do Node, sem dependências).
 - Todo texto de interface em **pt-BR**.
 
 ## Estrutura de arquivos
