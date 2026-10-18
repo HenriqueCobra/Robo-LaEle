@@ -154,7 +154,7 @@ API (todas retornam Promise):
 
 ## Popup (dropdown) — design
 
-- 360 px de largura, tema escuro moderno: fundo `#0f0b1a`, cartões `#1a1428`, acentos em gradiente `#ff2e88 → #a855f7`, tipografia Inter/system-ui com números tabulares. Cantos 14–16 px, sombras suaves, micro-animações. Ícones em SVG inline.
+- 360 px de largura. Visual definido em `docs/DESIGN.md` (opção D: escuro, quieto, acento bronze, fonte Switzer).
 - **Cabeçalho:** logo "Lá Ele" + chave de varredura automática.
 - **Cartão principal (aba atual):** pontuação grande, nota (S/A/B...), palavras encontradas, maior combo, top 3 termos em chips. Estado vazio: "Nada de lá ele por aqui... ainda" / página proibida.
 - **Botão primário grande:** "Varrer página" (com estado carregando e atualizando ao vivo via `LAELE_UPDATED`).
@@ -162,10 +162,10 @@ API (todas retornam Promise):
 
 ## Paleta e tokens compartilhados
 
+Tokens, cores das raridades, tipografia e movimento ficam em `docs/DESIGN.md`. Resumo:
+
 ```
---le-bg: #0f0b1a; --le-card: #1a1428; --le-card-2: #231a36; --le-border: #2f2445;
---le-text: #f4efff; --le-muted: #a79bbf; --le-pink: #ff2e88; --le-purple: #a855f7;
---le-yellow: #ffd23f; --le-green: #34d399;
---le-grad: linear-gradient(135deg, #ff2e88, #a855f7);
-raridade: leve #34d399 · comum #60a5fa · pesado #ff2e88 · lendario #ffd23f
+fundo #161616 · painel #1e1e1e · elevado #262626 · fio #2a2a2a
+texto #ededed · secundário #a3a3a3 · rótulo #8a8a8a · acento bronze #a08672
+marca-texto: leve #d3efb1 · comum #ffe38a · pesado #ffbfa8 · lendario #d6b58f
 ```
