@@ -1,7 +1,7 @@
 /*
  * LaEle.storage — leitura/escrita em chrome.storage, recordes e coleção (Laelédex).
  *
- * Chaves em chrome.storage.local: 'settings', 'records', 'collection'.
+ * Chaves em chrome.storage.local: 'settings', 'records', 'collection', 'topPhrases'.
  * Resumos por aba em chrome.storage.session: `tab:${tabId}`.
  *
  * Todas as escritas (settings, recordes, coleção, palavras próprias) passam por
@@ -14,10 +14,12 @@ LaEle.storage = (function () {
   'use strict';
 
   var SPEEDS = ['lento', 'normal', 'rapido'];
-  var WATCHED_KEYS = ['settings', 'records', 'collection'];
+  var THEMES = ['dark', 'light'];
+  var WATCHED_KEYS = ['settings', 'records', 'collection', 'topPhrases'];
+  var TOP_PHRASES_MAX = 10;
 
   function defaultSettings() {
-    return { autoScan: true, animations: true, speed: 'normal', showHud: true, customWords: [] };
+    return { autoScan: true, animations: true, speed: 'normal', showHud: true, theme: 'dark', customWords: [] };
   }
 
   function defaultRecords() {
@@ -76,6 +78,7 @@ LaEle.storage = (function () {
       });
     }
     if (SPEEDS.indexOf(out.speed) === -1) out.speed = 'normal';
+    if (THEMES.indexOf(out.theme) === -1) out.theme = 'dark';
     if (!Array.isArray(out.customWords)) out.customWords = [];
     out.autoScan = !!out.autoScan;
     out.animations = !!out.animations;
@@ -95,6 +98,15 @@ LaEle.storage = (function () {
 
   function mergeCollection(stored) {
     return isObject(stored) ? stored : {};
+  }
+
+  // Top lá ele: no máximo 10 trechos válidos, do mais para o menos pontuado
+  function mergeTopPhrases(stored) {
+    if (!Array.isArray(stored)) return [];
+    return stored
+      .filter(function (p) { return isObject(p) && typeof p.id === 'string' && p.id; })
+      .sort(function (a, b) { return num(b.points) - num(a.points); })
+      .slice(0, TOP_PHRASES_MAX);
   }
 
   function num(v) {
@@ -144,11 +156,82 @@ LaEle.storage = (function () {
     return readLocal('collection').then(mergeCollection);
   }
 
-  function recordScan(summary, matchedEntryIds) {
+  function getTopPhrases() {
+    return readLocal('topPhrases').then(mergeTopPhrases);
+  }
+
+  // normalize do motor quando disponível; senão uma versão simples equivalente
+  function normalizeText(str) {
+    var eng = globalThis.LaEle && globalThis.LaEle.engine;
+    if (!eng && typeof require === 'function') {
+      try { eng = require('./engine.js'); } catch (err) { /* sem motor: usa o normalize local */ }
+    }
+    if (eng && typeof eng.normalize === 'function') return eng.normalize(str);
+    return String(str).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+  }
+
+  // hash FNV-1a de 32 bits em hex
+  function hashText(str) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h.toString(16);
+  }
+
+  // Junta os trechos novos ao Top: mesmo id fica com o de mais pontos.
+  // Devolve true se algum trecho entrou no top 10 ou subiu de pontos.
+  function mergePhrases(top, incoming, s, at) {
+    var host = s.host ? String(s.host) : '';
+    var best = new Map();
+    incoming.forEach(function (p) {
+      if (!isObject(p) || typeof p.text !== 'string' || !p.text.trim()) return;
+      var id = host + '|' + hashText(normalizeText(p.text));
+      var prev = best.get(id);
+      if (!prev || num(p.points) > num(prev.points)) {
+        best.set(id, {
+          id: id,
+          text: p.text,
+          hits: Array.isArray(p.hits) ? p.hits : [],
+          points: num(p.points),
+          maxCombo: num(p.maxCombo),
+          count: num(p.count),
+          url: s.url || '',
+          host: host,
+          title: s.title || '',
+          at: at
+        });
+      }
+    });
+
+    var list = top.slice();
+    var applied = [];
+    best.forEach(function (cand, id) {
+      var i = list.findIndex(function (x) { return x.id === id; });
+      if (i === -1) {
+        list.push(cand);
+        applied.push(cand);
+      } else if (cand.points > num(list[i].points)) {
+        list[i] = cand;
+        applied.push(cand);
+      }
+    });
+    // ordenação estável: em empate, quem já estava no Top fica na frente
+    list.sort(function (a, b) { return num(b.points) - num(a.points); });
+    list = list.slice(0, TOP_PHRASES_MAX);
+
+    var entered = applied.some(function (c) {
+      return list.some(function (x) { return x === c; });
+    });
+    return { list: list, entered: entered };
+  }
+
+  function recordScan(summary, matchedEntryIds, phrases) {
     return enqueue(function () {
       var area = localArea();
-      if (!area) return { newGlobalBest: false, newSiteBest: false };
-      return area.get(['records', 'collection']).then(function (res) {
+      if (!area) return { newGlobalBest: false, newSiteBest: false, newTopPhrase: false };
+      return area.get(['records', 'collection', 'topPhrases']).then(function (res) {
         res = res || {};
         var records = mergeRecords(res.records);
         var collection = mergeCollection(res.collection);
@@ -158,7 +241,7 @@ LaEle.storage = (function () {
         var maxCombo = num(s.maxCombo);
         var at = num(s.at) || Date.now();
         var host = s.host ? String(s.host) : '';
-        var result = { newGlobalBest: false, newSiteBest: false };
+        var result = { newGlobalBest: false, newSiteBest: false, newTopPhrase: false };
 
         // recorde global
         if (total > 0 && total > num(records.global.best)) {
@@ -210,7 +293,16 @@ LaEle.storage = (function () {
           });
         }
 
-        return area.set({ records: records, collection: collection }).then(function () { return result; });
+        var toWrite = { records: records, collection: collection };
+
+        // Top lá ele (só grava a chave quando há trechos novos)
+        if (Array.isArray(phrases) && phrases.length) {
+          var merged = mergePhrases(mergeTopPhrases(res.topPhrases), phrases, s, at);
+          result.newTopPhrase = merged.entered;
+          toWrite.topPhrases = merged.list;
+        }
+
+        return area.set(toWrite).then(function () { return result; });
       });
     });
   }
@@ -252,10 +344,10 @@ LaEle.storage = (function () {
 
   // ---------- reset ----------
 
-  // Zera recordes, totais e coleção. Configurações e palavras próprias são mantidas.
+  // Zera recordes, totais, coleção e Top lá ele. Configurações e palavras próprias são mantidas.
   function resetAll() {
     return enqueue(function () {
-      return writeLocal({ records: defaultRecords(), collection: {} });
+      return writeLocal({ records: defaultRecords(), collection: {}, topPhrases: [] });
     });
   }
 
@@ -311,7 +403,7 @@ LaEle.storage = (function () {
 
   // ---------- mudanças ----------
 
-  // Repassa chrome.storage.onChanged (área local) apenas para settings/records/collection.
+  // Repassa chrome.storage.onChanged (área local) apenas para settings/records/collection/topPhrases.
   // callback(changes, areaName), onde changes só contém essas chaves. Retorna função para cancelar.
   function onChange(callback) {
     if (typeof callback !== 'function' || !(globalThis.chrome && chrome.storage && chrome.storage.onChanged)) {
@@ -337,6 +429,7 @@ LaEle.storage = (function () {
     saveSettings: saveSettings,
     getRecords: getRecords,
     getCollection: getCollection,
+    getTopPhrases: getTopPhrases,
     recordScan: recordScan,
     setTabSummary: setTabSummary,
     getTabSummary: getTabSummary,

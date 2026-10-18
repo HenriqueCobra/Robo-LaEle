@@ -6,8 +6,8 @@
  */
 'use strict';
 
-var BADGE_COLOR = '#A08672';
-var BADGE_TEXT_COLOR = '#111111';
+var BADGE_COLOR = '#FFE45C';
+var BADGE_TEXT_COLOR = '#17141f';
 
 if (typeof importScripts === 'function') {
   ['../shared/dictionary.js', '../shared/engine.js', '../shared/storage.js'].forEach(function (file) {
@@ -109,8 +109,9 @@ function handleResult(message, sender) {
   var tabId = sender && sender.tab ? sender.tab.id : undefined;
   var summary = message && message.summary;
   var entryIds = (message && message.entryIds) || [];
+  var phrases = message && Array.isArray(message.phrases) ? message.phrases : [];
   var storage = swLaEle.storage;
-  var fallback = { newGlobalBest: false, newSiteBest: false };
+  var fallback = { newGlobalBest: false, newSiteBest: false, newTopPhrase: false };
 
   if (!summary || !storage) return Promise.resolve(fallback);
 
@@ -119,7 +120,7 @@ function handleResult(message, sender) {
     : Promise.resolve();
 
   return saveTab
-    .then(function () { return storage.recordScan(summary, entryIds); })
+    .then(function () { return storage.recordScan(summary, entryIds, phrases); })
     .then(function (result) {
       setBadge(tabId, badgeTextFor(summary.total));
       broadcastUpdated(tabId, summary);

@@ -73,6 +73,10 @@ test.beforeEach(() => {
   chromeMock = installChrome();
 });
 
+const phrase = (text, points, over) => Object.assign({
+  text, hits: [{ start: 0, end: 3, tier: 'comum' }], points, maxCombo: 2, count: 2
+}, over);
+
 const summary = (over) => Object.assign({
   url: 'https://exemplo.com/a', host: 'exemplo.com', title: 'Página A',
   total: 1000, count: 4, maxCombo: 3, grade: 'B', gradeLabel: 'Bom',
@@ -83,7 +87,7 @@ const summary = (over) => Object.assign({
 
 test('namespace global LaEle.storage e module.exports apontam para o mesmo objeto', () => {
   assert.equal(globalThis.LaEle.storage, storage);
-  for (const fn of ['getSettings', 'saveSettings', 'getRecords', 'getCollection', 'recordScan',
+  for (const fn of ['getSettings', 'saveSettings', 'getRecords', 'getCollection', 'recordScan', 'getTopPhrases',
     'setTabSummary', 'getTabSummary', 'resetAll', 'addCustomWord', 'removeCustomWord', 'onChange']) {
     assert.equal(typeof storage[fn], 'function', fn);
   }
@@ -93,7 +97,7 @@ test('namespace global LaEle.storage e module.exports apontam para o mesmo objet
 
 test('getSettings devolve os padrões quando nada foi salvo', async () => {
   assert.deepEqual(await storage.getSettings(), {
-    autoScan: true, animations: true, speed: 'normal', showHud: true, customWords: []
+    autoScan: true, animations: true, speed: 'normal', showHud: true, theme: 'dark', customWords: []
   });
 });
 
@@ -112,6 +116,16 @@ test('getSettings corrige velocidade inválida e customWords inválido', async (
   const s = await storage.getSettings();
   assert.equal(s.speed, 'normal');
   assert.deepEqual(s.customWords, []);
+});
+
+test('theme: padrão escuro, aceita só dark/light e persiste', async () => {
+  assert.equal((await storage.getSettings()).theme, 'dark');
+  chromeMock.storage.local.data.settings = { theme: 'neon' };
+  assert.equal((await storage.getSettings()).theme, 'dark');
+  assert.equal((await storage.saveSettings({ theme: 'light' })).theme, 'light');
+  assert.equal((await storage.getSettings()).theme, 'light');
+  assert.equal((await storage.saveSettings({ theme: 'sepia' })).theme, 'dark');
+  assert.equal((await storage.saveSettings({ theme: 'dark' })).theme, 'dark');
 });
 
 test('saveSettings mescla parcial e persiste', async () => {
@@ -138,7 +152,7 @@ test('getRecords devolve os padrões', async () => {
 
 test('recordScan: primeiro scan é recorde global e do site', async () => {
   const res = await storage.recordScan(summary(), ['dar', 'pau']);
-  assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true });
+  assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true, newTopPhrase: false });
   const r = await storage.getRecords();
   assert.deepEqual(r.global, { best: 1000, url: 'https://exemplo.com/a', title: 'Página A', host: 'exemplo.com', at: 1000 });
   assert.deepEqual(r.bySite['exemplo.com'], {
@@ -150,7 +164,7 @@ test('recordScan: primeiro scan é recorde global e do site', async () => {
 test('recordScan: scan menor não bate recorde, mas atualiza last, maxCombo e totais', async () => {
   await storage.recordScan(summary(), []);
   const res = await storage.recordScan(summary({ total: 400, count: 2, maxCombo: 5, url: 'https://exemplo.com/b', at: 2000 }), []);
-  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: false });
+  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: false, newTopPhrase: false });
   const r = await storage.getRecords();
   const site = r.bySite['exemplo.com'];
   assert.equal(site.best, 1000);
@@ -164,13 +178,13 @@ test('recordScan: scan menor não bate recorde, mas atualiza last, maxCombo e to
 test('recordScan: empate não é recorde', async () => {
   await storage.recordScan(summary(), []);
   const res = await storage.recordScan(summary({ at: 3000 }), []);
-  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: false });
+  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: false, newTopPhrase: false });
 });
 
 test('recordScan: recorde de site novo sem bater o global', async () => {
   await storage.recordScan(summary({ total: 5000 }), []);
   const res = await storage.recordScan(summary({ host: 'outro.com', url: 'https://outro.com/', total: 300, at: 5 }), []);
-  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: true });
+  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: true, newTopPhrase: false });
   const r = await storage.getRecords();
   assert.equal(r.bySite['outro.com'].best, 300);
   assert.equal(r.global.host, 'exemplo.com');
@@ -179,7 +193,7 @@ test('recordScan: recorde de site novo sem bater o global', async () => {
 test('recordScan: superar o recorde do site atualiza url, title e at', async () => {
   await storage.recordScan(summary(), []);
   const res = await storage.recordScan(summary({ total: 2500, url: 'https://exemplo.com/c', title: 'C', at: 9000 }), []);
-  assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true });
+  assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true, newTopPhrase: false });
   const site = (await storage.getRecords()).bySite['exemplo.com'];
   assert.equal(site.best, 2500);
   assert.equal(site.url, 'https://exemplo.com/c');
@@ -189,7 +203,7 @@ test('recordScan: superar o recorde do site atualiza url, title e at', async () 
 
 test('recordScan: total 0 nunca é recorde, mas conta como scan', async () => {
   const res = await storage.recordScan(summary({ total: 0, count: 0, maxCombo: 0 }), []);
-  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: false });
+  assert.deepEqual(res, { newGlobalBest: false, newSiteBest: false, newTopPhrase: false });
   const r = await storage.getRecords();
   assert.equal(r.global.best, 0);
   assert.equal(r.totals.scans, 1);
@@ -243,6 +257,113 @@ test('fila continua funcionando depois de uma escrita que falha', async () => {
   const res = await storage.recordScan(summary(), ['dar']);
   assert.equal(res.newGlobalBest, true);
   assert.equal((await storage.getCollection()).dar.count, 1);
+});
+
+// ---------- Top lá ele ----------
+
+test('getTopPhrases: vazio por padrão e ignora lixo salvo', async () => {
+  assert.deepEqual(await storage.getTopPhrases(), []);
+  chromeMock.storage.local.data.topPhrases = 'x';
+  assert.deepEqual(await storage.getTopPhrases(), []);
+});
+
+test('recordScan com trechos: grava com url/host/title/at e devolve newTopPhrase', async () => {
+  const res = await storage.recordScan(summary({ at: 4242 }), ['dar'], [phrase('Ela pegou no pau e chupou tudo!', 700)]);
+  assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true, newTopPhrase: true });
+  const top = await storage.getTopPhrases();
+  assert.equal(top.length, 1);
+  const p = top[0];
+  assert.match(p.id, /^exemplo\.com\|[0-9a-f]+$/);
+  assert.equal(p.text, 'Ela pegou no pau e chupou tudo!');
+  assert.deepEqual(p.hits, [{ start: 0, end: 3, tier: 'comum' }]);
+  assert.equal(p.points, 700);
+  assert.equal(p.maxCombo, 2);
+  assert.equal(p.count, 2);
+  assert.equal(p.url, 'https://exemplo.com/a');
+  assert.equal(p.host, 'exemplo.com');
+  assert.equal(p.title, 'Página A');
+  assert.equal(p.at, 4242);
+});
+
+test('recordScan sem trechos: newTopPhrase false e o Top não muda', async () => {
+  await storage.recordScan(summary(), [], [phrase('um trecho', 300)]);
+  const antes = await storage.getTopPhrases();
+  for (const arg of [undefined, null, [], 'x']) {
+    const res = await storage.recordScan(summary(), [], arg);
+    assert.equal(res.newTopPhrase, false);
+  }
+  assert.deepEqual(await storage.getTopPhrases(), antes);
+});
+
+test('recordScan: Top guarda só 10, ordenado por pontos', async () => {
+  const list = Array.from({ length: 14 }, (_, i) => phrase('trecho número ' + i, (i + 1) * 10));
+  const res = await storage.recordScan(summary(), [], list);
+  assert.equal(res.newTopPhrase, true);
+  const top = await storage.getTopPhrases();
+  assert.equal(top.length, 10);
+  assert.deepEqual(top.map((p) => p.points), [140, 130, 120, 110, 100, 90, 80, 70, 60, 50]);
+});
+
+test('recordScan: trecho que não entra no top 10 não conta como novo', async () => {
+  await storage.recordScan(summary(), [], Array.from({ length: 10 }, (_, i) => phrase('forte ' + i, 1000 + i)));
+  const res = await storage.recordScan(summary(), [], [phrase('fraco', 50)]);
+  assert.equal(res.newTopPhrase, false);
+  const top = await storage.getTopPhrases();
+  assert.equal(top.length, 10);
+  assert.ok(top.every((p) => p.text !== 'fraco'));
+  // um trecho acima do último entra e empurra o menor para fora
+  const res2 = await storage.recordScan(summary(), [], [phrase('mediano', 1005)]);
+  assert.equal(res2.newTopPhrase, true);
+  const top2 = await storage.getTopPhrases();
+  assert.equal(top2.length, 10);
+  assert.ok(top2.some((p) => p.text === 'mediano'));
+  assert.ok(top2.every((p) => p.text !== 'forte 0'));
+});
+
+test('recordScan: mesmo trecho (mesmo host e texto normalizado) fica com o de mais pontos', async () => {
+  await storage.recordScan(summary(), [], [phrase('Pegou no PAU!', 400)]);
+  // menos pontos ou empate: nada muda
+  let res = await storage.recordScan(summary({ url: 'https://exemplo.com/b' }), [], [phrase('pegou no pau!', 300)]);
+  assert.equal(res.newTopPhrase, false);
+  res = await storage.recordScan(summary({ url: 'https://exemplo.com/b' }), [], [phrase('pegou no pau!', 400)]);
+  assert.equal(res.newTopPhrase, false);
+  let top = await storage.getTopPhrases();
+  assert.equal(top.length, 1);
+  assert.equal(top[0].points, 400);
+  assert.equal(top[0].url, 'https://exemplo.com/a');
+  // mais pontos: substitui (e vale como novo)
+  res = await storage.recordScan(summary({ url: 'https://exemplo.com/c', at: 77 }), [], [phrase('Pegou no pau!', 900)]);
+  assert.equal(res.newTopPhrase, true);
+  top = await storage.getTopPhrases();
+  assert.equal(top.length, 1);
+  assert.equal(top[0].points, 900);
+  assert.equal(top[0].url, 'https://exemplo.com/c');
+  assert.equal(top[0].at, 77);
+});
+
+test('recordScan: dedupe dentro da mesma chamada e hosts diferentes não se misturam', async () => {
+  await storage.recordScan(summary(), [], [phrase('igual', 100), phrase('igual', 250), phrase('igual', 150)]);
+  let top = await storage.getTopPhrases();
+  assert.equal(top.length, 1);
+  assert.equal(top[0].points, 250);
+  await storage.recordScan(summary({ host: 'outro.com', url: 'https://outro.com/' }), [], [phrase('igual', 100)]);
+  top = await storage.getTopPhrases();
+  assert.equal(top.length, 2);
+  assert.notEqual(top[0].id, top[1].id);
+});
+
+test('recordScan: id usa o texto normalizado (acento e caixa não importam)', async () => {
+  await storage.recordScan(summary(), [], [phrase('Atrás da Maçã', 200)]);
+  await storage.recordScan(summary(), [], [phrase('atras da maca', 100)]);
+  assert.equal((await storage.getTopPhrases()).length, 1);
+});
+
+test('resetAll também zera o Top lá ele', async () => {
+  await storage.recordScan(summary(), ['dar'], [phrase('um trecho', 300)]);
+  assert.equal((await storage.getTopPhrases()).length, 1);
+  await storage.resetAll();
+  assert.deepEqual(await storage.getTopPhrases(), []);
+  assert.equal((await storage.recordScan(summary(), [], [phrase('um trecho', 300)])).newTopPhrase, true);
 });
 
 // ---------- resumo por aba ----------
@@ -346,20 +467,22 @@ test('resetAll zera recordes, totais e coleção, mantendo as configurações', 
 
 // ---------- onChange ----------
 
-test('onChange repassa só settings/records/collection da área local', async () => {
+test('onChange repassa só settings/records/collection/topPhrases da área local', async () => {
   const seen = [];
   const off = storage.onChange((changes, area) => seen.push({ keys: Object.keys(changes).sort(), area }));
   await storage.saveSettings({ showHud: false });
   await storage.recordScan(summary(), ['dar']);
+  await storage.recordScan(summary(), [], [phrase('um trecho qualquer', 500)]);
   await chromeMock.storage.local.set({ outraChave: 1 });
   await chromeMock.storage.session.set({ 'tab:1': {} });
   assert.deepEqual(seen, [
     { keys: ['settings'], area: 'local' },
-    { keys: ['collection', 'records'], area: 'local' }
+    { keys: ['collection', 'records'], area: 'local' },
+    { keys: ['collection', 'records', 'topPhrases'], area: 'local' }
   ]);
   off();
   await storage.saveSettings({ showHud: true });
-  assert.equal(seen.length, 2);
+  assert.equal(seen.length, 3);
 });
 
 // ---------- formatCompact (service worker) ----------
@@ -419,12 +542,43 @@ test('service worker: LAELE_RESULT grava resumo, recordes, badge, broadcast e re
     const keep = sw.onMessage({ type: 'LAELE_RESULT', summary: s, entryIds: ['dar', 'dar'] }, { tab: { id: 9 } }, resolve);
     assert.equal(keep, true);
   });
-  assert.deepEqual(response, { newGlobalBest: true, newSiteBest: true });
+  assert.deepEqual(response, { newGlobalBest: true, newSiteBest: true, newTopPhrase: false });
   assert.deepEqual(await storage.getTabSummary(9), s);
   assert.equal((await storage.getCollection()).dar.count, 2);
   assert.deepEqual(calls.badgeText.at(-1), { tabId: 9, text: '1.2k' });
   assert.deepEqual(calls.broadcasts, [{ type: 'LAELE_UPDATED', tabId: 9, summary: s }]);
 });
+
+test('service worker: badge usa fundo amarelo e texto escuro', async () => {
+  const colors = [];
+  installSwChrome();
+  chromeMock.action.setBadgeBackgroundColor = async (a) => { colors.push(['bg', a]); };
+  chromeMock.action.setBadgeTextColor = async (a) => { colors.push(['fg', a]); };
+  sw.onMessage({ type: 'LAELE_PROGRESS', total: 500, count: 1 }, { tab: { id: 2 } }, () => {});
+  assert.deepEqual(colors, [['bg', { color: '#FFE45C', tabId: 2 }], ['fg', { color: '#17141f', tabId: 2 }]]);
+});
+
+test('service worker: LAELE_RESULT com phrases grava o Top e devolve newTopPhrase', async () => {
+  installSwChrome();
+  const send = (msg, id) => new Promise((resolve) => sw.onMessage(msg, { tab: { id } }, resolve));
+  const res = await send({
+    type: 'LAELE_RESULT', summary: summary(), entryIds: ['dar'], phrases: [phrase('vou dar uma passada e comer tudo', 800)]
+  }, 11);
+  assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true, newTopPhrase: true });
+  const top = await storage.getTopPhrases();
+  assert.equal(top.length, 1);
+  assert.equal(top[0].points, 800);
+  assert.equal(top[0].host, 'exemplo.com');
+  // o mesmo trecho de novo não é novidade; phrases ausente ou inválido vira lista vazia
+  const again = await send({ type: 'LAELE_RESULT', summary: summary(), entryIds: [], phrases: [phrase('vou dar uma passada e comer tudo', 800)] }, 11);
+  assert.equal(again.newTopPhrase, false);
+  for (const phrases of [undefined, 'x', null]) {
+    const r = await send({ type: 'LAELE_RESULT', summary: summary(), entryIds: [], phrases }, 11);
+    assert.equal(r.newTopPhrase, false);
+  }
+  assert.equal((await storage.getTopPhrases()).length, 1);
+});
+
 
 test('service worker: resultado vazio limpa o badge', async () => {
   const calls = installSwChrome();
