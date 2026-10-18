@@ -283,6 +283,131 @@ var LaEle = globalThis.LaEle = globalThis.LaEle || {};
     return { grade: 'S', label: RANKS[RANKS.length - 1].label };
   }
 
+  // ---------- trechos (Top lá ele) ----------
+
+  var PHRASE_MAX = 180;
+  var RE_SENTENCE_END = /[.!?…]+(?=\s|$)/g;
+  var RE_SPACE = /\s/;
+
+  // limites de frase: fim (exclusivo, já com a pontuação) de cada separador
+  function sentenceEnds(text) {
+    var ends = [];
+    var m;
+    RE_SENTENCE_END.lastIndex = 0;
+    while ((m = RE_SENTENCE_END.exec(text)) !== null) ends.push({ from: m.index, to: m.index + m[0].length });
+    return ends;
+  }
+
+  // começo da frase que contém `pos`: logo depois do último separador anterior
+  function sentenceStart(ends, pos) {
+    var start = 0;
+    for (var i = 0; i < ends.length && ends[i].to <= pos; i++) start = ends[i].to;
+    return start;
+  }
+
+  // fim da frase que contém `pos`: inclui a pontuação final
+  function sentenceEnd(ends, pos, len) {
+    for (var i = 0; i < ends.length; i++) if (ends[i].from >= pos) return ends[i].to;
+    return len;
+  }
+
+  // Colapsa qualquer espaço em branco (\n, \t, nbsp...) em um espaço e apara as pontas.
+  // Devolve o texto novo e o mapa índice-original -> índice-novo (só vale para caracteres não brancos).
+  function collapseSpaces(str) {
+    var out = '';
+    var map = new Array(str.length);
+    var pending = false;
+    for (var i = 0; i < str.length; i++) {
+      var ch = str.charAt(i);
+      if (RE_SPACE.test(ch)) {
+        pending = out.length > 0;
+        continue;
+      }
+      if (pending) { out += ' '; pending = false; }
+      map[i] = out.length;
+      out += ch;
+    }
+    return { text: out, map: map };
+  }
+
+  // Corta o contexto em volta da faixa [a, b) para caber em PHRASE_MAX, sempre em limite de palavra.
+  // Devolve { text, shift }: shift é o deslocamento a somar nos offsets originais.
+  function fitPhrase(t, a, b) {
+    if (t.length <= PHRASE_MAX) return { text: t, shift: 0 };
+    var len = t.length;
+    var range = b - a;
+    if (range > PHRASE_MAX) {
+      // pontuação final colada na faixa não conta como corte
+      if (/^[.!?…]+$/.test(t.slice(b))) b = len;
+      return { text: (a > 0 ? '…' : '') + t.slice(a, b) + (b < len ? '…' : ''), shift: (a > 0 ? 1 : 0) - a };
+    }
+    var room = PHRASE_MAX - range;
+    var ctxL = a;
+    var ctxR = len - b;
+    var halfL = Math.floor(room / 2);
+    var halfR = room - halfL;
+    var keepL;
+    var keepR;
+    if (ctxL <= halfL) { keepL = ctxL; keepR = room - ctxL - 1; }
+    else if (ctxR <= halfR) { keepR = ctxR; keepL = room - ctxR - 1; }
+    else { keepL = Math.floor((room - 2) / 2); keepR = room - 2 - keepL; }
+    keepL = Math.max(0, keepL);
+    keepR = Math.max(0, keepR);
+
+    var p = Math.max(0, a - keepL);
+    while (p > 0 && p < a && t.charAt(p - 1) !== ' ') p++;
+    var q = Math.min(len, b + keepR);
+    while (q < len && q > b && t.charAt(q) !== ' ') q--;
+
+    var cutL = p > 0;
+    var cutR = q < len;
+    return {
+      text: (cutL ? '…' : '') + t.slice(p, q) + (cutR ? '…' : ''),
+      shift: (cutL ? 1 : 0) - p
+    };
+  }
+
+  function buildPhrase(text, ends, seq) {
+    var first = seq[0];
+    var last = seq[seq.length - 1];
+    var from = sentenceStart(ends, first.start);
+    var to = sentenceEnd(ends, last.end, text.length);
+    var col = collapseSpaces(text.slice(from, to));
+    var a = col.map[first.start - from];
+    var b = col.map[last.end - 1 - from] + 1;
+    var fit = fitPhrase(col.text, a, b);
+    var points = 0;
+    var hits = seq.map(function (m) {
+      points += m.points;
+      return {
+        start: col.map[m.start - from] + fit.shift,
+        end: col.map[m.end - 1 - from] + 1 + fit.shift,
+        tier: m.tier
+      };
+    });
+    return { text: fit.text, hits: hits, points: points, maxCombo: last.combo, count: seq.length };
+  }
+
+  // Um trecho por sequência de combo (começa em todo match com combo 1) com 2+ matches.
+  function phrases(text, matches) {
+    var out = [];
+    if (text === null || text === undefined || !Array.isArray(matches) || matches.length < 2) return out;
+    text = String(text);
+    var ends = sentenceEnds(text);
+    var seq = [];
+    function flush() {
+      if (seq.length >= 2) out.push(buildPhrase(text, ends, seq));
+      seq = [];
+    }
+    matches.forEach(function (m) {
+      if (!m) return;
+      if (m.combo === 1) flush();
+      seq.push(m);
+    });
+    flush();
+    return out;
+  }
+
   LaEle.engine = {
     CONFIG: CONFIG,
     RANKS: RANKS,
@@ -291,6 +416,7 @@ var LaEle = globalThis.LaEle = globalThis.LaEle || {};
     compile: compile,
     analyze: analyze,
     rank: rank,
+    phrases: phrases,
     setCustomEntries: setCustomEntries,
     getDefaultIndex: getDefaultIndex
   };

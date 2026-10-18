@@ -375,3 +375,174 @@ test('analyze: entradas vazias ou inválidas', () => {
   }
   assert.strictEqual(engine.analyze('texto sem nada de especial').total, 0);
 });
+
+// ---------- phrases (Top lá ele) ----------
+
+// matches artificiais: cada palavra de `itens` é procurada no texto, na ordem
+function fakeMatches(text, itens) {
+  let from = 0;
+  return itens.map(([palavra, combo, points = 100, tier = 'comum']) => {
+    const start = text.indexOf(palavra, from);
+    assert.ok(start >= 0, 'palavra não achada: ' + palavra);
+    from = start + palavra.length;
+    return { start, end: from, raw: palavra, entryId: palavra, label: palavra, coef: 1, tier, combo, multiplier: 1, points };
+  });
+}
+
+function hitTexts(p) {
+  return p.hits.map((h) => p.text.slice(h.start, h.end));
+}
+
+function palavras(n, prefixo) {
+  return Array.from({ length: n }, (_, i) => (prefixo || 'palavra') + i).join(' ');
+}
+
+test('phrases: entradas vazias ou sem sequência devolvem lista vazia', () => {
+  assert.deepStrictEqual(engine.phrases('', []), []);
+  assert.deepStrictEqual(engine.phrases(null, null), []);
+  assert.deepStrictEqual(engine.phrases('texto', undefined), []);
+});
+
+test('phrases: sequência de 2+ matches vira um trecho com pontos, combo e contagem', () => {
+  const text = 'Ele vai dar uma passada e comer tudo.';
+  const r = engine.analyze(text);
+  const out = engine.phrases(text, r.matches);
+  assert.strictEqual(out.length, 1);
+  assert.strictEqual(out[0].text, text);
+  assert.strictEqual(out[0].count, 2);
+  assert.strictEqual(out[0].maxCombo, 2);
+  assert.strictEqual(out[0].points, r.total);
+  assert.deepStrictEqual(hitTexts(out[0]), ['dar uma passada', 'comer tudo']);
+  assert.deepStrictEqual(out[0].hits.map((h) => h.tier), r.matches.map((m) => m.tier));
+});
+
+test('phrases: match isolado não vira trecho', () => {
+  const um = 'xis no meio de nada.';
+  assert.deepStrictEqual(engine.phrases(um, engine.analyze(um, SIMPLE).matches), []);
+  const longe = 'xis ' + fillers(20) + ' xis';
+  const r = engine.analyze(longe, SIMPLE);
+  assert.deepStrictEqual(r.matches.map((m) => m.combo), [1, 1]);
+  assert.deepStrictEqual(engine.phrases(longe, r.matches), []);
+});
+
+test('phrases: duas sequências no mesmo bloco viram dois trechos', () => {
+  const text = 'xis duo xis. ' + fillers(12) + '. duo xis!';
+  const r = engine.analyze(text, SIMPLE);
+  assert.deepStrictEqual(r.matches.map((m) => m.combo), [1, 2, 3, 1, 2]);
+  const out = engine.phrases(text, r.matches);
+  assert.strictEqual(out.length, 2);
+  assert.strictEqual(out[0].text, 'xis duo xis.');
+  assert.strictEqual(out[0].count, 3);
+  assert.strictEqual(out[0].maxCombo, 3);
+  assert.strictEqual(out[1].text, 'duo xis!');
+  assert.strictEqual(out[1].count, 2);
+  assert.strictEqual(out[1].maxCombo, 2);
+  assert.strictEqual(out[0].points, r.matches.slice(0, 3).reduce((s, m) => s + m.points, 0));
+  assert.strictEqual(out[1].points, r.matches.slice(3).reduce((s, m) => s + m.points, 0));
+});
+
+test('phrases: recorta pela frase (ponto, exclamação, interrogação e reticências)', () => {
+  const text = 'Primeira frase sem nada. Segunda tem xis? Sim, duo! Quarta frase ainda sem nada nenhum por aqui… Quinta xis duo. Sexta qualquer.';
+  const r = engine.analyze(text, SIMPLE);
+  const out = engine.phrases(text, r.matches);
+  assert.deepStrictEqual(out.map((p) => p.text), ['Segunda tem xis? Sim, duo!', 'Quinta xis duo.']);
+  assert.strictEqual(out[0].count, 2);
+  assert.strictEqual(out[1].count, 2);
+  // ponto no meio de número não quebra a frase
+  const t2 = 'Custou 3.5 reais e xis com duo.';
+  assert.strictEqual(engine.phrases(t2, engine.analyze(t2, SIMPLE).matches)[0].text, t2);
+  // sem pontuação: o trecho é o bloco inteiro
+  const t3 = 'xis e duo sem ponto';
+  assert.strictEqual(engine.phrases(t3, engine.analyze(t3, SIMPLE).matches)[0].text, t3);
+});
+
+test('phrases: espaços em branco colapsam e os offsets dos hits acompanham', () => {
+  const text = '  Oi.\n\n  Tem   xis\t\tcom  duo \n  aqui.  Fim.';
+  const r = engine.analyze(text, SIMPLE);
+  const out = engine.phrases(text, r.matches);
+  assert.strictEqual(out.length, 1);
+  assert.strictEqual(out[0].text, 'Tem xis com duo aqui.');
+  assert.deepStrictEqual(hitTexts(out[0]), ['xis', 'duo']);
+});
+
+test('phrases: acima de 180 caracteres corta o contexto dos dois lados com "…"', () => {
+  const lado = palavras(30);
+  const text = lado + ' xis e duo ' + lado + '.';
+  const out = engine.phrases(text, engine.analyze(text, SIMPLE).matches);
+  assert.strictEqual(out.length, 1);
+  const p = out[0];
+  assert.ok(p.text.length <= 180, 'tamanho ' + p.text.length);
+  assert.ok(p.text.startsWith('…'));
+  assert.ok(p.text.endsWith('…'));
+  assert.ok(p.text.includes('xis e duo'));
+  assert.deepStrictEqual(hitTexts(p), ['xis', 'duo']);
+  // corte em limite de palavra: nenhuma palavra do contexto aparece pela metade
+  const ws = p.text.replace(/…/g, ' ').split(' ').filter(Boolean);
+  assert.ok(ws.every((w) => /^(palavra\d+|xis|e|duo)$/.test(w)), ws.join('|'));
+  // por igual: os dois lados ficam com tamanhos próximos
+  const esquerda = p.hits[0].start;
+  const direita = p.text.length - p.hits[1].end;
+  assert.ok(Math.abs(esquerda - direita) <= 12, esquerda + ' x ' + direita);
+});
+
+test('phrases: corte só do lado que passa do limite', () => {
+  const longo = palavras(40);
+  const a = 'xis duo ' + longo + '.';
+  const pa = engine.phrases(a, engine.analyze(a, SIMPLE).matches)[0];
+  assert.ok(pa.text.length <= 180);
+  assert.ok(pa.text.startsWith('xis duo '));
+  assert.ok(pa.text.endsWith('…'));
+  assert.deepStrictEqual(hitTexts(pa), ['xis', 'duo']);
+
+  const b = longo + ' xis duo.';
+  const pb = engine.phrases(b, engine.analyze(b, SIMPLE).matches)[0];
+  assert.ok(pb.text.length <= 180);
+  assert.ok(pb.text.startsWith('…'));
+  assert.ok(pb.text.endsWith('xis duo.'));
+  assert.deepStrictEqual(hitTexts(pb), ['xis', 'duo']);
+});
+
+test('phrases: faixa maior que 180 fica inteira, sem contexto', () => {
+  const text = 'Antes dela. xis ' + palavras(40) + ' duo. Depois dela.';
+  const out = engine.phrases(text, fakeMatches(text, [['xis', 1], ['duo', 2]]));
+  assert.strictEqual(out.length, 1);
+  const p = out[0];
+  assert.ok(p.text.startsWith('xis '));
+  assert.ok(p.text.endsWith('duo.'));
+  assert.ok(p.text.length > 180);
+  assert.deepStrictEqual(hitTexts(p), ['xis', 'duo']);
+  assert.strictEqual(p.hits[0].start, 0);
+});
+
+test('phrases: faixa grande com contexto dos dois lados ganha "…" nos dois', () => {
+  const text = 'Antes xis ' + palavras(40) + ' duo depois.';
+  const p = engine.phrases(text, fakeMatches(text, [['xis', 1], ['duo', 2]]))[0];
+  assert.ok(p.text.startsWith('…xis '));
+  assert.ok(p.text.endsWith(' duo…'));
+  assert.deepStrictEqual(hitTexts(p), ['xis', 'duo']);
+});
+
+test('phrases: offsets dos hits batem com o texto (analyze real, espaços e corte)', () => {
+  const bloco = Array.from({ length: 25 }, (_, i) => 'texto' + i).join('  ');
+  const text = bloco + '  ele vai\ndar uma passada,   comer   tudo e chupar ' + bloco + '. Fim.';
+  const r = engine.analyze(text);
+  const out = engine.phrases(text, r.matches);
+  assert.ok(out.length >= 1);
+  for (const p of out) {
+    assert.ok(p.text.length <= 180);
+    for (const h of p.hits) {
+      assert.ok(h.start >= 0 && h.end <= p.text.length && h.start < h.end);
+      const trecho = p.text.slice(h.start, h.end);
+      assert.ok(engine.analyze(trecho).matches.length >= 1, 'hit sem match: ' + JSON.stringify(trecho));
+    }
+  }
+});
+
+test('phrases: maxCombo é o combo do último match e points soma os da sequência', () => {
+  const text = 'xis duo xis duo xis.';
+  const r = engine.analyze(text, SIMPLE);
+  const p = engine.phrases(text, r.matches)[0];
+  assert.strictEqual(p.count, 5);
+  assert.strictEqual(p.maxCombo, 5);
+  assert.strictEqual(p.points, r.total);
+});
