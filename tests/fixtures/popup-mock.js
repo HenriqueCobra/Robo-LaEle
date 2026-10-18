@@ -1,14 +1,16 @@
 /* Mock de chrome.* e LaEle.* para pré-visualizar o popup fora da extensão.
- * Controle pela hash da URL, ex.: popup-preview.html#tab=dex&state=empty
- *   tab=records|dex|settings   aba inicial
+ * Controle pela hash ou pela query da URL, ex.: popup-preview.html?theme=light#tab=dex&state=empty
+ *   theme=dark|light           pele (padrão: dark)
+ *   tab=records|top|dex|settings   aba inicial
  *   state=result|empty|scanning|clean|pdf|internal|store
- *   data=none                  sem recordes nem coleção
+ *   data=none                  sem recordes, coleção nem Top lá ele
+ *   top=empty                  só o Top lá ele vazio
  *   click=#id|#id2             cliques automáticos (separados por |)
  *   type=texto                 digita na busca da Laelédex
  */
 (function () {
   var params = {};
-  location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+  (location.search.replace(/^\?/, '') + '&' + location.hash.replace(/^#/, '')).split('&').forEach(function (kv) {
     var p = kv.split('=');
     if (p[0]) params[p[0]] = decodeURIComponent(p[1] || '');
   });
@@ -21,7 +23,10 @@
     window.matchMedia = function (q) { return { matches: /reduce/.test(q), addEventListener: function () {} }; };
   }
 
-  try { localStorage.setItem('laele.popup.tab', params.tab || 'records'); } catch (e) { /* ignora */ }
+  try {
+    localStorage.setItem('laele.popup.tab', params.tab || 'records');
+    localStorage.setItem('laele.popup.theme', params.theme === 'light' ? 'light' : 'dark');
+  } catch (e) { /* ignora */ }
 
   var now = Date.now();
   var E = function (id, label, coef, tier, phrase) {
@@ -39,7 +44,7 @@
     E('mangueira', 'mangueira', 2, 'comum'), E('pirulito', 'pirulito', 1.5, 'leve'), E('meter', 'meter', 2.5, 'pesado')
   ];
 
-  var settings = { autoScan: true, animations: true, speed: 'normal', showHud: true, customWords: [
+  var settings = { autoScan: true, animations: true, speed: 'normal', showHud: true, theme: params.theme === 'light' ? 'light' : 'dark', customWords: [
     { id: 'custom-1', label: 'cenoura', coef: 2, tier: 'comum', forms: ['cenoura'], stems: [], phrase: false }
   ] };
 
@@ -65,6 +70,29 @@
     'por-tras': { count: 9, firstAt: now, firstUrl: '' }, sentar: { count: 5, firstAt: now, firstUrl: '' },
     comer: { count: 77, firstAt: now, firstUrl: '' }, 'custom-1': { count: 2, firstAt: now, firstUrl: '' }
   };
+
+  // trecho do Top lá ele: monta o texto e os offsets das palavras achadas a partir de pedaços
+  // P(id, host, pontos, combo, dias atrás, [texto] ou [palavra, raridade])
+  var P = function (id, host, points, maxCombo, daysAgo, parts) {
+    var text = '';
+    var hits = [];
+    parts.forEach(function (part) {
+      if (typeof part === 'string') { text += part; return; }
+      hits.push({ start: text.length, end: text.length + part[0].length, tier: part[1] });
+      text += part[0];
+    });
+    return {
+      id: id, text: text, hits: hits, points: points, maxCombo: maxCombo, count: hits.length,
+      url: 'https://' + host + '/', host: host, title: host, at: now - 86400e3 * daysAgo
+    };
+  };
+  var topPhrases = (none || params.top === 'empty') ? [] : [
+    P('a', 'receitasdavo.com.br', 9840, 6, 1, ['Disse que ia ', ['dar uma', 'comum'], ' ', ['passada', 'leve'], ' no pé de ', ['mandioca', 'comum'], ', que estava ', ['grossa', 'pesado'], ', ', ['dura', 'pesado'], ' e bem ', ['molhada', 'leve']]),
+    P('b', 'www.ge.globo.com', 5210, 4, 3, ['o atacante ', ['meteu', 'comum'], ' por ', ['trás', 'pesado'], ', o goleiro ', ['engoliu', 'comum'], ' e a torcida pediu ', ['mais', 'leve']]),
+    P('c', 'tudogostoso.com.br', 4780, 3, 6, ['deixe a ', ['linguiça', 'pesado'], ' de molho e ', ['enfie', 'comum'], ' no espeto ', ['até o fundo', 'lendario']]),
+    P('d', 'receitasdavo.com.br', 3960, 3, 8, ['…a vizinha pediu para ele ', ['tirar', 'comum'], ' o ', ['pepino', 'pesado'], ' da ', ['geladeira', 'leve'], ' com cuidado…']),
+    P('e', 'tudogostoso.com.br', 1900, 2, 30, ['bata a massa até ficar ', ['dura', 'comum'], ' e ', ['grossa', 'pesado']])
+  ];
 
   var summary = {
     url: 'https://exemplo.com.br/receitas', host: 'www.exemplo.com.br', title: 'Receitas de bolo',
@@ -123,6 +151,7 @@
       saveSettings: function (p) { Object.assign(settings, p); return Promise.resolve(settings); },
       getRecords: function () { return Promise.resolve(records); },
       getCollection: function () { return Promise.resolve(collection); },
+      getTopPhrases: function () { return Promise.resolve(topPhrases); },
       getTabSummary: function () { return Promise.resolve(tabSummary); },
       addCustomWord: function (w) {
         var e = { id: 'custom-' + Math.random().toString(36).slice(2, 7), label: w.label, coef: w.coef, tier: 'comum', forms: [w.label], stems: [], phrase: false };
@@ -136,6 +165,7 @@
       resetAll: function () {
         records = { global: { best: 0, url: '', title: '', host: '', at: 0 }, bySite: {}, totals: { scans: 0, words: 0, points: 0 } };
         collection = {};
+        topPhrases = [];
         return Promise.resolve();
       }
     }

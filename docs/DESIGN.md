@@ -28,6 +28,7 @@ Os mesmos nomes de token nas duas peles. Tinta é o padrão; Papel entra com `se
 | `--moldura` | `#0c0a11` | `#d9d1c0` | Fundo do `html` do popup, em volta do cartão. |
 | `--sw-off` | `#3a3449` | `#cfc6b4` | Trilho do switch desligado. |
 | `--nota-d` / `--nota-d-txt` | `#4a4359` / `#f6f2ea` | `#ddd4c2` / `#1b1822` | Quadrado da nota D e sem nota. |
+| `--perigo-bg` / `--perigo-txt` | `#4a2030` / `#ffc2d0` | `#f4d4d6` / `#8a1f33` | Só "Apagar tudo", erro de formulário e aviso de erro. |
 
 ### Canetas (iguais nas duas peles)
 
@@ -89,7 +90,7 @@ HUD: placar 40 px, nota 46 px de quadrado com letra 26 px, resto 12–13 px.
 
 ### Janela com cantos
 
-O Chrome desenha a janela do popup sempre retangular e não aceita fundo transparente. Por isso o canto redondo é desenhado por dentro: o `html`/`body` pinta `--moldura` e o conteúdo é um cartão `--bg` com raio 12 e 6 px de folga em volta. A janela fica com 372 px de largura (6 + 360 + 6) e a altura máxima do cartão é 600 px, com rolagem só dentro do cartão.
+O Chrome desenha a janela do popup sempre retangular e não aceita fundo transparente. Por isso o canto redondo é desenhado por dentro: o `html`/`body` pinta `--moldura` e o conteúdo é um cartão `--bg` com raio 12 e 6 px de folga em volta. A janela fica com 372 px de largura (6 + 360 + 6) e o cartão tem no máximo 588 px de altura (o Chrome limita o popup a 600 px, e as folgas de cima e de baixo entram na conta), com rolagem só dentro do cartão.
 
 ### Topo e resultado
 
@@ -105,7 +106,7 @@ O Chrome desenha a janela do popup sempre retangular e não aceita fundo transpa
 │ └────────────┴────────────┴────────────┘ │
 │ [mandioca 4] [pau 3] [pepino 3]          │  ← #terms: cada chip é um traço da raridade
 │ [         Varrer página                ] │  ← #scanBtn 42 px, comum, texto tinta 14/600
-│ ( Recordes | Top | Laelédex | Ajustes )  │  ← #tabs 4 segmentos; ativo = traço comum-3 86% × 62%
+│ ( Recordes | Top | Laelédex | Ajustes )  │  ← #tabs 4 segmentos; ativo = traço comum-3 86% × 66% a 50% 52%
 ```
 
 - **Traço do placar:** pseudo-elemento sob o número (`--mt-comum-2`, 13 px de altura, `z-index: -1` num contêiner com `isolation: isolate`). Quando a pontuação muda, ele se redesenha da esquerda (`scaleX` 0→1, 380 ms).

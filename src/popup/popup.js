@@ -9,7 +9,8 @@
 
   var SCAN_TIMEOUT_MS = 15000;
   var TAB_KEY = 'laele.popup.tab';
-  var TABS = ['records', 'dex', 'settings'];
+  var THEME_KEY = 'laele.popup.theme';
+  var TABS = ['records', 'top', 'dex', 'settings'];
   var SPEEDS = ['lento', 'normal', 'rapido'];
   var SVG_NS = 'http://www.w3.org/2000/svg';
   var NO_CONTENT_RE = /Receiving end does not exist|Could not establish connection/i;
@@ -26,6 +27,7 @@
     animations: true,
     speed: 'normal',
     showHud: true,
+    theme: 'dark',
     customWords: []
   };
 
@@ -42,6 +44,9 @@
     settings: Object.assign({}, DEFAULT_SETTINGS),
     records: null,
     collection: {},
+    topPhrases: [],
+    shownGrade: null,
+    scoreTarget: null,
     dexFilter: 'all',
     dexQuery: '',
     shownScore: 0,
@@ -144,6 +149,42 @@
 
   function lsSet(key, val) {
     try { window.localStorage.setItem(key, val); } catch (e) { /* ignora */ }
+  }
+
+  // Pele: Tinta ('dark', padrão) ou Papel ('light'). O valor também fica em cache local para a
+  // próxima abertura já nascer na pele certa, antes de o chrome.storage responder.
+  function applyTheme(theme) {
+    var t = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    lsSet(THEME_KEY, t);
+    var btn = document.getElementById('themeToggle');
+    if (btn) btn.setAttribute('aria-checked', t === 'dark' ? 'true' : 'false');
+  }
+
+  // Traço de marca-texto: caneta pela raridade, forma (1, 2, 3) pela ordem
+  function paintStroke(node, tier, order) {
+    node.classList.add('mt');
+    node.dataset.t = TIERS[tier] ? tier : 'comum';
+    node.dataset.v = String((order % 3) + 1);
+    return node;
+  }
+
+  // "hoje", "ontem", "sáb" (últimos dias) ou "12 out"
+  function shortDate(ts) {
+    if (!ts) return '';
+    try {
+      var d = new Date(ts);
+      var now = new Date();
+      var day = function (x) { return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(); };
+      var diff = Math.round((day(now) - day(d)) / 86400000);
+      if (diff <= 0) return 'hoje';
+      if (diff === 1) return 'ontem';
+      if (diff < 7) return d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+      var txt = d.getDate() + ' ' + d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+      return d.getFullYear() === now.getFullYear() ? txt : txt + ' ' + d.getFullYear();
+    } catch (e) {
+      return '';
+    }
   }
 
   function wait(ms) {
@@ -304,6 +345,10 @@
       els.heroMain.dataset.grade = grade;
       els.gradeLetter.textContent = grade === '-' ? '–' : grade;
       els.grade.setAttribute('aria-label', grade === '-' ? 'Sem nota' : 'Nota ' + grade);
+      if (state.shownGrade !== grade) {
+        state.shownGrade = grade;
+        stamp(els.grade);
+      }
       els.gradeLabel.textContent = s.gradeLabel || '';
 
       els.statWords.textContent = fmt(s.count);
@@ -328,35 +373,55 @@
     list.textContent = '';
     var top = terms.slice(0, 3);
     els.termsWrap.hidden = top.length === 0;
-    top.forEach(function (t) {
+    top.forEach(function (t, i) {
       var li = make('li', 'chip');
-      var tier = tierOf(t.entryId);
-      if (tier) li.dataset.t = tier;
+      paintStroke(li, tierOf(t.entryId), i);
       li.title = t.label + ': ' + fmt(t.count) + 'x, ' + fmt(t.points) + ' pontos';
-      li.appendChild(make('i', 'chip-dot'));
       li.appendChild(make('span', 'chip-label', t.label));
       li.appendChild(make('span', 'chip-n', fmt(t.count)));
       list.appendChild(li);
     });
   }
 
+  // reinicia uma animação de CSS (o carimbo da nota, o traço sob o placar)
+  function replay(node, cls) {
+    node.classList.remove(cls);
+    void node.offsetWidth;
+    node.classList.add(cls);
+  }
+
+  function stamp(node) {
+    if (animationsOn()) replay(node, 'pula');
+  }
+
+  function setScoreText(v) {
+    var txt = fmt(v);
+    els.score.textContent = txt;
+    els.score.dataset.size = txt.length >= 11 ? 'xs' : (txt.length >= 9 ? 's' : '');
+  }
+
   function showScore(to) {
     cancelAnimationFrame(state.countRaf);
     var from = state.shownScore;
-    if (from === to) { els.score.textContent = fmt(to); return; }
+    // o traço sob o número se redesenha quando a pontuação muda
+    if (to !== state.scoreTarget) {
+      state.scoreTarget = to;
+      if (animationsOn()) replay(els.scoreWrap, 'is-drawing');
+    }
+    if (from === to) { setScoreText(to); return; }
     if (!animationsOn()) {
       state.shownScore = to;
-      els.score.textContent = fmt(to);
+      setScoreText(to);
       return;
     }
-    var dur = Math.min(1100, 450 + Math.log10(Math.abs(to - from) + 1) * 150);
+    var dur = 320;
     var t0 = performance.now();
     function step(now) {
       var p = Math.min(1, (now - t0) / dur);
       var eased = 1 - Math.pow(1 - p, 3);
       var v = Math.round(from + (to - from) * eased);
       state.shownScore = v;
-      els.score.textContent = fmt(v);
+      setScoreText(v);
       if (p < 1) state.countRaf = requestAnimationFrame(step);
     }
     state.countRaf = requestAnimationFrame(step);
@@ -469,14 +534,17 @@
       var res = await Promise.all([
         storage.getSettings ? storage.getSettings() : null,
         storage.getRecords ? storage.getRecords() : null,
-        storage.getCollection ? storage.getCollection() : null
+        storage.getCollection ? storage.getCollection() : null,
+        storage.getTopPhrases ? storage.getTopPhrases() : null
       ]);
       if (res[0]) state.settings = Object.assign({}, DEFAULT_SETTINGS, res[0]);
       state.records = res[1] || null;
       state.collection = res[2] || {};
+      state.topPhrases = Array.isArray(res[3]) ? res[3] : [];
     } catch (e) { /* mantém o que já havia */ }
     tierMap = {};
     renderRecords();
+    renderTop();
     renderDex();
     renderSettings();
   }
@@ -556,6 +624,60 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Top lá ele                                                          */
+  /* ------------------------------------------------------------------ */
+
+  // A frase vem de sites alheios: só nós de texto, nunca innerHTML
+  function buildPhrase(p, cardIdx) {
+    var text = String(p.text || '');
+    var q = document.createElement('q');
+    var hits = (Array.isArray(p.hits) ? p.hits : []).filter(function (h) {
+      return h && Number.isFinite(h.start) && Number.isFinite(h.end) && h.start >= 0 && h.end > h.start && h.start < text.length;
+    }).sort(function (a, b) { return a.start - b.start; });
+
+    var pos = 0;
+    var n = 0;
+    hits.forEach(function (h) {
+      var start = Math.max(h.start, pos);
+      var end = Math.min(h.end, text.length);
+      if (end <= start) return; // trecho sobreposto a um anterior
+      if (start > pos) q.appendChild(document.createTextNode(text.slice(pos, start)));
+      var span = paintStroke(document.createElement('span'), h.tier, cardIdx + n);
+      span.textContent = text.slice(start, end);
+      q.appendChild(span);
+      pos = end;
+      n++;
+    });
+    if (pos < text.length) q.appendChild(document.createTextNode(text.slice(pos)));
+    return q;
+  }
+
+  function renderTop() {
+    var list = state.topPhrases.slice(0, 10);
+    els.topList.textContent = '';
+    els.topEmpty.hidden = list.length > 0;
+
+    list.forEach(function (p, i) {
+      var li = make('li', 'top-card');
+      li.appendChild(make('span', 'top-n', String(i + 1)));
+      var phrase = make('p', 'top-phrase');
+      phrase.appendChild(buildPhrase(p, i));
+      li.appendChild(phrase);
+
+      var info = make('div', 'top-info');
+      info.appendChild(make('b', 'top-pts', fmt(p.points) + ' pts'));
+      if (Number(p.maxCombo) > 0) info.appendChild(make('span', null, 'combo ' + fmt(p.maxCombo)));
+      var host = stripWww(p.host);
+      if (host) info.appendChild(make('span', 'top-host', host));
+      var when = shortDate(p.at);
+      if (when) info.appendChild(make('span', null, when));
+      li.appendChild(info);
+      if (p.title) li.title = String(p.title);
+      els.topList.appendChild(li);
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Laelédex                                                            */
   /* ------------------------------------------------------------------ */
 
@@ -576,6 +698,7 @@
     var q = norm(state.dexQuery.trim());
     var frag = document.createDocumentFragment();
     var shown = 0;
+    var painted = 0;
 
     entries.forEach(function (e, idx) {
       var tier = TIERS[e.tier] ? e.tier : 'comum';
@@ -595,7 +718,10 @@
       top.appendChild(tierTag);
       li.appendChild(top);
 
-      li.appendChild(make('span', 'dex-name', isFound ? e.label : '???'));
+      var nameEl = make('span', 'dex-name', isFound ? e.label : '???');
+      if (isFound) paintStroke(nameEl, tier, painted++);
+      else nameEl.classList.add('is-hidden');
+      li.appendChild(nameEl);
 
       if (isFound) {
         var meta = make('div', 'dex-meta');
@@ -604,7 +730,7 @@
         li.appendChild(meta);
         li.setAttribute('aria-label', e.label + ', ' + TIERS[tier].label + ', coeficiente ' + fmtCoef(e.coef) + ', encontrada ' + rec.count + ' vezes');
       } else {
-        li.setAttribute('aria-label', 'Palavra ainda não descoberta, raridade ' + TIERS[tier].label);
+        li.setAttribute('aria-label', 'Palavra não descoberta, raridade ' + TIERS[tier].label);
         li.appendChild(make('div', 'dex-meta'));
       }
       frag.appendChild(li);
@@ -625,6 +751,7 @@
 
   function renderSettings() {
     var s = state.settings;
+    applyTheme(s.theme);
     setSwitch(els.autoHeader, !!s.autoScan);
     setSwitch(els.setAutoScan, !!s.autoScan);
     setSwitch(els.setAnimations, !!s.animations);
@@ -806,7 +933,7 @@
     [
       'hero', 'heroAvatar', 'heroHost', 'heroMain', 'scanPill', 'recordPill', 'score', 'grade', 'gradeLetter', 'gradeLabel',
       'statWords', 'statCombo', 'statMult', 'terms', 'termsWrap', 'msgTitle', 'msgText', 'scanBtn', 'scanLabel',
-      'tabs', 'autoHeader', 'bestCard', 'bestScore', 'bestMeta', 'totScans', 'totWords', 'totPoints', 'sites', 'sitesEmpty',
+      'tabs', 'autoHeader', 'themeToggle', 'scoreWrap', 'topList', 'topEmpty', 'bestCard', 'bestScore', 'bestMeta', 'totScans', 'totWords', 'totPoints', 'sites', 'sitesEmpty',
       'dexFound', 'dexTotal', 'dexPct', 'dexBar', 'dexBarWrap', 'dexSearch', 'dexFilters', 'dexGrid', 'dexEmpty',
       'setAutoScan', 'setAnimations', 'setShowHud', 'speedSeg', 'addForm', 'wordInput', 'coefInput', 'coefValue',
       'addMsg', 'customList', 'customEmpty', 'resetIdle', 'resetConfirm', 'resetBtn', 'resetCancel', 'resetYes', 'toast'
@@ -824,6 +951,9 @@
     });
 
     els.autoHeader.addEventListener('click', function () { toggleSetting('autoScan'); });
+    els.themeToggle.addEventListener('click', function () {
+      saveSetting({ theme: state.settings.theme === 'light' ? 'dark' : 'light' });
+    });
     els.setAutoScan.addEventListener('click', function () { toggleSetting('autoScan'); });
     els.setAnimations.addEventListener('click', function () { toggleSetting('animations'); });
     els.setShowHud.addEventListener('click', function () { toggleSetting('showHud'); });
@@ -871,7 +1001,7 @@
         if (area === 'session' && state.tabId != null) {
           var ch = changes['tab:' + state.tabId];
           if (ch && ch.newValue) onUpdated(ch.newValue, false);
-        } else if (area === 'local' && (changes.records || changes.collection || changes.settings)) {
+        } else if (area === 'local' && (changes.records || changes.collection || changes.settings || changes.topPhrases)) {
           reloadData();
         }
       });
@@ -891,6 +1021,14 @@
     renderHero();
     bindRuntime();
   }
+
+  // Antes da primeira pintura: cache local (síncrono) e depois o valor guardado em settings
+  applyTheme(lsGet(THEME_KEY));
+  try {
+    if (storage && storage.getSettings) {
+      storage.getSettings().then(function (s) { if (s) applyTheme(s.theme); }, function () { /* fica a pele do cache */ });
+    }
+  } catch (e) { /* fora da extensão */ }
 
   document.addEventListener('DOMContentLoaded', init);
 })();
