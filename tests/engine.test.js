@@ -29,24 +29,24 @@ test('normalize: minúsculas, acentos e cedilha', () => {
 });
 
 test('normalize: leet', () => {
-  assert.strictEqual(engine.normalize('p4u'), 'pau');
-  assert.strictEqual(engine.normalize('r0l4'), 'rola');
+  assert.strictEqual(engine.normalize('b4n4n4'), 'banana');
+  assert.strictEqual(engine.normalize('b0l4'), 'bola');
   assert.strictEqual(engine.normalize('c0m3r'), 'comer');
   assert.strictEqual(engine.normalize('@$7'), 'ast');
-  assert.strictEqual(engine.normalize('5ex0'), 'sexo');
+  assert.strictEqual(engine.normalize('54p0'), 'sapo');
 });
 
 test('normalize: letras repetidas 3+ colapsam, 2 ficam', () => {
-  assert.strictEqual(engine.normalize('roooola'), 'rola');
-  assert.strictEqual(engine.normalize('pauuuuu'), 'pau');
-  assert.strictEqual(engine.normalize('caaaaralho'), 'caralho');
+  assert.strictEqual(engine.normalize('boooola'), 'bola');
+  assert.strictEqual(engine.normalize('sapooooo'), 'sapo');
+  assert.strictEqual(engine.normalize('baaaanana'), 'banana');
   assert.strictEqual(engine.normalize('carro'), 'carro');
-  assert.strictEqual(engine.normalize('rooola'), 'rola');
-  assert.strictEqual(engine.normalize('roola'), 'roola');
+  assert.strictEqual(engine.normalize('booola'), 'bola');
+  assert.strictEqual(engine.normalize('boola'), 'boola');
 });
 
 test('tokenize: offsets apontam para o texto original', () => {
-  const text = '  Olá, VOU dar uma Passada!! \u{1F600} Pão-de-queijo p4u';
+  const text = '  Olá, VOU dar uma Passada!! \u{1F600} Pão-de-queijo 54p0';
   const tokens = engine.tokenize(text);
   assert.ok(tokens.length >= 8);
   for (const t of tokens) {
@@ -55,7 +55,7 @@ test('tokenize: offsets apontam para o texto original', () => {
   }
   assert.deepStrictEqual(
     tokens.map((t) => t.norm),
-    ['ola', 'vou', 'dar', 'uma', 'passada', 'pao', 'de', 'queijo', 'pau']
+    ['ola', 'vou', 'dar', 'uma', 'passada', 'pao', 'de', 'queijo', 'sapo']
   );
   assert.strictEqual(tokens[0].start, 2);
 });
@@ -66,15 +66,15 @@ test('tokenize: ignora símbolos soltos e texto vazio', () => {
 });
 
 test('analyze: palavra simples com offsets e pontos', () => {
-  const text = 'Que pau enorme';
+  const text = 'Que mandioca enorme';
   const r = engine.analyze(text);
   assert.strictEqual(r.matches.length, 1);
   const m = r.matches[0];
-  assert.strictEqual(m.entryId, 'pau');
-  assert.strictEqual(m.raw, 'pau');
+  assert.strictEqual(m.entryId, 'mandioca');
+  assert.strictEqual(m.raw, 'mandioca');
   assert.strictEqual(m.start, 4);
-  assert.strictEqual(m.end, 7);
-  assert.strictEqual(text.slice(m.start, m.end), 'pau');
+  assert.strictEqual(m.end, 12);
+  assert.strictEqual(text.slice(m.start, m.end), 'mandioca');
   assert.strictEqual(m.combo, 1);
   assert.strictEqual(m.multiplier, 1);
   assert.strictEqual(m.points, Math.round(CONFIG.basePoints * m.coef));
@@ -83,12 +83,12 @@ test('analyze: palavra simples com offsets e pontos', () => {
 });
 
 test('analyze: acento, caixa alta, leet e repetição casam com o raw original', () => {
-  const text = 'POR TRÁS e P4UUUUU e Rooooola';
+  const text = 'POR TRÁS e MANDI0CA e Peeeepino';
   const r = engine.analyze(text);
-  assert.deepStrictEqual(ids(r), ['por-tras', 'pau', 'rola']);
+  assert.deepStrictEqual(ids(r), ['por-tras', 'mandioca', 'pepino']);
   assert.strictEqual(r.matches[0].raw, 'POR TRÁS');
-  assert.strictEqual(r.matches[1].raw, 'P4UUUUU');
-  assert.strictEqual(r.matches[2].raw, 'Rooooola');
+  assert.strictEqual(r.matches[1].raw, 'MANDI0CA');
+  assert.strictEqual(r.matches[2].raw, 'Peeeepino');
   r.matches.forEach((m) => assert.strictEqual(text.slice(m.start, m.end), m.raw));
 });
 
@@ -109,12 +109,12 @@ test('analyze: expressão tem prioridade sobre palavra solta (exemplo clássico)
 });
 
 test('analyze: expressão gulosa pelo maior número de tokens', () => {
-  const r = engine.analyze('segura no pau da barraca');
-  assert.deepStrictEqual(ids(r), ['segurar-no-pau-da-barraca']);
-  assert.strictEqual(r.matches[0].raw, 'segura no pau da barraca');
+  const r = engine.analyze('bateu na trave');
+  assert.deepStrictEqual(ids(r), ['bola-na-trave']);
+  assert.strictEqual(r.matches[0].raw, 'bateu na trave');
 
-  // expressão menor ("dar uma") perde para a maior ("dar uma rapidinha")
-  assert.deepStrictEqual(ids(engine.analyze('deu uma rapidinha')), ['dar-uma-rapidinha']);
+  // expressão menor ("dar uma") perde para a maior ("dar uma passada")
+  assert.deepStrictEqual(ids(engine.analyze('deu uma passada')), ['dar-uma-passada']);
   assert.deepStrictEqual(ids(engine.analyze('deu uma folga')), ['dar-uma']);
 });
 
@@ -172,7 +172,7 @@ test('combo: recomeça depois de quebrar e acompanha o maior combo', () => {
 });
 
 test('combo: expressão conta como um match e a janela parte do fim dela', () => {
-  const r = engine.analyze('vou dar uma passada e depois pau', undefined);
+  const r = engine.analyze('vou dar uma passada e depois mandioca', undefined);
   assert.deepStrictEqual(r.matches.map((m) => m.combo), [1, 2]);
 });
 
@@ -206,10 +206,10 @@ test('CONFIG é lido a cada análise', () => {
 });
 
 test('stems: prefixo com no máximo +5 letras', () => {
-  assert.deepStrictEqual(ids(engine.analyze('chupando')), ['chupar']);
-  assert.deepStrictEqual(ids(engine.analyze('chupeta')), ['chupar']);
-  assert.deepStrictEqual(ids(engine.analyze('safadinhas')), ['safado']);
-  assert.deepStrictEqual(ids(engine.analyze('chupacabras')), []);
+  assert.deepStrictEqual(ids(engine.analyze('gostosas')), ['gostoso']);
+  assert.deepStrictEqual(ids(engine.analyze('rebolando')), ['rebolar']);
+  assert.deepStrictEqual(ids(engine.analyze('pirulitao')), ['pirulito']);
+  assert.deepStrictEqual(ids(engine.analyze('gostosuradissima')), []);
 });
 
 test('palavras customizadas entram no índice padrão', () => {
@@ -226,7 +226,7 @@ test('palavras customizadas entram no índice padrão', () => {
     assert.strictEqual(r.matches[0].points, 200);
     assert.strictEqual(text.slice(r.matches[0].start, r.matches[0].end), 'JABUTICABA');
     // o dicionário embutido continua funcionando junto
-    assert.deepStrictEqual(ids(engine.analyze('pau e jabuticabas')), ['pau', 'custom-jabuticaba']);
+    assert.deepStrictEqual(ids(engine.analyze('mandioca e jabuticabas')), ['mandioca', 'custom-jabuticaba']);
   } finally {
     engine.setCustomEntries([]);
   }
@@ -268,7 +268,7 @@ test('falsos positivos: "da", "de", "no" soltos não pontuam', () => {
 
 test('performance: 100 mil palavras em tempo razoável', () => {
   const base = 'o rapaz foi ao mercado comprar pão e leite mas esqueceu a carteira ';
-  const text = base.repeat(Math.ceil(100000 / 13)) + ' vou dar uma passada no pau da barraca';
+  const text = base.repeat(Math.ceil(100000 / 13)) + ' vou dar uma passada na mandioca';
   const t0 = Date.now();
   const r = engine.analyze(text);
   const dt = Date.now() - t0;
@@ -356,12 +356,12 @@ test('dicionário: exemplos clássicos do lá ele', () => {
   const casos = {
     'vou dar uma passada': ['dar-uma-passada'],
     'come tudo': ['comer-tudo'],
-    'segura no pau da barraca': ['segurar-no-pau-da-barraca'],
+    'bateu na trave': ['bola-na-trave'],
     'ficou de quatro': ['de-quatro'],
     'pode entrar': ['pode-entrar'],
     'vai até o talo': ['ate-o-talo'],
     'engole tudo': ['engolir-tudo'],
-    'pega no pau': ['pegar-no-pau']
+    'entra rasgando': ['entrar-rasgando']
   };
   for (const [texto, esperado] of Object.entries(casos)) {
     assert.deepStrictEqual(ids(engine.analyze(texto)), esperado, texto);
@@ -524,7 +524,7 @@ test('phrases: faixa grande com contexto dos dois lados ganha "…" nos dois', (
 
 test('phrases: offsets dos hits batem com o texto (analyze real, espaços e corte)', () => {
   const bloco = Array.from({ length: 25 }, (_, i) => 'texto' + i).join('  ');
-  const text = bloco + '  ele vai\ndar uma passada,   comer   tudo e chupar ' + bloco + '. Fim.';
+  const text = bloco + '  ele vai\ndar uma passada,   comer   tudo e soprar ' + bloco + '. Fim.';
   const r = engine.analyze(text);
   const out = engine.phrases(text, r.matches);
   assert.ok(out.length >= 1);
@@ -626,16 +626,13 @@ test('dicionário ampliado: nenhuma forma aparece em duas entradas', () => {
 });
 
 test('dicionário ampliado: stems novos só pegam a própria família', () => {
-  // arromb: arrombar, arrombado, arrombadona (até +5 letras)
-  assert.deepStrictEqual(ids(engine.analyze('arrombadona')), ['arrombar']);
-  assert.deepStrictEqual(ids(engine.analyze('arrombados')), ['arrombar']);
-  assert.deepStrictEqual(ids(engine.analyze('o arrombamento da loja')), []);
-  // encox: encoxar, encoxada, encoxador
-  assert.deepStrictEqual(ids(engine.analyze('encoxando')), ['encoxar']);
-  assert.deepStrictEqual(ids(engine.analyze('encoxadinha')), []);
-  // libidin: libidinoso, libidinosas
-  assert.deepStrictEqual(ids(engine.analyze('libidinosas')), ['libidinoso']);
-  assert.deepStrictEqual(ids(engine.analyze('libidinosissimo')), []);
+  // esguich: esguichar, esguichado, esguichando (até +5 letras)
+  assert.deepStrictEqual(ids(engine.analyze('esguichando')), ['esguichar']);
+  assert.deepStrictEqual(ids(engine.analyze('esguichados')), ['esguichar']);
+  assert.deepStrictEqual(ids(engine.analyze('esguichadinhamente')), []);
+  // pirul: pirulito, pirulitos
+  assert.deepStrictEqual(ids(engine.analyze('pirulitos')), ['pirulito']);
+  assert.deepStrictEqual(ids(engine.analyze('pirulitinhoszinhos')), []);
   // palavras comuns de prefixo parecido não casam
   const comum = 'Encontrar a liberdade, arrancar o encosto e armar a libra na arrumação da biblioteca.';
   assert.deepStrictEqual(engine.analyze(comum).matches.map((m) => m.raw), []);
@@ -717,19 +714,19 @@ test('entradas ampliadas: exemplos de cada área casam (inclusive plural e conju
     ['Levou uma surra do time', ['dar-uma-surra']],
     ['Deixou o sabonete cair no banho', ['deixar-o-sabonete-cair', 'banho']],
     ['Ele mordeu a isca com o anzol', ['morder-a-isca', 'anzol']],
-    ['Cutucou, bolinou e encoxou', ['cutucar', 'bolinar', 'encoxar']],
+    ['Cutucou, alisou e esfregou', ['cutucar', 'alisar', 'esfregar']],
     // adjetivos e estados
-    ['Um sujeito depravado e libidinoso', ['depravado', 'libidinoso']],
+    ['Um sujeito assanhado e atiçado', ['assanhado', 'aticado']],
     ['Calça folgada e camisa estreita', ['folgado', 'estreito']],
     ['Ele é bem dotado', ['bem-servido']],
     // expressões e ditados
-    ['Pau que nasce torto nunca se endireita', ['pau-que-nasce-torto']],
-    ['Em casa de ferreiro, espeto de pau', ['em-casa-de-ferreiro']],
+    ['Água mole em pedra dura', ['agua-mole-em-pedra-dura']],
+    ['Calma, devagar com o andor', ['devagar-com-o-andor']],
     ['Vai quebrar o galho', ['quebrar-o-galho']],
     ['Ela vai dar uma de louca', ['dar-uma-de']],
     ['Rolou um clima ontem', ['rolou-um-clima']],
     // gírias
-    ['A tcheca, a xana e a quenga', ['tcheca', 'xana', 'quenga']]
+    ['O bofe e o mulherengo', ['bofe', 'mulherengo']]
   ];
   for (const [texto, esperado] of casos) {
     assert.deepStrictEqual(ids(engine.analyze(texto)), esperado, texto);
@@ -738,9 +735,8 @@ test('entradas ampliadas: exemplos de cada área casam (inclusive plural e conju
 
 test('entradas ampliadas: expressão nova ganha da palavra solta', () => {
   const pares = [
-    ['pica pau', 'pica-pau', ['pica', 'pau']],
-    ['cavalo de pau', 'cavalo-de-pau', ['pau']],
-    ['pau que nasce torto', 'pau-que-nasce-torto', ['pau']],
+    ['água mole em pedra dura', 'agua-mole-em-pedra-dura', []],
+    ['bola na trave', 'bola-na-trave', ['bola']],
     ['dar carona', 'dar-carona', ['dar']],
     ['bate estaca', 'bater-prego', ['bater']],
     ['encher linguiça', 'encher-linguica', ['linguica']],

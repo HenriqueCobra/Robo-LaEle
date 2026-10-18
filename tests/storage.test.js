@@ -151,7 +151,7 @@ test('getRecords devolve os padrões', async () => {
 });
 
 test('recordScan: primeiro scan é recorde global e do site', async () => {
-  const res = await storage.recordScan(summary(), ['dar', 'pau']);
+  const res = await storage.recordScan(summary(), ['dar', 'mandioca']);
   assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true, newTopPhrase: false });
   const r = await storage.getRecords();
   assert.deepEqual(r.global, { best: 1000, url: 'https://exemplo.com/a', title: 'Página A', host: 'exemplo.com', at: 1000 });
@@ -211,15 +211,15 @@ test('recordScan: total 0 nunca é recorde, mas conta como scan', async () => {
 });
 
 test('recordScan: coleção conta uma ocorrência por repetição e guarda firstAt/firstUrl', async () => {
-  await storage.recordScan(summary({ at: 111 }), ['dar', 'pau', 'dar', 'dar']);
+  await storage.recordScan(summary({ at: 111 }), ['dar', 'mandioca', 'dar', 'dar']);
   let c = await storage.getCollection();
   assert.deepEqual(c.dar, { count: 3, firstAt: 111, firstUrl: 'https://exemplo.com/a' });
-  assert.deepEqual(c.pau, { count: 1, firstAt: 111, firstUrl: 'https://exemplo.com/a' });
+  assert.deepEqual(c.mandioca, { count: 1, firstAt: 111, firstUrl: 'https://exemplo.com/a' });
 
-  await storage.recordScan(summary({ at: 222, url: 'https://exemplo.com/z' }), ['dar', 'rola']);
+  await storage.recordScan(summary({ at: 222, url: 'https://exemplo.com/z' }), ['dar', 'pepino']);
   c = await storage.getCollection();
   assert.deepEqual(c.dar, { count: 4, firstAt: 111, firstUrl: 'https://exemplo.com/a' });
-  assert.deepEqual(c.rola, { count: 1, firstAt: 222, firstUrl: 'https://exemplo.com/z' });
+  assert.deepEqual(c.pepino, { count: 1, firstAt: 222, firstUrl: 'https://exemplo.com/z' });
 });
 
 test('recordScan ignora ids inválidos e aceita entryIds ausente', async () => {
@@ -233,7 +233,7 @@ test('recordScan: chamadas simultâneas não perdem atualizações (fila)', asyn
   const N = 25;
   const results = await Promise.all(
     Array.from({ length: N }, (_, i) =>
-      storage.recordScan(summary({ total: (i + 1) * 10, count: 2, maxCombo: i }), ['dar', 'pau']))
+      storage.recordScan(summary({ total: (i + 1) * 10, count: 2, maxCombo: i }), ['dar', 'mandioca']))
   );
   const r = await storage.getRecords();
   const c = await storage.getCollection();
@@ -241,7 +241,7 @@ test('recordScan: chamadas simultâneas não perdem atualizações (fila)', asyn
   assert.equal(r.totals.words, N * 2);
   assert.equal(r.totals.points, 10 * (N * (N + 1)) / 2);
   assert.equal(c.dar.count, N);
-  assert.equal(c.pau.count, N);
+  assert.equal(c.mandioca.count, N);
   assert.equal(r.global.best, N * 10);
   assert.equal(r.bySite['exemplo.com'].maxCombo, N - 1);
   // como as chamadas executam em ordem, cada uma foi recorde (totais crescentes)
@@ -268,13 +268,13 @@ test('getTopPhrases: vazio por padrão e ignora lixo salvo', async () => {
 });
 
 test('recordScan com trechos: grava com url/host/title/at e devolve newTopPhrase', async () => {
-  const res = await storage.recordScan(summary({ at: 4242 }), ['dar'], [phrase('Ela pegou no pau e chupou tudo!', 700)]);
+  const res = await storage.recordScan(summary({ at: 4242 }), ['dar'], [phrase('Ela pegou na mandioca e soprou tudo!', 700)]);
   assert.deepEqual(res, { newGlobalBest: true, newSiteBest: true, newTopPhrase: true });
   const top = await storage.getTopPhrases();
   assert.equal(top.length, 1);
   const p = top[0];
   assert.match(p.id, /^exemplo\.com\|[0-9a-f]+$/);
-  assert.equal(p.text, 'Ela pegou no pau e chupou tudo!');
+  assert.equal(p.text, 'Ela pegou na mandioca e soprou tudo!');
   assert.deepEqual(p.hits, [{ start: 0, end: 3, tier: 'comum' }]);
   assert.equal(p.points, 700);
   assert.equal(p.maxCombo, 2);
@@ -321,18 +321,18 @@ test('recordScan: trecho que não entra no top 10 não conta como novo', async (
 });
 
 test('recordScan: mesmo trecho (mesmo host e texto normalizado) fica com o de mais pontos', async () => {
-  await storage.recordScan(summary(), [], [phrase('Pegou no PAU!', 400)]);
+  await storage.recordScan(summary(), [], [phrase('Pegou na MANDIOCA!', 400)]);
   // menos pontos ou empate: nada muda
-  let res = await storage.recordScan(summary({ url: 'https://exemplo.com/b' }), [], [phrase('pegou no pau!', 300)]);
+  let res = await storage.recordScan(summary({ url: 'https://exemplo.com/b' }), [], [phrase('pegou na mandioca!', 300)]);
   assert.equal(res.newTopPhrase, false);
-  res = await storage.recordScan(summary({ url: 'https://exemplo.com/b' }), [], [phrase('pegou no pau!', 400)]);
+  res = await storage.recordScan(summary({ url: 'https://exemplo.com/b' }), [], [phrase('pegou na mandioca!', 400)]);
   assert.equal(res.newTopPhrase, false);
   let top = await storage.getTopPhrases();
   assert.equal(top.length, 1);
   assert.equal(top[0].points, 400);
   assert.equal(top[0].url, 'https://exemplo.com/a');
   // mais pontos: substitui (e vale como novo)
-  res = await storage.recordScan(summary({ url: 'https://exemplo.com/c', at: 77 }), [], [phrase('Pegou no pau!', 900)]);
+  res = await storage.recordScan(summary({ url: 'https://exemplo.com/c', at: 77 }), [], [phrase('Pegou na mandioca!', 900)]);
   assert.equal(res.newTopPhrase, true);
   top = await storage.getTopPhrases();
   assert.equal(top.length, 1);

@@ -9,16 +9,16 @@
   g.LaEle = g.LaEle || {};
 
   var WORDS = {
-    pau: [3, 'pesado'], rola: [3, 'pesado'], mandioca: [2, 'comum'], banana: [1.5, 'comum'], pepino: [2, 'comum'],
+    berinjela: [2, 'comum'], abobrinha: [1.8, 'comum'], mandioca: [2, 'comum'], banana: [1.5, 'comum'], pepino: [2, 'comum'],
     dar: [1.5, 'comum'], dou: [1.5, 'comum'], deu: [1.5, 'comum'], comer: [1.5, 'comum'], come: [1.5, 'comum'],
     duro: [1, 'leve'], grosso: [1.5, 'leve'], molhado: [1, 'leve'], apertado: [1, 'leve'], passada: [1.2, 'leve'],
-    chupar: [2, 'pesado'], enfiar: [2, 'pesado'], sentar: [1.5, 'comum'], rabo: [2, 'comum'], mangueira: [2, 'comum']
+    soprar: [1.8, 'comum'], enfiar: [2, 'pesado'], sentar: [1.5, 'comum'], rabo: [2, 'comum'], mangueira: [2, 'comum']
   };
   var PHRASES = [
     { tokens: ['de', 'quatro'], coef: 3.5, tier: 'pesado', id: 'de-quatro', label: 'de quatro' },
     { tokens: ['por', 'tras'], coef: 3, tier: 'pesado', id: 'por-tras', label: 'por trás' },
     { tokens: ['ate', 'o', 'talo'], coef: 4, tier: 'lendario', id: 'ate-o-talo', label: 'até o talo' },
-    { tokens: ['pegar', 'no', 'pau'], coef: 5, tier: 'lendario', id: 'pegar-no-pau', label: 'pegar no pau' },
+    { tokens: ['bater', 'na', 'trave'], coef: 4, tier: 'lendario', id: 'bola-na-trave', label: 'bater na trave' },
     { tokens: ['dar', 'uma'], coef: 2.5, tier: 'comum', id: 'dar-uma', label: 'dar uma' }
   ];
   var custom = [];

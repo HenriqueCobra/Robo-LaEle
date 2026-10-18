@@ -33,11 +33,11 @@
     return { id: id, label: label, coef: coef, tier: tier, forms: [label], stems: [], phrase: !!phrase };
   };
   var entries = [
-    E('dar', 'dar', 1.5, 'comum'), E('comer', 'comer', 1.5, 'comum'), E('pau', 'pau', 2, 'comum'),
-    E('rola', 'rola', 2.5, 'pesado'), E('duro', 'duro', 1, 'leve'), E('grosso', 'grosso', 1.5, 'leve'),
-    E('banana', 'banana', 1, 'leve'), E('mandioca', 'mandioca', 2, 'comum'), E('chupar', 'chupar', 2.5, 'pesado'),
+    E('dar', 'dar', 1.5, 'comum'), E('comer', 'comer', 1.5, 'comum'), E('berinjela', 'berinjela', 2, 'comum'),
+    E('abobrinha', 'abobrinha', 1.8, 'comum'), E('duro', 'duro', 1, 'leve'), E('grosso', 'grosso', 1.5, 'leve'),
+    E('banana', 'banana', 1, 'leve'), E('mandioca', 'mandioca', 2, 'comum'), E('soprar', 'soprar', 1.8, 'comum'),
     E('por-tras', 'por trás', 3, 'pesado', true), E('de-quatro', 'de quatro', 3.5, 'pesado', true),
-    E('ate-o-talo', 'até o talo', 4, 'lendario', true), E('pegar-no-pau', 'pegar no pau', 4.5, 'lendario', true),
+    E('ate-o-talo', 'até o talo', 4, 'lendario', true), E('bola-na-trave', 'bola na trave', 4, 'lendario', true),
     E('molhado', 'molhado', 1.5, 'leve'), E('apertado', 'apertado', 2, 'comum'), E('sentar', 'sentar', 2, 'comum'),
     E('engolir', 'engolir', 2.5, 'pesado'), E('pepino', 'pepino', 1.5, 'leve'), E('linguica', 'linguiça', 2, 'comum'),
     E('vai-com-tudo', 'vai com tudo', 3.5, 'pesado', true), E('pode-entrar', 'pode entrar', 3, 'pesado', true),
@@ -64,8 +64,8 @@
   };
 
   var collection = none ? {} : {
-    dar: { count: 142, firstAt: now, firstUrl: '' }, pau: { count: 31, firstAt: now, firstUrl: '' },
-    rola: { count: 12, firstAt: now, firstUrl: '' }, duro: { count: 58, firstAt: now, firstUrl: '' },
+    dar: { count: 142, firstAt: now, firstUrl: '' }, berinjela: { count: 31, firstAt: now, firstUrl: '' },
+    abobrinha: { count: 12, firstAt: now, firstUrl: '' }, duro: { count: 58, firstAt: now, firstUrl: '' },
     'ate-o-talo': { count: 3, firstAt: now, firstUrl: '' }, banana: { count: 1, firstAt: now, firstUrl: '' },
     'por-tras': { count: 9, firstAt: now, firstUrl: '' }, sentar: { count: 5, firstAt: now, firstUrl: '' },
     comer: { count: 77, firstAt: now, firstUrl: '' }, 'custom-1': { count: 2, firstAt: now, firstUrl: '' }
@@ -99,7 +99,7 @@
     total: 48250, count: 63, maxCombo: 14, grade: 'S', gradeLabel: 'Lá ele supremo',
     topTerms: [
       { entryId: 'ate-o-talo', label: 'até o talo', count: 4, points: 9800 },
-      { entryId: 'rola', label: 'rola', count: 11, points: 7200 },
+      { entryId: 'abobrinha', label: 'abobrinha', count: 11, points: 7200 },
       { entryId: 'dar', label: 'dar', count: 18, points: 5100 }
     ],
     at: now

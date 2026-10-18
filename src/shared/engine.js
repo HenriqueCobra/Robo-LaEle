@@ -10,7 +10,7 @@ var LaEle = globalThis.LaEle = globalThis.LaEle || {};
   var RANKS = [
     { grade: 'D', below: 300, label: 'Quase inocente' },
     { grade: 'C', below: 1000, label: 'Lá ele de leve' },
-    { grade: 'B', below: 3000, label: 'Tá ficando safado' },
+    { grade: 'B', below: 3000, label: 'Tá esquentando' },
     { grade: 'A', below: 8000, label: 'Lá ele pesado' },
     { grade: 'S', below: Infinity, label: 'Lá ele supremo' }
   ];
