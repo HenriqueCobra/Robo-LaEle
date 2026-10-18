@@ -615,6 +615,8 @@
       var logo = buildLogo(brand);
       els.logo = logo.el;
       els.pupils = logo.pupils;
+      // pupilas nascem de lado, como no icone
+      for (var pi = 0; pi < els.pupils.length; pi++) els.pupils[pi].style.transform = 'translate(' + PUPIL_REACH + 'px,0px)';
       h('span', 'nome', 'Lá ele', brand);
       var miniBox = h('span', 'mini-box', null, head);
       els.miniWrap = h('span', 'score-wrap mini-wrap', null, miniBox);
@@ -754,10 +756,10 @@
       raf = requestAnimationFrame(loop);
     }
 
-    // Olhar: pupilas andam ate 8/128 na direcao da palavra; sem alvo, voltam ao centro.
+    // Olhar: pupilas andam ate 8/128 na direcao da palavra; sem alvo, ficam de lado como no icone.
     function look(el) {
       if (!els.pupils) return;
-      var dx = 0;
+      var dx = PUPIL_REACH;
       var dy = 0;
       if (el && !reducedMotion()) {
         try {
@@ -767,7 +769,7 @@
           var vy = a.top + a.height / 2 - (b.top + b.height / 2);
           var m = Math.sqrt(vx * vx + vy * vy);
           if (m > 0) { dx = vx / m * PUPIL_REACH; dy = vy / m * PUPIL_REACH; }
-        } catch (e) { /* sem alvo, centro */ }
+        } catch (e) { /* sem alvo, de lado */ }
       }
       var tf = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)';
       for (var i = 0; i < els.pupils.length; i++) els.pupils[i].style.transform = tf;

@@ -152,7 +152,7 @@ Grupo `--panel` raio 10, linhas com título 13/500 e descrição 12 `--muted`, d
 ```
 
 - Caixa `--bg` de 248 px, raio 16, sombra do HUD, pele conforme `settings.theme`.
-- Pupilas: até 8/128 na direção da palavra, 220 ms; voltam ao centro no fim.
+- Pupilas: até 8/128 na direção da palavra, 220 ms. Sem palavra (antes, no fim e com movimento reduzido) ficam encostadas à direita, como no ícone.
 - Aviso no fim, por prioridade: "Novo recorde" > "Entrou no Top lá ele" > "Recorde do site".
 - No fim, a barra de combo fica cheia na proporção do maior multiplicador (×10 enche).
 - Minimizado (`.min`): logo, placar e botões (o nome sai para caber).
