@@ -1,11 +1,13 @@
 /*
- * Robo-LaEle - estilos dos destaques injetados na pagina.
+ * Robo-LaEle - estilos dos destaques injetados na pagina (direcao "caneta", ver docs/DESIGN.md).
  * Tudo com prefixo "laele" e !important onde precisa vencer CSS de sites.
  * Estado inicial: neutro (nenhuma alteracao visual nem de layout).
- * Estado aceso (.laele-on): marca-texto da raridade crescendo da esquerda, texto escuro.
+ * Estado aceso (.laele-on): traco de marca-texto da raridade crescendo da esquerda, texto tinta.
+ * O traco e um SVG de cor unica em data URI; o mark nao ganha padding, margin, font-size nem line-height,
+ * entao o texto do site nao se mexe.
  */
 
-/* ---------- Fonte (o Chrome ignora @font-face dentro do Shadow DOM, por isso fica aqui) ---------- */
+/* ---------- Fontes (o Chrome ignora @font-face dentro do Shadow DOM, por isso ficam aqui) ---------- */
 @font-face {
   font-family: "LaEle Inter";
   font-weight: 400;
@@ -27,10 +29,30 @@
   font-display: swap;
   src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/inter-600.woff2') format('woff2');
 }
+@font-face {
+  font-family: "LaEle Bricolage";
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/bricolage-grotesque.woff2') format('woff2');
+}
 
 /* ---------- Estado neutro ---------- */
 mark.laele-hit {
-  --laele-m: #ffe38a;
+  /* tres formas de traco por raridade (viewBox 100x20, cor unica) */
+  --laele-mt-leve-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23B8F27C'/%3E%3C/svg%3E") !important;
+  --laele-mt-leve-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23B8F27C'/%3E%3C/svg%3E") !important;
+  --laele-mt-leve-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23B8F27C'/%3E%3C/svg%3E") !important;
+  --laele-mt-comum-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FFE45C'/%3E%3C/svg%3E") !important;
+  --laele-mt-comum-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23FFE45C'/%3E%3C/svg%3E") !important;
+  --laele-mt-comum-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23FFE45C'/%3E%3C/svg%3E") !important;
+  --laele-mt-pesado-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FF9BD2'/%3E%3C/svg%3E") !important;
+  --laele-mt-pesado-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23FF9BD2'/%3E%3C/svg%3E") !important;
+  --laele-mt-pesado-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23FF9BD2'/%3E%3C/svg%3E") !important;
+  --laele-mt-lendario-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FFB054'/%3E%3C/svg%3E") !important;
+  --laele-mt-lendario-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23FFB054'/%3E%3C/svg%3E") !important;
+  --laele-mt-lendario-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23FFB054'/%3E%3C/svg%3E") !important;
+  --laele-mt: var(--laele-mt-comum-1);
   display: inline !important;
   position: static !important;
   margin: 0 !important;
@@ -41,12 +63,11 @@ mark.laele-hit {
   word-spacing: inherit !important;
   color: inherit !important;
   background-color: transparent !important;
-  /* cor solida: o "gradiente" de uma cor so existe para o background-size poder animar */
-  background-image: linear-gradient(var(--laele-m), var(--laele-m)) !important;
+  background-image: var(--laele-mt) !important;
   background-repeat: no-repeat !important;
-  background-position: 0 50% !important;
-  background-size: 0% 100% !important;
-  border-radius: 3px !important;
+  background-position: 0 70% !important;
+  background-size: 0% 78% !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   text-shadow: none !important;
   -webkit-box-decoration-break: clone !important;
@@ -56,72 +77,92 @@ mark.laele-hit {
     color 0s linear calc(var(--laele-wipe, 240ms) / 2) !important;
 }
 
-/* ---------- Cores por raridade (marca-texto) ---------- */
-mark.laele-hit[data-laele-tier="leve"] { --laele-m: #d3efb1; }
-mark.laele-hit[data-laele-tier="comum"] { --laele-m: #ffe38a; }
-mark.laele-hit[data-laele-tier="pesado"] { --laele-m: #ffbfa8; }
-mark.laele-hit[data-laele-tier="lendario"] { --laele-m: #d6b58f; }
+/* ---------- Traco por raridade (forma 1 e a padrao; 2 e 3 alternam pela ordem) ---------- */
+mark.laele-hit[data-laele-tier="leve"] { --laele-mt: var(--laele-mt-leve-1); }
+mark.laele-hit[data-laele-tier="comum"] { --laele-mt: var(--laele-mt-comum-1); }
+mark.laele-hit[data-laele-tier="pesado"] { --laele-mt: var(--laele-mt-pesado-1); }
+mark.laele-hit[data-laele-tier="lendario"] { --laele-mt: var(--laele-mt-lendario-1); }
+mark.laele-hit[data-laele-tier="leve"][data-laele-v="2"] { --laele-mt: var(--laele-mt-leve-2); }
+mark.laele-hit[data-laele-tier="comum"][data-laele-v="2"] { --laele-mt: var(--laele-mt-comum-2); }
+mark.laele-hit[data-laele-tier="pesado"][data-laele-v="2"] { --laele-mt: var(--laele-mt-pesado-2); }
+mark.laele-hit[data-laele-tier="lendario"][data-laele-v="2"] { --laele-mt: var(--laele-mt-lendario-2); }
+mark.laele-hit[data-laele-tier="leve"][data-laele-v="3"] { --laele-mt: var(--laele-mt-leve-3); }
+mark.laele-hit[data-laele-tier="comum"][data-laele-v="3"] { --laele-mt: var(--laele-mt-comum-3); }
+mark.laele-hit[data-laele-tier="pesado"][data-laele-v="3"] { --laele-mt: var(--laele-mt-pesado-3); }
+mark.laele-hit[data-laele-tier="lendario"][data-laele-v="3"] { --laele-mt: var(--laele-mt-lendario-3); }
 
 /* ---------- Estado aceso ---------- */
 mark.laele-hit.laele-on {
-  background-size: 100% 100% !important;
-  color: #1d1d1f !important;
+  background-size: 100% 78% !important;
+  color: #17141f !important;
 }
 
-/* ---------- Etiqueta de pontos (+260 ×1,5) ---------- */
+/* ---------- Etiqueta de pontos (+260 ×1,5): papelzinho da cor da caneta ---------- */
 span.laele-float {
   all: initial !important;
   position: absolute !important;
   z-index: 2147483646 !important;
   display: block !important;
   margin: 0 !important;
-  padding: 3px 7px !important;
+  padding: 4px 8px 5px !important;
   pointer-events: none !important;
   user-select: none !important;
   white-space: nowrap !important;
   text-align: left !important;
-  background: #161616 !important;
-  border-radius: 6px !important;
-  font-family: "LaEle Inter", "Helvetica Neue", Arial, sans-serif !important;
-  font-weight: 500 !important;
-  font-size: 12px !important;
-  line-height: 1.35 !important;
+  background: #ffe45c !important;
+  border-radius: 7px !important;
+  box-shadow: 0 6px 16px rgba(23, 20, 31, 0.18) !important;
+  font-family: "LaEle Bricolage", "Arial Rounded MT Bold", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 17px !important;
+  line-height: 1 !important;
   font-variant-numeric: tabular-nums !important;
-  letter-spacing: 0 !important;
-  color: #f2f2f2 !important;
-  transform: translate(-50%, -100%);
+  letter-spacing: -0.02em !important;
+  color: #17141f !important;
+  transform: translate(-50%, -100%) rotate(var(--laele-giro, -4deg));
   opacity: 0;
-  animation: laele-float-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+  animation: laele-sobe 950ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
 }
+span.laele-float[data-laele-tier="leve"] { background: #b8f27c !important; }
+span.laele-float[data-laele-tier="comum"] { background: #ffe45c !important; }
+span.laele-float[data-laele-tier="pesado"] { background: #ff9bd2 !important; }
+span.laele-float[data-laele-tier="lendario"] { background: #ffb054 !important; }
 
 span.laele-float > span.laele-float-mult {
   all: initial !important;
   display: inline !important;
   margin: 0 0 0 5px !important;
-  font-family: inherit !important;
-  font-weight: 500 !important;
+  font-family: "LaEle Inter", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 600 !important;
   font-size: 12px !important;
-  line-height: inherit !important;
+  line-height: 1 !important;
   font-variant-numeric: tabular-nums !important;
-  color: #c9a27c !important;
+  letter-spacing: 0 !important;
+  color: #17141f !important;
+  opacity: 0.78 !important;
 }
 
-@keyframes laele-float-up {
+/* Entra com escala 0,6 > 1,08 > 1, sobe 34 px e some (a posicao-base fica no translate(-50%, -100%)) */
+@keyframes laele-sobe {
   0% {
     opacity: 0;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -100%) translateY(6px) rotate(var(--laele-giro, -4deg)) scale(0.6);
   }
-  20% {
+  18% {
     opacity: 1;
-    transform: translate(-50%, calc(-100% - 4px));
+    transform: translate(-50%, -100%) translateY(-6px) rotate(var(--laele-giro, -4deg)) scale(1.08);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -100%) translateY(-24px) rotate(var(--laele-giro, -4deg)) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, calc(-100% - 30px));
+    transform: translate(-50%, -100%) translateY(-34px) rotate(var(--laele-giro, -4deg)) scale(0.96);
   }
 }
 
-/* ---------- Movimento reduzido: o marca-texto aparece cheio, a etiqueta nao aparece ---------- */
+/* ---------- Movimento reduzido: o traco aparece cheio, a etiqueta nao aparece ---------- */
 @media (prefers-reduced-motion: reduce) {
   mark.laele-hit {
     transition: none !important;

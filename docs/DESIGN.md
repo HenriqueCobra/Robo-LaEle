@@ -83,7 +83,7 @@ HUD: placar 40 px, nota 46 px de quadrado com letra 26 px, resto 12–13 px.
 
 - **Cantos:** 16 px no HUD; 12 px no cartão do popup; 10 px em grupos, blocos, botões grandes, abas e cartões; 8 px em campos e segmentos; 7 px nos segmentos internos.
 - **Fios:** só entre linhas de um mesmo grupo de Ajustes. Blocos se separam por fundo (`--panel`), não por contorno.
-- **Sombra:** HUD `0 16px 40px rgba(23,20,31,.28)`; etiqueta de pontos `0 6px 16px rgba(23,20,31,.18)`. Nenhuma outra.
+- **Sombra:** HUD `0 0 0 1px var(--line), 0 16px 40px rgba(23,20,31,.28)` (o anel de 1 px separa o HUD de sites com o mesmo fundo); etiqueta de pontos `0 6px 16px rgba(23,20,31,.18)`. Nenhuma outra.
 - **Torto de propósito:** nota `rotate(-6deg)`; etiqueta de pontos ±4°; hover do botão principal `translateY(-1px) rotate(-.6deg)`; hover dos cartões da Laelédex `rotate(-1deg) translateY(-2px)`. Nada mais gira.
 
 ## Popup
@@ -154,7 +154,8 @@ Grupo `--panel` raio 10, linhas com título 13/500 e descrição 12 `--muted`, d
 - Caixa `--bg` de 248 px, raio 16, sombra do HUD, pele conforme `settings.theme`.
 - Pupilas: até 8/128 na direção da palavra, 220 ms; voltam ao centro no fim.
 - Aviso no fim, por prioridade: "Novo recorde" > "Entrou no Top lá ele" > "Recorde do site".
-- Minimizado (`.min`): cabeçalho + placar.
+- No fim, a barra de combo fica cheia na proporção do maior multiplicador (×10 enche).
+- Minimizado (`.min`): logo, placar e botões (o nome sai para caber).
 
 ## Destaque na palavra
 

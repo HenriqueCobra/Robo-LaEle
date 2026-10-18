@@ -6,8 +6,10 @@
 <title>Página de teste - Robo-LaEle</title>
 <!--
   Abra direto no navegador. Usa o mock de tests/fixtures/mock-laele.js no lugar do motor real.
-  Parâmetros opcionais na URL: ?anim=0  ?speed=rapido|lento  ?hud=0  ?auto=0
-  No console: __laeleSend({ type: 'LAELE_SCAN' }) para varrer de novo; __laeleLog mostra as mensagens enviadas.
+  Parâmetros opcionais na URL: ?anim=0  ?speed=rapido|lento  ?hud=0  ?auto=0  ?theme=light (pele Papel do HUD)
+  ?rec=global|top|site|nada escolhe o aviso final do HUD (padrão: global).
+  No console: __laeleSend({ type: 'LAELE_SCAN' }) para varrer de novo; __laeleTheme('light'|'dark') troca a pele ao vivo;
+  __laeleLog mostra as mensagens enviadas (LAELE_RESULT leva os trechos em phrases).
 -->
 <link rel="stylesheet" href="../../src/content/content.css">
 <style>

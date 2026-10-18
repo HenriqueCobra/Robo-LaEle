@@ -78,6 +78,38 @@
       });
       return { matches: matches, total: total, maxCombo: maxCombo };
     },
+    // Trechos do Top lá ele: uma sequencia de combo (comeca em combo 1) com 2+ palavras vira um trecho.
+    phrases: function (text, matches) {
+      var out = [];
+      var seq = [];
+      function build(list) {
+        var first = list[0];
+        var last = list[list.length - 1];
+        var a = Math.max(text.lastIndexOf('. ', first.start), text.lastIndexOf('! ', first.start), text.lastIndexOf('? ', first.start));
+        var start = a < 0 ? 0 : a + 2;
+        var rel = text.slice(last.end).search(/[.!?…](s|$)/);
+        var end = rel < 0 ? text.length : last.end + rel + 1;
+        var pre = '';
+        var post = '';
+        if (end - start > 180) {
+          start = Math.max(start, first.start - 40);
+          end = Math.min(end, last.end + 40);
+          if (start > 0) pre = '…';
+          if (end < text.length) post = '…';
+        }
+        var points = 0;
+        list.forEach(function (m) { points += m.points; });
+        return {
+          text: pre + text.slice(start, end) + post,
+          hits: list.map(function (m) { return { start: m.start - start + pre.length, end: m.end - start + pre.length, tier: m.tier }; }),
+          points: points, maxCombo: last.combo, count: list.length
+        };
+      }
+      function flush() { if (seq.length >= 2) out.push(build(seq)); seq = []; }
+      (matches || []).forEach(function (m) { if (m.combo === 1) flush(); seq.push(m); });
+      flush();
+      return out;
+    },
     rank: function (total) {
       if (total <= 0) return { grade: '-', label: '' };
       if (total >= 20000) return { grade: 'S', label: 'Lá ele supremo' };
@@ -93,7 +125,7 @@
       var q = new URLSearchParams(location.search);
       return Promise.resolve({
         autoScan: q.get('auto') !== '0', animations: q.get('anim') !== '0', speed: q.get('speed') || 'normal',
-        showHud: q.get('hud') !== '0', customWords: [{ id: 'custom-cenoura', label: 'cenoura', coef: 2, tier: 'comum', forms: ['cenoura', 'cenouras'], stems: [], phrase: false }]
+        showHud: q.get('hud') !== '0', theme: q.get('theme') === 'light' ? 'light' : 'dark', customWords: [{ id: 'custom-cenoura', label: 'cenoura', coef: 2, tier: 'comum', forms: ['cenoura', 'cenouras'], stems: [], phrase: false }]
       });
     }
   };
@@ -102,17 +134,34 @@
   if (!g.chrome || !g.chrome.runtime || !g.chrome.runtime.id) {
     g.__laeleLog = [];
     var listeners = [];
+    var storageListeners = [];
     g.chrome = {
       runtime: {
         id: 'mock',
         lastError: null,
         sendMessage: function (msg, cb) {
           g.__laeleLog.push(msg);
-          if (msg.type === 'LAELE_RESULT' && cb) setTimeout(function () { cb({ newGlobalBest: true, newSiteBest: true }); }, 50);
+          // ?rec=global|top|site|nada escolhe qual aviso o HUD mostra no fim (padrao: global)
+          if (msg.type === 'LAELE_RESULT' && cb) {
+            var rec = new URLSearchParams(location.search).get('rec') || 'global';
+            setTimeout(function () {
+              cb({ newGlobalBest: rec === 'global', newSiteBest: rec === 'global' || rec === 'site', newTopPhrase: rec === 'global' || rec === 'top' });
+            }, 50);
+          }
         },
         onMessage: { addListener: function (fn) { listeners.push(fn); } }
+      },
+      storage: {
+        onChanged: {
+          addListener: function (fn) { storageListeners.push(fn); },
+          removeListener: function (fn) { storageListeners = storageListeners.filter(function (x) { return x !== fn; }); }
+        }
       }
     };
     g.__laeleSend = function (msg) { listeners.forEach(function (fn) { fn(msg, {}, function () {}); }); };
+    // No console: __laeleTheme('light') troca a pele do HUD ao vivo, como o popup faria.
+    g.__laeleTheme = function (theme) {
+      storageListeners.forEach(function (fn) { fn({ settings: { newValue: { theme: theme } } }, 'local'); });
+    };
   }
 })();
