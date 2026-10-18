@@ -111,7 +111,12 @@
     dictionary: { version: 1, entries: entries },
     engine: {
       CONFIG: { comboWindow: 8, comboStep: 0.5, maxMultiplier: 10, basePoints: 100 },
-      normalize: function (s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+      normalize: function (s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); },
+      rank: function (t) {
+        var r = [[300, 'D'], [1000, 'C'], [3000, 'B'], [8000, 'A'], [Infinity, 'S']];
+        if (!(t > 0)) return { grade: '-', label: '' };
+        for (var i = 0; i < r.length; i++) if (t < r[i][0]) return { grade: r[i][1], label: '' };
+      }
     },
     storage: {
       getSettings: function () { return Promise.resolve(JSON.parse(JSON.stringify(settings))); },

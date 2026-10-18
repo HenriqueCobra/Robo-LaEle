@@ -73,8 +73,8 @@ HUD: pontuação 32 px / 600, resto 12–13 px.
 
 ## Formas
 
-- **Cantos:** 12 px no popup e no HUD; 10 px em grupos e blocos internos; 8 px em botões, campos, segmentados e no quadrado da nota; 6 px em chips e linhas; 4 px na página de apresentação.
-- **Fios:** 1 px `--line` só para contornar o popup, o HUD, os grupos de ajustes, os campos e a grade de números. Nada de divisória solta entre seções.
+- **Cantos:** 12 px no HUD (o popup usa a janela do próprio Chrome, sem contorno); 10 px em grupos e blocos internos; 8 px em botões, campos, segmentados e no quadrado da nota; 6 px em chips e linhas; 4 px na página de apresentação.
+- **Fios:** 1 px `--line` só para contornar o HUD, os grupos de ajustes, os campos e a grade de números. Nada de divisória solta entre seções.
 - **Sombra:** só no HUD, porque ele flutua sobre o site: `0 12px 32px rgba(0,0,0,.28)`. Nenhuma outra.
 - **Sem** gradiente, glow, glass, emoji, caixa alta ou ícone decorativo. Ícones de traço 2 px só para fechar, minimizar, varrer de novo, adicionar e a lupa.
 
@@ -107,14 +107,14 @@ HUD: pontuação 32 px / 600, resto 12–13 px.
 
 - Bloco `--panel` raio 10: "Recorde global" 12 `--muted`, `#bestScore` 22/600, `#bestMeta` à direita.
 - `#totScans` / `#totWords` / `#totPoints`: três colunas, número 15/500 em cima, legenda 11 embaixo.
-- "Melhores sites" 11/500 `--muted`, depois `#sites` em linhas de 36 px: posição (12 `#6f6f6f`), favicon 16 px raio 4, host, pontos à direita, nota. A nota do primeiro em bronze-claro. Hover: fundo `--panel`.
+- "Melhores sites" 11/500 `--muted`, depois `#sites` em linhas de 36 px: posição (12 `--muted`), favicon 16 px raio 4, host, pontos à direita, nota. A nota do primeiro em bronze-claro. Hover: fundo `--panel`.
 
 ### Laelédex
 
 - `#dexFound` de `#dexTotal` descobertas e `#dexPct` à direita; `#dexBar` com 4 px de altura, trilho `--raised`, preenchimento bronze.
 - `#dexSearch`: campo de 34 px, fio 1 px, lupa 14 px.
 - `#dexFilters`: segmentado de cinco (Todas, Leve, Comum, Pesado, Lendário).
-- `#dexGrid`: lista de linhas de 34 px. Descoberta: ponto da raridade, palavra 13/500, coeficiente em `--soft` ao lado, contagem "4×" à direita. Não descoberta: ponto, uma bolinha "•" por letra em `#5f5f5f` com espaçamento, "N letras" em `--soft`. A busca só procura entre as descobertas.
+- `#dexGrid`: mantém a grade de cartões da v0.1 (`li.dex-card`): número `#001` e etiqueta da raridade com o ponto no topo, nome da palavra ou "???" quando não descoberta, coeficiente e contagem embaixo. Só a pele muda para os tokens desta direção (fundo `--panel`, fio 1 px, raio 8, Inter, ponto da raridade). A busca só procura entre as descobertas.
 
 ### Ajustes
 
@@ -122,7 +122,7 @@ HUD: pontuação 32 px / 600, resto 12–13 px.
 - "Velocidade" + `#speedSeg` segmentado de três.
 - "Palavras próprias": `#wordInput` + botão "+" 34 px; `#coefInput` range com `accent-color` bronze e `#coefValue` "×2 · comum" (raridade calculada pelo coeficiente); `#customList` em linhas com o ponto da raridade e "×" para remover.
 - Zerar: `#resetBtn` contornado; confirmação `#resetConfirm` com "Cancelar" e "Apagar tudo" (cor de perigo).
-- Rodapé 11 `#6f6f6f`: "Tudo fica no seu navegador."
+- Rodapé 11 `--muted`: "Tudo fica no seu navegador."
 
 ## HUD na página (Shadow DOM, canto inferior direito)
 
@@ -175,5 +175,5 @@ Curva padrão: `cubic-bezier(.2, .8, .2, 1)`. Só `transform`, `opacity` e `back
 - Texto secundário nunca abaixo de 4,5:1 sobre `#161616` (`--muted` dá 5,6:1; `--soft` 7,7:1).
 - Foco visível: `outline: 2px solid #a08672; outline-offset: 3px`.
 - Switches com `role="switch"`; segmentados com `role="radiogroup"`/`radio` ou `tablist`/`tab`, como hoje.
-- A nota tem `aria-label="Nota S"`; as palavras não descobertas têm `aria-label="Palavra não descoberta, N letras"`.
+- A nota tem `aria-label="Nota S"`; os cartões não descobertos têm `aria-label="Palavra não descoberta"`.
 - `prefers-reduced-motion: reduce` conforme a tabela.

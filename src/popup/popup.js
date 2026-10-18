@@ -124,8 +124,7 @@
     var key = host || '?';
     var hue = hueOf(key);
     node.textContent = (key.replace(/^www\./, '').charAt(0) || '?').toUpperCase();
-    node.style.background =
-      'linear-gradient(145deg, hsl(' + hue + ' 78% 58%), hsl(' + ((hue + 42) % 360) + ' 72% 40%))';
+    node.style.background = 'hsl(' + hue + ' 34% 40%)';
   }
 
   function stripWww(host) {
@@ -198,7 +197,14 @@
     return tierMap[entryId] || null;
   }
 
-  var TIER_COLOR = { leve: '#34d399', comum: '#60a5fa', pesado: '#ff2e88', lendario: '#ffd23f' };
+  // mesma faixa de coeficiente que o storage usa ao salvar uma palavra própria
+  function tierOfCoef(coef) {
+    coef = Number(coef) || 0;
+    if (coef < 1.5) return 'leve';
+    if (coef < 3) return 'comum';
+    if (coef < 4) return 'pesado';
+    return 'lendario';
+  }
 
   /* ------------------------------------------------------------------ */
   /* Aba atual                                                           */
@@ -284,29 +290,33 @@
     els.scanPill.hidden = !(st === 'result' && state.scanning);
     els.recordPill.hidden = !(st === 'result' && state.liveRecord && !state.scanning);
 
+    // o host aparece em todos os estados; páginas internas mostram o endereço inteiro
+    var hostText = (state.host || (s && s.host) || '').replace(/^www\./, '');
+    if (state.tabUrl && !/^https?:/i.test(state.tabUrl)) hostText = state.tabUrl.replace(/\/+$/, '');
+    paintAvatar(els.heroAvatar, hostText);
+    els.heroHost.textContent = hostText || (st === 'result' ? 'esta página' : '—');
+
     if (st === 'result') {
-      paintAvatar(els.heroAvatar, state.host || s.host);
-      els.heroHost.textContent = (state.host || s.host || '').replace(/^www\./, '') || 'esta página';
       showScore(Number(s.total) || 0);
 
       var grade = s.grade || '-';
       els.grade.dataset.grade = grade;
       els.heroMain.dataset.grade = grade;
-      els.gradeLetter.textContent = grade;
-      els.grade.setAttribute('aria-label', 'Nota ' + grade + (s.gradeLabel ? ': ' + s.gradeLabel : ''));
+      els.gradeLetter.textContent = grade === '-' ? '–' : grade;
+      els.grade.setAttribute('aria-label', grade === '-' ? 'Sem nota' : 'Nota ' + grade);
       els.gradeLabel.textContent = s.gradeLabel || '';
 
       els.statWords.textContent = fmt(s.count);
       var combo = Number(s.maxCombo) || 0;
-      els.statCombo.textContent = combo + 'x';
-      els.statMult.textContent = '';
+      els.statCombo.textContent = fmt(combo);
+      var mult = 1;
       els.statMult.removeAttribute('title');
       if (combo > 1 && engine && engine.CONFIG) {
         var c = engine.CONFIG;
-        var mult = Math.min(c.maxMultiplier, 1 + c.comboStep * (combo - 1));
-        els.statMult.textContent = fmtCoef(mult);
+        mult = Math.min(c.maxMultiplier, 1 + c.comboStep * (combo - 1));
         els.statMult.title = 'Multiplicador máximo atingido: ' + fmtCoef(mult);
       }
+      els.statMult.textContent = fmtCoef(mult);
       renderTerms(s.topTerms || []);
     }
 
@@ -320,12 +330,12 @@
     els.termsWrap.hidden = top.length === 0;
     top.forEach(function (t) {
       var li = make('li', 'chip');
-      var color = TIER_COLOR[tierOf(t.entryId)] || '#a79bbf';
-      li.style.setProperty('--c', color);
+      var tier = tierOf(t.entryId);
+      if (tier) li.dataset.t = tier;
       li.title = t.label + ': ' + fmt(t.count) + 'x, ' + fmt(t.points) + ' pontos';
       li.appendChild(make('i', 'chip-dot'));
       li.appendChild(make('span', 'chip-label', t.label));
-      li.appendChild(make('span', 'chip-n', '×' + fmt(t.count)));
+      li.appendChild(make('span', 'chip-n', fmt(t.count)));
       list.appendChild(li);
     });
   }
@@ -518,30 +528,26 @@
       var li = document.createElement('li');
       var btn = make('button', 'site-row');
       btn.type = 'button';
-      btn.style.animationDelay = (i * 35) + 'ms';
       var hostLabel = r.host.replace(/^www\./, '');
-      btn.setAttribute('aria-label', hostLabel + ': ' + fmt(r.best) + ' pontos. Abrir página.');
-      btn.title = r.title || r.url || hostLabel;
+      var grade = (engine && typeof engine.rank === 'function') ? engine.rank(r.best).grade : '';
+      btn.setAttribute('aria-label', hostLabel + ': ' + fmt(r.best) + ' pontos' + (grade && grade !== '-' ? ', nota ' + grade : '') + '. Abrir página.');
+      var subParts = [];
+      if (r.maxCombo > 1) subParts.push('combo máx. ' + r.maxCombo + 'x');
+      if (r.last != null && r.last !== r.best) subParts.push('última ' + fmt(r.last));
+      if (r.at) subParts.push(relTime(r.at));
+      btn.title = (r.title || r.url || hostLabel) + (subParts.length ? ' · ' + subParts.join(' · ') : '');
       if (!r.url) btn.disabled = true;
 
-      btn.appendChild(make('span', 'rank rank-' + (i + 1), String(i + 1)));
+      btn.appendChild(make('span', 'rank', String(i + 1)));
       var av = make('span', 'avatar');
       av.setAttribute('aria-hidden', 'true');
       paintAvatar(av, r.host);
       btn.appendChild(av);
-
-      var info = make('span', 'site-info');
-      info.appendChild(make('span', 'site-host', hostLabel));
-      var subParts = [];
-      if (r.maxCombo > 1) subParts.push('combo máx. ' + r.maxCombo + 'x');
-      if (r.last != null && r.last !== r.best) subParts.push('última ' + fmt(r.last));
-      info.appendChild(make('span', 'site-sub', subParts.join(' · ') || 'melhor pontuação'));
-      btn.appendChild(info);
-
-      var right = make('span', 'site-right');
-      right.appendChild(make('span', 'site-score', fmt(r.best)));
-      right.appendChild(make('span', 'site-when', relTime(r.at)));
-      btn.appendChild(right);
+      btn.appendChild(make('span', 'site-host', hostLabel));
+      btn.appendChild(make('span', 'site-score', fmt(r.best)));
+      var gradeEl = make('span', 'site-grade', grade && grade !== '-' ? grade : '');
+      gradeEl.setAttribute('aria-hidden', 'true');
+      btn.appendChild(gradeEl);
 
       btn.addEventListener('click', function () { if (r.url) safeOpen(r.url); });
       li.appendChild(btn);
@@ -625,7 +631,6 @@
     setSwitch(els.setShowHud, !!s.showHud);
 
     var speed = SPEEDS.indexOf(s.speed) !== -1 ? s.speed : 'normal';
-    els.speedSeg.style.setProperty('--i', String(SPEEDS.indexOf(speed)));
     var off = !s.animations;
     els.speedSeg.classList.toggle('is-off', off);
     Array.prototype.forEach.call(els.speedSeg.querySelectorAll('.seg'), function (b) {
@@ -640,8 +645,12 @@
     els.customEmpty.hidden = words.length > 0;
     words.forEach(function (w) {
       var li = make('li', 'custom-item');
-      li.appendChild(make('span', 'custom-name', w.label));
-      li.appendChild(make('span', 'custom-coef', fmtCoef(w.coef)));
+      li.dataset.t = TIERS[w.tier] ? w.tier : tierOfCoef(w.coef);
+      li.appendChild(make('i', 'pt'));
+      var cw = make('span', 'custom-word');
+      cw.appendChild(make('b', null, w.label));
+      cw.appendChild(make('small', null, fmtCoef(w.coef)));
+      li.appendChild(cw);
       var rm = make('button', 'icon-btn');
       rm.type = 'button';
       rm.setAttribute('aria-label', 'Remover ' + w.label);
@@ -719,9 +728,7 @@
 
   function updateRangeFill() {
     var r = els.coefInput;
-    var pct = ((r.value - r.min) / (r.max - r.min)) * 100;
-    r.style.setProperty('--fill', pct + '%');
-    els.coefValue.textContent = fmtCoef(r.value);
+    els.coefValue.textContent = fmtCoef(r.value) + ' · ' + TIERS[tierOfCoef(r.value)].label.toLowerCase();
   }
 
   function showResetConfirm(on) {
@@ -755,7 +762,6 @@
     opts = opts || {};
     if (TABS.indexOf(name) === -1) name = 'records';
     state.activeTab = name;
-    els.tabs.style.setProperty('--i', String(TABS.indexOf(name)));
     TABS.forEach(function (t) {
       var btn = $('tab-' + t);
       var on = t === name;
