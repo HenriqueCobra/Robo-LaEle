@@ -6,8 +6,8 @@
  */
 'use strict';
 
-var BADGE_COLOR = '#ff2e88';
-var BADGE_TEXT_COLOR = '#ffffff';
+var BADGE_COLOR = '#A08672';
+var BADGE_TEXT_COLOR = '#111111';
 
 if (typeof importScripts === 'function') {
   ['../shared/dictionary.js', '../shared/engine.js', '../shared/storage.js'].forEach(function (file) {

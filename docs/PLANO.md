@@ -140,14 +140,14 @@ API (todas retornam Promise):
 
 - Se o popup mandar `LAELE_SCAN` e não houver content script na aba (página aberta antes da instalação), o popup injeta via `chrome.scripting.executeScript` / `insertCSS` os mesmos arquivos e tenta de novo.
 - Páginas `chrome://`, Chrome Web Store e PDFs não podem ser varridas: o popup mostra um estado vazio amigável.
-- Badge: texto com pontuação compacta (`950`, `12k`, `1.2M`), cor de fundo `#ff2e88`.
+- Badge: texto com pontuação compacta (`950`, `12k`, `1.2M`), fundo bronze `#A08672` com texto `#111111` (ver `docs/DESIGN.md`).
 
 ## Content script (comportamento)
 
 1. Se `settings.autoScan`, varre em `document_idle` (+ 600 ms para páginas que montam conteúdo depois). Também escuta `LAELE_SCAN`.
 2. Coleta blocos de texto com `TreeWalker` (ignorar `script, style, noscript, textarea, input, code, pre, svg, [contenteditable]` e nós já destacados). Agrupa nós de texto pelo ancestral de bloco mais próximo, concatena e chama `engine.analyze` por bloco, mapeando os offsets de volta para os nós de texto (um match que atravessa nós é envolvido em pedaços).
 3. Envolve cada match em `<mark class="laele-hit" data-laele-points="..." data-laele-mult="...">` inicialmente sem destaque visível.
-4. **Animação sequencial** na ordem do documento, priorizando o que está visível no viewport: cada palavra "acende" (pop de escala, brilho neon, sublinhado gradiente), solta um texto flutuante `+150` e `x2.5` quando há combo, e o HUD soma os pontos com contador animado. Duração total limitada (~6 s em `normal`, 3 s em `rapido`, 10 s em `lento`): com muitos matches, acende em lotes. Se `animations` = false, tudo aparece de uma vez.
+4. **Animação sequencial** na ordem do documento, priorizando o que está visível no viewport: cada palavra ganha o marca-texto da raridade, que cresce da esquerda, solta um texto flutuante `+150` e `×2,5` quando há combo, e o HUD soma os pontos com contador animado. Duração total limitada (~6 s em `normal`, 3 s em `rapido`, 10 s em `lento`): com muitos matches, acende em lotes. Se `animations` = false, tudo aparece de uma vez.
 5. **HUD** fixo no canto inferior direito, em Shadow DOM (estilo isolado do site): pontuação total em contagem animada, contador de palavras, combo atual com barra e multiplicador, nota (S/A/B/C/D) ao final, aviso "NOVO RECORDE!" se o background responder que bateu, botão fechar e botão "varrer de novo". Respeita `prefers-reduced-motion`.
 6. Ao terminar, envia `LAELE_RESULT`. Uma nova varredura limpa os destaques anteriores (desfaz os `<mark>`) antes de começar.
 7. Nunca quebrar o site: try/catch em volta de tudo, sem mexer em layout fora do `<mark>`, z-index alto só no HUD.
