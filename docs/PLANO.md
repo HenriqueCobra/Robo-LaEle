@@ -78,6 +78,7 @@ LaEle.engine = {
   compile(entries),        // -> índice pronto (Map de formas, lista de stems, trie/mapa de expressões por 1º token)
   analyze(text, index?),   // -> { matches: Match[], total, maxCombo }   (index padrão = dicionário embutido + palavras do usuário já compiladas)
   rank(total),             // -> { grade: 'S'|'A'|'B'|'C'|'D'|'-', label: string }  ex.: S = "Lá ele supremo"
+  phrases(text, matches),  // -> Phrase[]: um trecho por sequência de combo com 2+ matches (Top lá ele)
 };
 
 Match = {
@@ -88,6 +89,14 @@ Match = {
   multiplier,          // 1 + comboStep * (combo - 1), limitado a maxMultiplier
   points               // Math.round(basePoints * coef * multiplier)
 }
+
+Phrase = {
+  text,                // trecho exibido, até 180 caracteres, com "…" onde foi cortado
+  hits: [{ start, end, tier }],   // offsets das palavras achadas DENTRO de `text`
+  points,              // soma dos points dos matches da sequência
+  maxCombo,            // combo do último match da sequência
+  count                // número de matches da sequência
+}
 ```
 
 Regras de matching:
@@ -95,6 +104,7 @@ Regras de matching:
 2. Palavra solta: o token normalizado está em `forms` ou começa com um `stem` (comprimento ≤ stem + 5).
 3. **Combo**: dentro do mesmo texto analisado, se um match começa no máximo `comboWindow` tokens depois do fim do match anterior, `combo` incrementa; caso contrário volta para 1. Pontuação de frase passa por `combo` também (expressão = combo forte, já que vale mais).
 4. Cada chamada de `analyze` é um bloco independente: o combo não atravessa blocos. O content script chama `analyze` uma vez por bloco de texto (parágrafo, título, item de lista...).
+5. **Trechos (Top lá ele)**: `phrases(text, matches)` agrupa os matches de um bloco em sequências de combo (uma sequência começa em todo match com `combo === 1`) e devolve só as sequências com 2 ou mais matches. O trecho vai do começo da frase do primeiro match ao fim da frase do último (frase = até `.`, `!`, `?` ou `…` seguidos de espaço, ou a borda do bloco), com espaços colapsados. Se passar de 180 caracteres, o contexto em volta é cortado nos limites de palavra, por igual dos dois lados, com "…"; a sequência em si nunca é cortada.
 
 ## Contrato 3 — `LaEle.storage` (src/shared/storage.js)
 
@@ -103,6 +113,7 @@ Tudo em `chrome.storage.local`, exceto resultados por aba em `chrome.storage.ses
 ```js
 // chave 'settings'
 { autoScan: true, animations: true, speed: 'normal' /* 'lento'|'normal'|'rapido' */, showHud: true,
+  theme: 'dark' /* 'dark'|'light': pele Tinta ou Papel, ver docs/DESIGN.md */,
   customWords: [ { id: 'custom-xxx', label: 'cenoura', coef: 2, tier: 'comum', forms: ['cenoura','cenouras'], stems: [], phrase: false } ] }
 
 // chave 'records'
@@ -112,6 +123,10 @@ Tudo em `chrome.storage.local`, exceto resultados por aba em `chrome.storage.ses
 
 // chave 'collection'  (Laelédex: palavras já encontradas)
 { [entryId]: { count, firstAt, firstUrl } }
+
+// chave 'topPhrases'  (Top lá ele: os 10 melhores trechos de sempre, ordenados por points)
+[ { id, text, hits, points, maxCombo, count, url, host, title, at } ]
+// id = host + '|' + hash do texto normalizado; o mesmo id não se repete (fica o de mais pontos)
 
 // chrome.storage.session chave `tab:${tabId}`
 Summary
@@ -124,9 +139,9 @@ Summary = { url, host, title, total, count, maxCombo, grade, gradeLabel,
 ```
 
 API (todas retornam Promise):
-`getSettings()`, `saveSettings(partial)`, `getRecords()`, `getCollection()`,
-`recordScan(summary, matchedEntryIds)` → `{ newGlobalBest: bool, newSiteBest: bool }` (atualiza records, totals e collection; **só o service worker chama**),
-`setTabSummary(tabId, summary)`, `getTabSummary(tabId)`, `resetAll()`,
+`getSettings()`, `saveSettings(partial)`, `getRecords()`, `getCollection()`, `getTopPhrases()`,
+`recordScan(summary, matchedEntryIds, phrases?)` → `{ newGlobalBest: bool, newSiteBest: bool, newTopPhrase: bool }` (atualiza records, totals, collection e topPhrases; `newTopPhrase` é true se algum trecho entrou ou subiu no top 10; **só o service worker chama**),
+`setTabSummary(tabId, summary)`, `getTabSummary(tabId)`, `resetAll()` (zera também o Top lá ele),
 `addCustomWord({label, coef})`, `removeCustomWord(id)`.
 
 ## Contrato 4 — mensagens (`chrome.runtime` / `chrome.tabs`)
@@ -134,13 +149,13 @@ API (todas retornam Promise):
 | De → Para | Mensagem | Resposta |
 |---|---|---|
 | popup → content | `{ type: 'LAELE_SCAN' }` | `{ ok: true }` (o resultado chega depois via `LAELE_RESULT`) |
-| content → background | `{ type: 'LAELE_RESULT', summary, entryIds }` | `{ newGlobalBest, newSiteBest }` |
+| content → background | `{ type: 'LAELE_RESULT', summary, entryIds, phrases }` | `{ newGlobalBest, newSiteBest, newTopPhrase }` |
 | background → popup (broadcast `runtime.sendMessage`) | `{ type: 'LAELE_UPDATED', tabId, summary }` | — |
 | content → background | `{ type: 'LAELE_PROGRESS', total, count }` | — (background atualiza o badge durante a animação) |
 
 - Se o popup mandar `LAELE_SCAN` e não houver content script na aba (página aberta antes da instalação), o popup injeta via `chrome.scripting.executeScript` / `insertCSS` os mesmos arquivos e tenta de novo.
 - Páginas `chrome://`, Chrome Web Store e PDFs não podem ser varridas: o popup mostra um estado vazio amigável.
-- Badge: texto com pontuação compacta (`950`, `12k`, `1.2M`), fundo bronze `#A08672` com texto `#111111` (ver `docs/DESIGN.md`).
+- Badge: texto com pontuação compacta (`950`, `12k`, `1.2M`), fundo `#FFE45C` com texto `#17141f` (ver `docs/DESIGN.md`).
 
 ## Content script (comportamento)
 
@@ -148,24 +163,25 @@ API (todas retornam Promise):
 2. Coleta blocos de texto com `TreeWalker` (ignorar `script, style, noscript, textarea, input, code, pre, svg, [contenteditable]` e nós já destacados). Agrupa nós de texto pelo ancestral de bloco mais próximo, concatena e chama `engine.analyze` por bloco, mapeando os offsets de volta para os nós de texto (um match que atravessa nós é envolvido em pedaços).
 3. Envolve cada match em `<mark class="laele-hit" data-laele-points="..." data-laele-mult="...">` inicialmente sem destaque visível.
 4. **Animação sequencial** na ordem do documento, priorizando o que está visível no viewport: cada palavra ganha o marca-texto da raridade, que cresce da esquerda, solta um texto flutuante `+150` e `×2,5` quando há combo, e o HUD soma os pontos com contador animado. Duração total limitada (~6 s em `normal`, 3 s em `rapido`, 10 s em `lento`): com muitos matches, acende em lotes. Se `animations` = false, tudo aparece de uma vez.
-5. **HUD** fixo no canto inferior direito, em Shadow DOM (estilo isolado do site): pontuação total em contagem animada, contador de palavras, combo atual com barra e multiplicador, nota (S/A/B/C/D) ao final, aviso "NOVO RECORDE!" se o background responder que bateu, botão fechar e botão "varrer de novo". Respeita `prefers-reduced-motion`.
-6. Ao terminar, envia `LAELE_RESULT`. Uma nova varredura limpa os destaques anteriores (desfaz os `<mark>`) antes de começar.
+5. **HUD** fixo no canto inferior direito, em Shadow DOM (estilo isolado do site): pontuação total em contagem animada, contador de palavras, combo atual com barra e multiplicador, nota (S/A/B/C/D) ao final, aviso no fim por prioridade ("Novo recorde" > "Entrou no Top lá ele" > "Recorde do site") conforme a resposta do background, botão fechar e botão "varrer de novo". Respeita `prefers-reduced-motion`.
+6. Ao terminar, envia `LAELE_RESULT` com os 10 melhores trechos da página (`engine.phrases` de cada bloco, ordenados por points). Uma nova varredura limpa os destaques anteriores (desfaz os `<mark>`) antes de começar.
 7. Nunca quebrar o site: try/catch em volta de tudo, sem mexer em layout fora do `<mark>`, z-index alto só no HUD.
+8. A pele do HUD segue `settings.theme` e troca ao vivo por `chrome.storage.onChanged`.
 
 ## Popup (dropdown) — design
 
-- 360 px de largura. Visual definido em `docs/DESIGN.md` (opção D: escuro, quieto, acento bronze, fonte Inter).
-- **Cabeçalho:** logo "Lá Ele" + chave de varredura automática.
+- Cartão de 360 px dentro de uma moldura de 6 px (janela de 372 px). Visual definido em `docs/DESIGN.md` (opção E: marca-texto, peles Tinta e Papel, fontes Inter e Bricolage Grotesque).
+- **Cabeçalho:** logo "Lá ele" + seletor de modo sol/lua (`settings.theme`, escuro por padrão) + chave de varredura automática.
 - **Cartão principal (aba atual):** pontuação grande, nota (S/A/B...), palavras encontradas, maior combo, top 3 termos em chips. Estado vazio: "Nada de lá ele por aqui... ainda" / página proibida.
 - **Botão primário grande:** "Varrer página" (com estado carregando e atualizando ao vivo via `LAELE_UPDATED`).
-- **Abas:** `Recordes` (recorde global + top 10 sites), `Laelédex` (todas as palavras do dicionário em grade: encontradas com contagem, não encontradas aparecem como "???" com a raridade; barra de progresso X/Y), `Ajustes` (auto-varredura, animações, velocidade, HUD, adicionar/remover palavras próprias com coeficiente, zerar recordes com confirmação).
+- **Abas:** `Recordes` (recorde global + top 10 sites), `Top` (Top lá ele: os 10 melhores trechos de sempre, com as palavras no marca-texto, pontos, combo, site e data), `Laelédex` (todas as palavras do dicionário em grade: encontradas com contagem, não encontradas aparecem como "???" com a raridade; barra de progresso X/Y), `Ajustes` (auto-varredura, animações, velocidade, HUD, adicionar/remover palavras próprias com coeficiente, zerar recordes com confirmação).
 
 ## Paleta e tokens compartilhados
 
 Tokens, cores das raridades, tipografia e movimento ficam em `docs/DESIGN.md`. Resumo:
 
 ```
-fundo #161616 · painel #1e1e1e · elevado #262626 · fio #2a2a2a
-texto #ededed · secundário #a3a3a3 · rótulo #8a8a8a · acento bronze #a08672
-marca-texto: leve #d3efb1 · comum #ffe38a · pesado #ffbfa8 · lendario #d6b58f
+Tinta (padrão): fundo #17141f · painel #201c2b · elevado #2b2639 · texto #f6f2ea · rótulo #a29bb5
+Papel:          fundo #fbf8f1 · painel #f3eee3 · elevado #e9e2d4 · texto #1b1822 · rótulo #696374
+canetas: leve #B8F27C · comum #FFE45C · pesado #FF9BD2 · lendario #FFB054 · texto sobre caneta #17141f
 ```
