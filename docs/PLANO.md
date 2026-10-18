@@ -154,7 +154,7 @@ API (todas retornam Promise):
 
 ## Popup (dropdown) — design
 
-- 360 px de largura. Visual definido em `docs/DESIGN.md` (opção D: escuro, quieto, acento bronze, fonte Switzer).
+- 360 px de largura. Visual definido em `docs/DESIGN.md` (opção D: escuro, quieto, acento bronze, fonte Inter).
 - **Cabeçalho:** logo "Lá Ele" + chave de varredura automática.
 - **Cartão principal (aba atual):** pontuação grande, nota (S/A/B...), palavras encontradas, maior combo, top 3 termos em chips. Estado vazio: "Nada de lá ele por aqui... ainda" / página proibida.
 - **Botão primário grande:** "Varrer página" (com estado carregando e atualizando ao vivo via `LAELE_UPDATED`).

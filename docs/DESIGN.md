@@ -2,7 +2,7 @@
 
 Este documento manda no visual do popup, do HUD, dos destaques na página e dos ícones. Os contratos de dados e mensagens continuam em `docs/PLANO.md`; nada aqui muda IDs, mensagens ou chaves de storage.
 
-Direção escolhida: **opção D, "em silêncio"**. O protótipo de referência, em tamanho real e funcionando, está em `docs/prototipos/opcao-d-silencio.html`. As opções A, B e C ficam na mesma pasta só como registro. As cores podem mudar depois; a estrutura, a tipografia e os componentes estão fechados.
+Direção escolhida: **opção D, "em silêncio"**. O protótipo de referência, em tamanho real e funcionando, está em `docs/prototipos/opcao-d-silencio.html`. As opções A, B e C ficam na mesma pasta só como registro. As cores podem mudar depois; a estrutura, a tipografia e os componentes estão fechados. Única diferença para o protótipo: a fonte é Inter, não Switzer (ver Tipografia).
 
 ## A ideia
 
@@ -48,7 +48,7 @@ Fundo bronze `#A08672`, texto `#111111` (`chrome.action.setBadgeBackgroundColor`
 
 ## Tipografia
 
-Uma família só: **Switzer** (Fontshare), pesos 400, 500 e 600. Números sempre com `font-variant-numeric: tabular-nums`. Nada de caixa alta nem `letter-spacing` positivo; títulos e números grandes com tracking negativo (−0,02 a −0,04 em).
+Uma família só: **Inter**, pesos 400, 500 e 600. Números sempre com `font-variant-numeric: tabular-nums`. Nada de caixa alta nem `letter-spacing` positivo; títulos e números grandes com tracking negativo (−0,02 a −0,04 em).
 
 Escala do popup (360 px):
 
@@ -64,10 +64,11 @@ HUD: pontuação 32 px / 600, resto 12–13 px.
 
 ### Licença e carga da fonte
 
-- Switzer vem sob a **ITF Free Font License** (Fontshare). Antes de colocar os `.woff2` no repositório e publicar na Chrome Web Store, conferir se a licença permite redistribuir o arquivo dentro de um projeto aberto. Se não permitir, a alternativa é **Inter** (OFL) com os mesmos pesos e tracking, sem mudar mais nada.
+- Inter 4.1, sob a **SIL Open Font License 1.1**, que permite levar a fonte no repositório e na extensão. Arquivos: `assets/fonts/inter-400.woff2`, `inter-500.woff2`, `inter-600.woff2`, com a licença em `assets/fonts/OFL-Inter.txt`.
+- O protótipo da opção D usa Switzer. Ela foi trocada porque a ITF Free Font License proíbe distribuir os arquivos da fonte por repositório público. Fora a fonte, nada mudou.
 - Popup: `@font-face` em `popup.css` com `url('../../assets/fonts/...')`.
 - Página e HUD: `@font-face` em `content.css` com `url('chrome-extension://__MSG_@@extension_id__/assets/fonts/...')`, porque o Chrome ignora `@font-face` dentro de Shadow DOM; o HUD só usa o nome da família. `manifest.json` ganha `web_accessible_resources` com `assets/fonts/*.woff2` para `<all_urls>`.
-- Nome no `@font-face`: `"LaEle Switzer"`, para não colidir com fontes dos sites. `font-display: swap`; fallback `"Helvetica Neue", Arial, sans-serif`.
+- Nome no `@font-face`: `"LaEle Inter"`, para não colidir com a Inter que muitos sites já carregam. `font-display: swap`; fallback `"Helvetica Neue", Arial, sans-serif`.
 - As fontes antigas de `assets/fonts/` (Permanent Marker, Bricolage Grotesque) não são usadas nesta direção.
 
 ## Formas
