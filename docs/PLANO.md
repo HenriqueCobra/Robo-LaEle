@@ -2,7 +2,7 @@
 
 ## Conceito
 
-"Lá ele" é a resposta clássica a qualquer frase com duplo sentido ("vou dar uma passada", "come tudo", "pega no pau da barraca"). O Robo-LaEle é uma extensão do Chrome que varre a página aberta, encontra essas palavras e expressões, destaca cada uma com uma animação conforme é contabilizada e soma uma pontuação no estilo arcade, com combos, multiplicadores e recordes.
+"Lá ele" é a resposta clássica a qualquer frase com duplo sentido ("vou dar uma passada", "come tudo", "bateu na trave"). O Robo-LaEle é uma extensão do Chrome que varre a página aberta, encontra essas palavras e expressões, destaca cada uma com uma animação conforme é contabilizada e soma uma pontuação no estilo arcade, com combos, multiplicadores e recordes.
 
 ## Decisão: algoritmo, não IA
 
@@ -51,7 +51,7 @@ LaEle.dictionary = {
     {
       id: 'dar',              // único, kebab-case ascii
       label: 'dar',           // como mostrar na interface
-      coef: 1.5,              // coeficiente lá ele (0.5 a 5). Mais safado = maior
+      coef: 1.5,              // coeficiente lá ele (0.5 a 5). Mais picante = maior
       tier: 'comum',          // 'leve' (< 1.5) | 'comum' (< 2.5) | 'pesado' (< 3.5) | 'lendario' — calculado por dictionary.tierOf(coef)
       forms: ['dar','dou','deu','dando','dei','dava','daria','dá'], // formas exatas (palavra inteira)
       stems: [],              // opcional: prefixos; casa token que começa com o prefixo e tem até +5 letras
@@ -64,8 +64,8 @@ LaEle.dictionary = {
 ```
 
 - `forms` e `stems` podem ser escritos com acento ou caixa alta; o motor normaliza tudo com a mesma função.
-- Mínimo de ~120 entradas: substantivos (pau, rola, pinto, linguiça, mandioca, pepino, banana, rabo, rosca, vara, mangueira, pirulito...), verbos (dar, comer, chupar, mamar, sentar, meter, enfiar, engolir, lamber, cavalgar, esfregar, soprar...), adjetivos (duro, grosso, comprido, molhado, apertado...) e expressões (`de quatro`, `por trás`, `até o talo`, `sentar em cima`, `dar uma`, `engolir tudo`, `pegar no pau`, `vai com tudo`, `pode entrar`...). Expressões têm coeficiente maior que as palavras isoladas.
-- Evitar formas que geram falso positivo absurdo (ex.: não incluir `da`/`de` soltos; `cu` só como palavra inteira).
+- Mínimo de ~120 entradas: substantivos (mandioca, pepino, banana, linguiça, mangueira, pirulito, vara...), verbos (dar, comer, sentar, meter, enfiar, engolir, soprar...), adjetivos (duro, grosso, comprido, molhado, apertado...) e expressões (`de quatro`, `por trás`, `até o talo`, `sentar em cima`, `dar uma`, `vai com tudo`, `pode entrar`...). Expressões têm coeficiente maior que as palavras isoladas.
+- Evitar formas que geram falso positivo absurdo (ex.: não incluir `da`/`de` soltos; palavras curtas só como palavra inteira).
 
 ## Contrato 2 — `LaEle.engine` (src/shared/engine.js)
 
@@ -73,7 +73,7 @@ LaEle.dictionary = {
 LaEle.engine = {
   CONFIG: { comboWindow: 8, comboStep: 0.5, maxMultiplier: 10, basePoints: 100 },
   normalize(str),          // -> string: minúsculas, sem acento (NFD), leet (4→a 3→e 1→i 0→o 5→s 7→t @→a $→s),
-                           //    letras repetidas 3+ vezes colapsadas para 1 ("roooola" → "rola")
+                           //    letras repetidas 3+ vezes colapsadas para 1 ("boooola" → "bola")
   tokenize(text),          // -> [{ raw, norm, start, end }]  start/end = offsets no texto ORIGINAL
   compile(entries),        // -> índice pronto (Map de formas, lista de stems, trie/mapa de expressões por 1º token)
   analyze(text, index?),   // -> { matches: Match[], total, maxCombo }   (index padrão = dicionário embutido + palavras do usuário já compiladas)

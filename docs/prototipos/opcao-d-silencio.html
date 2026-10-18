@@ -441,7 +441,7 @@ mark.laele-hit.laele-on { background-color: var(--m); transition: background-col
       <div class="ui-linha" data-t="leve"><i class="pt"></i><span><b>molhada</b><small>leve</small></span><span class="v num">+135 ×1,5</span></div>
     </div>
     <div class="espia-set">
-      <div class="ui-linha sel" data-t="pesado"><i class="pt"></i><span><b>pau</b><small>pesado</small></span><span class="v num">+300</span></div>
+      <div class="ui-linha sel" data-t="pesado"><i class="pt"></i><span><b>nabo</b><small>pesado</small></span><span class="v num">+300</span></div>
       <div class="ui-linha" data-t="comum"><i class="pt"></i><span><b>banana</b><small>comum</small></span><span class="v num">+270 ×1,5</span></div>
     </div>
     <svg class="cursor" viewBox="0 0 16 20"><path d="M1 1v15l4-4 3 7 3-1-3-7h6z" fill="#f2f2f2" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></svg>
@@ -565,7 +565,7 @@ mark.laele-hit.laele-on { background-color: var(--m); transition: background-col
           <div><dt>maior combo</dt><dd class="num">28</dd></div>
           <div><dt>multiplicador</dt><dd class="num">×14,5</dd></div>
         </dl>
-        <div class="pp-termos"><span data-t="pesado">mandioca <small>4</small></span><span data-t="pesado">pau <small>3</small></span><span data-t="comum">pepino <small>3</small></span><span data-t="lendario">sentar em cima <small>1</small></span></div>
+        <div class="pp-termos"><span data-t="pesado">mandioca <small>4</small></span><span data-t="pesado">nabo <small>3</small></span><span data-t="comum">pepino <small>3</small></span><span data-t="lendario">sentar em cima <small>1</small></span></div>
         <button type="button" class="pp-scan" data-scan><span class="lbl">Varrer página</span></button>
         <div class="seg pp-tabs" role="tablist" aria-label="Seções do popup">
           <button type="button" role="tab" aria-selected="true" data-tab="rec">Recordes</button>
@@ -706,7 +706,7 @@ mark.laele-hit.laele-on { background-color: var(--m); transition: background-col
   document.documentElement.classList.add('js');
   var reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fmt = new Intl.NumberFormat('pt-BR');
-  var RANKS = [[300, 'D', 'Quase inocente'], [1000, 'C', 'Lá ele de leve'], [3000, 'B', 'Tá ficando safado'], [8000, 'A', 'Lá ele pesado'], [Infinity, 'S', 'Lá ele supremo']];
+  var RANKS = [[300, 'D', 'Quase inocente'], [1000, 'C', 'Lá ele de leve'], [3000, 'B', 'Tá esquentando'], [8000, 'A', 'Lá ele pesado'], [Infinity, 'S', 'Lá ele supremo']];
   function rank(t) { if (t <= 0) return [0, '-', '']; return RANKS.filter(function (x) { return t < x[0]; })[0]; }
   function tierDe(c) { return c < 1.5 ? 'leve' : c < 2.5 ? 'comum' : c < 3.5 ? 'pesado' : 'lendario'; }
   var NOME = { leve: 'leve', comum: 'comum', pesado: 'pesado', lendario: 'lendário' };
@@ -732,8 +732,8 @@ mark.laele-hit.laele-on { background-color: var(--m); transition: background-col
 
   // ---------- Dados da Laelédex ----------
   var DEX = {
-    lendario: [['segura no pau da barraca', 5, 'expressão inteira', 1, ['g1']], ['sentar em cima', 4.5, 'sentar em cima, sentou em cima', 1, ['g1']], [null, 0, 9]],
-    pesado: [['até o talo', 3.4, 'expressão inteira', 1, ['tg']], ['pau', 3, 'pau, paus, pauzão', 3, ['g1', 'hf', 'tg']], ['de quatro', 3, 'expressão inteira', 1, ['wk']], ['mandioca', 2.6, 'mandioca, mandiocas, mandiocão', 4, ['g1', 'hf']], [null, 0, 6]],
+    lendario: [['bate na trave', 5, 'expressão inteira', 1, ['g1']], ['sentar em cima', 4.5, 'sentar em cima, sentou em cima', 1, ['g1']], [null, 0, 9]],
+    pesado: [['até o talo', 3.4, 'expressão inteira', 1, ['tg']], ['nabo', 3, 'nabo, nabos, nabão', 3, ['g1', 'hf', 'tg']], ['de quatro', 3, 'expressão inteira', 1, ['wk']], ['mandioca', 2.6, 'mandioca, mandiocas, mandiocão', 4, ['g1', 'hf']], [null, 0, 6]],
     comum: [['salsicha', 2, 'salsicha, salsichão', 1, ['tg']], ['banana', 1.8, 'banana, bananas, bananão', 2, ['hf', 'ce']], ['pepino', 1.6, 'pepino, pepinos, pepinão', 3, ['g1', 'hf', 'tg']], ['linguiça', 1.6, 'linguiça, linguiças', 2, ['tg']], ['berinjela', 1.5, 'berinjela, berinjelas', 1, ['ce']], [null, 0, 8]],
     leve: [['grossa', 1.2, 'grosso, grossa, grossão', 3, ['g1', 'tg', 'wk']], ['comprido', 1, 'comprido, comprida', 2, ['hf']], ['molhada', 0.9, 'molhado, molhada', 1, ['tg']], [null, 0, 7]]
   };

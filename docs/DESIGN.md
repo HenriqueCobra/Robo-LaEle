@@ -104,7 +104,7 @@ O Chrome desenha a janela do popup sempre retangular e não aceita fundo transpa
 │ ┌────────────┬────────────┬────────────┐ │
 │ │ 85         │ 28         │ ×14,5      │ │  ← grade --panel raio 10; número 20 Bricolage, legenda 11
 │ └────────────┴────────────┴────────────┘ │
-│ [mandioca 4] [pau 3] [pepino 3]          │  ← #terms: cada chip é um traço da raridade
+│ [mandioca 4] [nabo 3] [pepino 3]          │  ← #terms: cada chip é um traço da raridade
 │ [         Varrer página                ] │  ← #scanBtn 42 px, comum, texto tinta 14/600
 │ ( Recordes | Top | Laelédex | Ajustes )  │  ← #tabs 4 segmentos; ativo = traço comum-3 86% × 66% a 50% 52%
 ```
