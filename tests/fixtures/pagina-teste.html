@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Página de teste - Robo-LaEle</title>
+<!--
+  Abra direto no navegador. Usa o mock de tests/fixtures/mock-laele.js no lugar do motor real.
+  Parâmetros opcionais na URL: ?anim=0  ?speed=rapido|lento  ?hud=0  ?auto=0
+  No console: __laeleSend({ type: 'LAELE_SCAN' }) para varrer de novo; __laeleLog mostra as mensagens enviadas.
+-->
+<link rel="stylesheet" href="../../src/content/content.css">
+<style>
+  body { font: 18px/1.65 Georgia, serif; max-width: 760px; margin: 0 auto; padding: 24px 20px 80vh; background: #fafafa; color: #222; }
+  h1, h2 { font-family: system-ui, sans-serif; }
+  .escuro { background: #14101f; color: #e8e2f5; padding: 14px 18px; border-radius: 10px; }
+  .escuro a { color: #ff7ab8; }
+  .estreito { max-width: 240px; border: 1px dashed #aaa; padding: 8px; }
+  .flex { display: flex; gap: 6px; }
+  .tag { display: inline-block; background: #eee; padding: 2px 8px; border-radius: 8px; }
+  mark { background: yellow; color: black; } /* mark do site: nao deve vazar nos destaques */
+  nav a { margin-right: 12px; }
+</style>
+</head>
+<body>
+<nav><a href="#">Início</a><a href="#">Receitas</a><a href="#">Contato</a></nav>
+
+<h1>A grande colheita de mandioca</h1>
+<p>O seu João acordou cedo, pegou a enxada e foi direto para a roça. Disse que ia dar uma passada no pé de mandioca,
+porque a mandioca estava grossa, dura e bem molhada depois da chuva da madrugada.</p>
+
+<p>Na feira, a dona Lúcia perguntou se o pepino estava apertado na caixa. O feirante respondeu que ia enfiar mais
+duas bananas lá dentro, até o talo, e que ninguém ia reclamar do preço.</p>
+
+<h2>Textos com formatação no meio da frase</h2>
+<p>Ele quis <b>sentar</b> em cima do banco e depois <i>dar uma</i> volta. A <a href="#">man<b>dio</b>ca</a> cozida
+estava ótima, e o <a href="#">pau</a>-de-sebo da festa junina ficou de pé até o fim.</p>
+<p>Foi tudo por <b>trás</b> da casa, de <em>quatro</em> em cima do telhado: <strong>pegar no pau</strong> da barraca é
+coisa séria, repetiu o tio, enquanto comia a banana com a rola da bandeira balançando.</p>
+<p>Frase quebrada com br: o rabo<br>do cachorro e a mangue<br>ira do vizinho (não deve juntar palavras de linhas diferentes).</p>
+
+<h2>Combo longo</h2>
+<p>Pau, rola, pepino, banana, mandioca, linguiça, rabo, mangueira, pau, rola, pepino, banana, mandioca, rabo, mangueira, chupar, enfiar, sentar,
+dar, dou, deu, come, comer, duro, grosso, molhado, apertado, passada.</p>
+
+<h2>Contextos diferentes</h2>
+<div class="escuro">
+  <p>Fundo escuro: ela vai <a href="#">sentar até o talo</a> e depois chupar a cenoura, de quatro, por trás do muro.</p>
+</div>
+<p class="estreito">Coluna estreita para forçar quebra de linha: pegar no pau da barraca e dar uma passada na mandioca grossa.</p>
+<div class="flex"><span>ma</span><span>ndioca</span><span class="tag">pau</span><span class="tag">rola</span></div>
+<ul>
+  <li>Item de lista com banana</li>
+  <li>Outro item: dar uma voltinha</li>
+  <li>Nada demais aqui, só texto comum.</li>
+</ul>
+
+<h2>Não deve ser destacado</h2>
+<pre>pau rola mandioca dentro de pre</pre>
+<p>Dentro de código: <code>pau rola banana</code> (ignorado).</p>
+<textarea rows="2" cols="40">pau rola banana</textarea>
+<p style="display:none">pau oculto com display none, mandioca</p>
+<script>var s = "pau rola mandioca em script";</script>
+
+<h2>Parte de baixo da página</h2>
+<p style="margin-top: 70vh">Esta parte só aparece depois de rolar: dar uma passada na mandioca grossa, pau duro, rola molhada, banana apertada, de quatro por trás até o talo.</p>
+<p>Fim. A prioridade da animação vai primeiro para o que está visível na janela.</p>
+
+<script src="mock-laele.js"></script>
+<script src="../../src/content/content.js"></script>
+</body>
+</html>
