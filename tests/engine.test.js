@@ -546,3 +546,215 @@ test('phrases: maxCombo é o combo do último match e points soma os da sequênc
   assert.strictEqual(p.maxCombo, 5);
   assert.strictEqual(p.points, r.total);
 });
+
+// ---------- dicionário ampliado: integridade, falsos positivos e exemplos por área ----------
+
+const FUNCIONAIS = [
+  'a', 'as', 'o', 'os', 'um', 'uns', 'uma', 'umas',
+  'de', 'do', 'dos', 'da', 'das', 'dum', 'duma', 'em', 'no', 'nos', 'na', 'nas', 'num', 'numa',
+  'pelo', 'pela', 'pelos', 'pelas', 'por', 'per', 'para', 'pra', 'pro', 'com', 'sem', 'sob', 'sobre',
+  'ate', 'ao', 'aos', 'entre', 'apos', 'contra', 'desde', 'durante', 'perante',
+  'que', 'e', 'ou', 'mas', 'se', 'como', 'quando', 'porque', 'pois', 'nem', 'logo', 'enquanto',
+  'mais', 'menos', 'muito', 'pouco', 'ja', 'nao', 'sim', 'tambem', 'so', 'la', 'aqui', 'ali', 'ca', 'bem', 'mal',
+  'eu', 'tu', 'ele', 'ela', 'eles', 'elas', 'voce', 'voces', 'me', 'te', 'lhe', 'lhes', 'vos',
+  'meu', 'minha', 'meus', 'minhas', 'seu', 'sua', 'seus', 'suas', 'teu', 'tua', 'nosso', 'nossa',
+  'este', 'esta', 'esse', 'essa', 'isso', 'isto', 'aquele', 'aquela', 'aquilo', 'estes', 'esses',
+  'qual', 'quem', 'onde', 'cujo', 'todo', 'toda', 'tudo', 'nada', 'algo', 'outro', 'outra', 'cada',
+  'ser', 'sou', 'es', 'eh', 'foi', 'fui', 'sao', 'era', 'seja', 'sendo', 'sido',
+  'ter', 'tem', 'tenho', 'tinha', 'tive', 'teve', 'tendo', 'haver', 'ha', 'havia',
+  'estar', 'estou', 'estamos', 'estava', 'estive', 'ta', 'to', 'tao',
+  'ir', 'vai', 'vou', 'vamos', 'fazer', 'faz', 'fez', 'fazia', 'poder', 'pode', 'podia',
+  'dever', 'deve', 'querer', 'quer', 'quero', 'ver', 'vi'
+];
+
+function normForm(form) {
+  return engine.tokenize(form).map((t) => t.norm).join(' ');
+}
+
+test('dicionário ampliado: tamanho e contagem por faixa', () => {
+  const entries = dictionary.entries;
+  assert.ok(entries.length >= 650, 'entradas: ' + entries.length);
+  const por = { leve: 0, comum: 0, pesado: 0, lendario: 0 };
+  for (const e of entries) por[e.tier]++;
+  for (const tier of Object.keys(por)) {
+    assert.ok(por[tier] >= 20, 'poucas entradas em ' + tier + ': ' + por[tier]);
+  }
+  assert.ok(entries.filter((e) => e.phrase).length >= 150);
+});
+
+test('dicionário ampliado: ids únicos kebab-case, coef na faixa e tier coerente', () => {
+  const vistos = new Set();
+  for (const e of dictionary.entries) {
+    assert.match(e.id, /^[a-z0-9]+(-[a-z0-9]+)*$/, 'id fora do padrão: ' + e.id);
+    assert.ok(!vistos.has(e.id), 'id repetido: ' + e.id);
+    vistos.add(e.id);
+    assert.ok(typeof e.coef === 'number' && e.coef >= 0.5 && e.coef <= 5, 'coef fora de 0,5 a 5: ' + e.id + ' ' + e.coef);
+    assert.strictEqual(e.tier, dictionary.tierOf(e.coef), 'tier incoerente: ' + e.id);
+    if (e.phrase) assert.ok(e.coef >= 2.5, 'expressão com coef < 2,5: ' + e.id + ' ' + e.coef);
+    if (e.tier === 'leve') assert.ok(e.coef < 1.5, 'leve acima de 1,4: ' + e.id);
+  }
+});
+
+test('dicionário ampliado: sem palavra funcional como forma solta ou stem', () => {
+  const banidas = new Set(FUNCIONAIS);
+  for (const e of dictionary.entries) {
+    for (const f of e.forms) {
+      const n = normForm(f);
+      if (!/\s/.test(n)) assert.ok(!banidas.has(n), 'palavra funcional como forma solta: "' + f + '" em ' + e.id);
+      assert.ok(n !== 'da' && n !== 'de', 'forma normaliza para da/de: "' + f + '" em ' + e.id);
+    }
+    for (const s of e.stems) {
+      assert.ok(!banidas.has(engine.normalize(s)), 'stem funcional: ' + s + ' em ' + e.id);
+    }
+  }
+  const index = engine.getDefaultIndex();
+  for (const w of FUNCIONAIS) {
+    assert.strictEqual(index.words.has(w), false, 'forma solta perigosa no índice: ' + w);
+  }
+});
+
+test('dicionário ampliado: nenhuma forma aparece em duas entradas', () => {
+  const dono = new Map();
+  for (const e of dictionary.entries) {
+    for (const f of e.forms) {
+      const key = normForm(f);
+      assert.ok(key.length > 0, 'forma vazia em ' + e.id);
+      if (dono.has(key)) assert.strictEqual(dono.get(key), e.id, 'forma "' + key + '" em ' + dono.get(key) + ' e ' + e.id);
+      dono.set(key, e.id);
+    }
+  }
+});
+
+test('dicionário ampliado: stems novos só pegam a própria família', () => {
+  // arromb: arrombar, arrombado, arrombadona (até +5 letras)
+  assert.deepStrictEqual(ids(engine.analyze('arrombadona')), ['arrombar']);
+  assert.deepStrictEqual(ids(engine.analyze('arrombados')), ['arrombar']);
+  assert.deepStrictEqual(ids(engine.analyze('o arrombamento da loja')), []);
+  // encox: encoxar, encoxada, encoxador
+  assert.deepStrictEqual(ids(engine.analyze('encoxando')), ['encoxar']);
+  assert.deepStrictEqual(ids(engine.analyze('encoxadinha')), []);
+  // libidin: libidinoso, libidinosas
+  assert.deepStrictEqual(ids(engine.analyze('libidinosas')), ['libidinoso']);
+  assert.deepStrictEqual(ids(engine.analyze('libidinosissimo')), []);
+  // palavras comuns de prefixo parecido não casam
+  const comum = 'Encontrar a liberdade, arrancar o encosto e armar a libra na arrumação da biblioteca.';
+  assert.deepStrictEqual(engine.analyze(comum).matches.map((m) => m.raw), []);
+});
+
+test('falsos positivos ampliados: palavras comuns que parecem entradas não pontuam', () => {
+  const frases = [
+    'Os dados do computador estão no sistema comercial.',
+    'A pauta da reunião tem uma pausa e bastante tempo para comemorar.',
+    'O rolamento do eixo e a rolagem da página mudaram o cabeçalho.',
+    'Metade do paulista entrou no metrô e andou um metro.',
+    'A pintura da parede ficou boa e a pinta no tecido sumiu.',
+    'Os comentários sobre o comportamento do comprador chegaram.',
+    'O dardo, o darwinismo e a comunidade compraram comida.'
+  ];
+  for (const frase of frases) {
+    assert.deepStrictEqual(engine.analyze(frase).matches.map((m) => m.raw), [], frase);
+  }
+  // "chupa-cabra" pode pontuar, é lá ele mesmo
+  assert.ok(engine.analyze('o chupa-cabra').matches.length >= 1);
+});
+
+test('falsos positivos ampliados: parágrafo de notícia neutra dá zero', () => {
+  const noticia = [
+    'O Banco Central manteve a taxa básica de juros e informou que a inflação deve desacelerar nos próximos meses.',
+    'Segundo o relatório, as exportações de soja cresceram e o setor de tecnologia contratou mais profissionais.',
+    'A empresa anunciou um novo servidor, um aplicativo para celular e uma plataforma de pagamentos,',
+    'com previsão de lançamento no segundo semestre, depois de testes com clientes em diferentes cidades.'
+  ].join(' ');
+  assert.ok(noticia.split(/\s+/).length >= 55);
+  const r = engine.analyze(noticia);
+  assert.deepStrictEqual(r.matches.map((m) => m.raw), []);
+  assert.strictEqual(r.total, 0);
+});
+
+test('entradas ampliadas: exemplos de cada área casam (inclusive plural e conjugação)', () => {
+  const casos = [
+    // comida e feira
+    ['Comprei cenouras e berinjelas na feira', ['cenoura', 'berinjela']],
+    ['Fez um espetinho de calabresa com paio', ['espeto', 'calabresa', 'paio']],
+    ['Ela adora brigadeiro e churros', ['brigadeiro', 'churros']],
+    ['Tem um bolo no forno', ['bolo-no-forno']],
+    ['Pediu um cachorro quente', ['cachorro-quente']],
+    // cozinha e receitas
+    ['Vou sovar a massa e untar a forma', ['sovar', 'untar-a-forma']],
+    ['Ele sovou a massa a tarde toda', ['sovar']],
+    ['Raspou o tacho da panela', ['raspar-o-tacho']],
+    ['Deixa de molho e cozinha em fogo baixo', ['deixar-de-molho', 'fogo-baixo']],
+    // esporte e futebol
+    ['O artilheiro bateu na trave e depois balançou a rede', ['artilheiro', 'bola-na-trave', 'balancar-a-rede']],
+    ['O zagueiro entrou rasgando', ['entrar-rasgando']],
+    ['Ele meteu de cabeça no canto', ['meter-de-cabeca']],
+    ['O lateral deu um chapéu no marcador', ['dar-um-chapeu']],
+    ['A goleada saiu no apagar das luzes', ['goleada', 'nos-acrescimos']],
+    // ferramentas e obra
+    ['Preciso de uma chave de fenda e de um alicate', ['chave-de-fenda', 'alicate']],
+    ['O pedreiro bateu o prego com a marreta', ['bater-prego', 'marreta']],
+    ['Apertou o parafuso com a arruela', ['apertar-o-parafuso', 'arruela']],
+    ['Trouxe porca e parafuso na trena', ['porca-e-parafuso', 'trena']],
+    // animais
+    ['O coelho viu a serpente', ['coelho', 'serpente']],
+    ['Um pica-pau no quintal', ['pica-pau']],
+    ['Ele fez um cavalo de pau na curva', ['cavalo-de-pau']],
+    ['Tem tigresas e garanhões na festa', ['tigresa', 'garanhao']],
+    // música e instrumentos
+    ['Ela toca sanfona e batuca no bumbo', ['tocar-instrumento', 'batuque', 'bumbo']],
+    ['O cavaquinho e o berimbau', ['cavaquinho', 'berimbau']],
+    ['Dançou o quadradinho de oito', ['quadradinho-de-oito']],
+    // trabalho e escritório
+    ['Ele só sabe encher linguiça no relatório', ['encher-linguica']],
+    ['O chefe deu um aumento e a hora extra acabou', ['dar-um-aumento', 'hora-extra']],
+    ['O estagiário perdeu o carimbo', ['estagiario', 'carimbo']],
+    // carro e mecânica
+    ['Pisou fundo e engatou a marcha', ['pisar-fundo', 'engatar-a-marcha']],
+    ['O frentista encheu o tanque', ['frentista', 'encher-o-tanque']],
+    ['Deu ré e furou o pneu', ['dar-re', 'furar-o-pneu']],
+    ['A embreagem e o pistão fumaçaram', ['embreagem', 'pistao']],
+    // verbos de ação, banho e pesca
+    ['Levou uma surra do time', ['dar-uma-surra']],
+    ['Deixou o sabonete cair no banho', ['deixar-o-sabonete-cair', 'banho']],
+    ['Ele mordeu a isca com o anzol', ['morder-a-isca', 'anzol']],
+    ['Cutucou, bolinou e encoxou', ['cutucar', 'bolinar', 'encoxar']],
+    // adjetivos e estados
+    ['Um sujeito depravado e libidinoso', ['depravado', 'libidinoso']],
+    ['Calça folgada e camisa estreita', ['folgado', 'estreito']],
+    ['Ele é bem dotado', ['bem-servido']],
+    // expressões e ditados
+    ['Pau que nasce torto nunca se endireita', ['pau-que-nasce-torto']],
+    ['Em casa de ferreiro, espeto de pau', ['em-casa-de-ferreiro']],
+    ['Vai quebrar o galho', ['quebrar-o-galho']],
+    ['Ela vai dar uma de louca', ['dar-uma-de']],
+    ['Rolou um clima ontem', ['rolou-um-clima']],
+    // gírias
+    ['A tcheca, a xana e a quenga', ['tcheca', 'xana', 'quenga']]
+  ];
+  for (const [texto, esperado] of casos) {
+    assert.deepStrictEqual(ids(engine.analyze(texto)), esperado, texto);
+  }
+});
+
+test('entradas ampliadas: expressão nova ganha da palavra solta', () => {
+  const pares = [
+    ['pica pau', 'pica-pau', ['pica', 'pau']],
+    ['cavalo de pau', 'cavalo-de-pau', ['pau']],
+    ['pau que nasce torto', 'pau-que-nasce-torto', ['pau']],
+    ['dar carona', 'dar-carona', ['dar']],
+    ['bate estaca', 'bater-prego', ['bater']],
+    ['encher linguiça', 'encher-linguica', ['linguica']],
+    ['bola na trave', 'bola-na-trave', ['bola', 'trave']],
+    ['deixou o sabonete cair', 'deixar-o-sabonete-cair', ['sabonete']],
+    ['mal passado', 'mal-passado', []]
+  ];
+  for (const [texto, expr, soltas] of pares) {
+    const r = engine.analyze(texto);
+    assert.deepStrictEqual(ids(r), [expr], texto);
+    for (const s of soltas) assert.ok(!ids(r).includes(s), texto + ' não deveria casar ' + s);
+  }
+  // a expressão vale mais que a palavra isolada dentro dela
+  const solta = engine.analyze('trave').matches[0].coef;
+  const expr = engine.analyze('bateu na trave').matches[0].coef;
+  assert.ok(expr > solta);
+});

@@ -87,6 +87,24 @@ var LaEle = globalThis.LaEle = globalThis.LaEle || {};
   var SOPRAR = ['soprar', 'sopro', 'soprou', 'soprando', 'sopra', 'soprei'];
   var FURAR = ['furar', 'furo', 'furou', 'furando', 'fura', 'furei'];
   var ENFIAR_PE = ENFIAR.concat(['por', 'pos', 'poe', 'meter', 'meteu', 'mete', 'meto', 'botar', 'bota', 'botou', 'boto']);
+  var APERTAR = ['apertar', 'aperto', 'apertou', 'apertando', 'aperta', 'apertei', 'apertam'];
+  var DEIXAR = ['deixar', 'deixo', 'deixou', 'deixando', 'deixa', 'deixei'];
+  var LEVAR = ['levar', 'levo', 'levou', 'levando', 'leva', 'levei', 'levam'];
+  var JOGAR = ['jogar', 'jogo', 'jogou', 'jogando', 'joga', 'joguei'];
+  var CHUTAR = ['chutar', 'chuto', 'chutou', 'chutando', 'chuta', 'chutei'];
+  var PISAR = ['pisar', 'piso', 'pisou', 'pisando', 'pisa', 'pisei'];
+  var TROCAR = ['trocar', 'troco', 'trocou', 'trocando', 'troca', 'troquei'];
+  var ENGATAR = ['engatar', 'engato', 'engatou', 'engatando', 'engata', 'engatei'];
+  var MORDER = ['morder', 'morde', 'mordeu', 'mordendo', 'mordi', 'mordem'];
+  var UNTAR = ['untar', 'unto', 'untou', 'untando', 'unta', 'untei'];
+  var RASPAR = ['raspar', 'raspo', 'raspou', 'raspando', 'raspa', 'raspei'];
+  var ENTRARV = ['entrar', 'entro', 'entrou', 'entrando', 'entra'];
+  var ENTERRAR = ['enterrar', 'enterro', 'enterrou', 'enterrando', 'enterra', 'enterrei'];
+  var ARREGACAR = ['arregacar', 'arregaco', 'arregacou', 'arregacando', 'arregaca', 'arreguei'];
+  var MERGULHAR = ['mergulhar', 'mergulho', 'mergulhou', 'mergulhando', 'mergulha', 'mergulhei'];
+  var CAIR = ['cair', 'caio', 'caiu', 'caindo', 'cai'];
+  var FECHAR = ['fechar', 'fecho', 'fechou', 'fechando', 'fecha', 'fechei'];
+  var LAVAR = ['lavar', 'lavo', 'lavou', 'lavando', 'lava', 'lavei'];
 
   /* ---------------------------------------------------------------
    * Palavras soltas - leves (< 1.5)
@@ -558,6 +576,334 @@ var LaEle = globalThis.LaEle = globalThis.LaEle || {};
   p('garganta-profunda', 'garganta profunda', 4.5, ['garganta profunda', 'gargantas profundas']);
   p('beijo-grego', 'beijo grego', 4.5, ['beijo grego']);
   p('beijo-de-lingua', 'beijo de língua', 3.0, ['beijo de lingua', 'beijo na boca', 'beijar na boca', 'beijo molhado', 'beijo roubado', 'beijo ardente']);
+
+  /* ---------------------------------------------------------------
+   * Comida e feira
+   * ------------------------------------------------------------- */
+  w('cenoura', 'cenoura', 2.0, ['cenoura', 'cenouras', 'cenourinha', 'cenourinhas']);
+  w('abobrinha', 'abobrinha', 1.8, ['abobrinha', 'abobrinhas']);
+  w('berinjela', 'berinjela', 2.0, ['berinjela', 'berinjelas']);
+  w('quiabo', 'quiabo', 1.6, ['quiabo', 'quiabos']);
+  w('nabo', 'nabo', 1.6, ['nabo', 'nabos']);
+  w('abacaxi', 'abacaxi', 1.2, ['abacaxi', 'abacaxis']);
+  w('salame', 'salame', 1.6, ['salame', 'salames', 'salaminho']);
+  w('chourico', 'chouriço', 2.0, ['chourico', 'chouricos']);
+  w('calabresa', 'calabresa', 1.8, ['calabresa', 'calabresas']);
+  w('paio', 'paio', 2.0, ['paio', 'paios']);
+  w('espeto', 'espeto', 1.8, ['espeto', 'espetos', 'espetinho', 'espetinhos', 'espetar', 'espeta', 'espetou', 'espetando']);
+  w('maminha', 'maminha', 2.0, ['maminha', 'maminhas']);
+  w('marisco', 'marisco', 1.8, ['marisco', 'mariscos', 'mexilhao', 'mexilhoes', 'ostra', 'ostras']);
+  w('casquinha', 'casquinha', 1.8, ['casquinha', 'casquinhas']);
+  w('brigadeiro', 'brigadeiro', 1.8, ['brigadeiro', 'brigadeiros', 'brigadeirao']);
+  w('churros', 'churros', 2.0, ['churros', 'churro']);
+  w('pamonha', 'pamonha', 1.8, ['pamonha', 'pamonhas']);
+  w('bisnaga', 'bisnaga', 2.0, ['bisnaga', 'bisnagas', 'bisnaguinha', 'bisnaguinhas']);
+  w('colarinho', 'colarinho', 1.8, ['colarinho', 'colarinhos']);
+  w('espuma', 'espuma', 1.4, ['espuma', 'espumas', 'espumar', 'espumou', 'espumando', 'espumante', 'espumantes']);
+  p('cachorro-quente', 'cachorro-quente', 3.0, ['cachorro quente', 'cachorros quentes', 'hot dog', 'hot dogs']);
+  p('cacho-de-banana', 'cacho de banana', 3.5, ['cacho de banana', 'cachos de banana', 'penca de banana', 'penca de bananas']);
+  p('bolo-no-forno', 'bolo no forno', 4.0, ['bolo no forno', 'pao no forno', 'paozinho no forno', 'bolinho no forno']);
+  p('olho-de-sogra', 'olho de sogra', 3.0, ['olho de sogra']);
+
+  /* ---------------------------------------------------------------
+   * Cozinha e receitas
+   * ------------------------------------------------------------- */
+  w('untar', 'untar', 1.8, UNTAR.concat(['untada', 'untado']));
+  w('sovar', 'sovar', 2.0, ['sovar', 'sova', 'sovou', 'sovando', 'sovada', 'sovado']);
+  w('descascar', 'descascar', 1.4, DESCASCAR.concat(['descascada', 'descascado']));
+  w('rolo', 'rolo', 1.2, ['rolo', 'rolos', 'rolinho', 'rolinhos', 'rolete', 'roletes']);
+  w('forno', 'forno', 1.2, ['forno', 'fornos', 'fornada', 'fornadas', 'fornalha']);
+  w('batedeira', 'batedeira', 1.6, ['batedeira', 'batedeiras']);
+  w('pilao', 'pilão', 1.8, ['pilao', 'piloes']);
+  p('untar-a-forma', 'untar a forma', 3.2, x(UNTAR, ['a forma', 'a assadeira', 'a travessa', 'a tigela']));
+  p('bater-as-claras', 'bater as claras', 3.0, x(BATER, ['as claras', 'claras em neve', 'a massa', 'a gema', 'as gemas', 'o creme']));
+  p('raspar-o-tacho', 'raspar o tacho', 3.5, x(RASPAR, ['o tacho', 'a panela', 'o fundo do tacho', 'o fundo da panela']));
+  p('abrir-a-massa', 'abrir a massa', 3.2, x(ABRIR, ['a massa', 'massa', 'a massinha']));
+  p('fogo-baixo', 'fogo baixo', 3.0, ['fogo baixo', 'fogo brando', 'fogo alto', 'fogo medio', 'fogo lento', 'fogo forte']);
+  p('mal-passado', 'mal passado', 3.0, ['mal passado', 'mal passada', 'bem passado', 'bem passada']);
+  p('deixar-de-molho', 'deixar de molho', 3.0, x(DEIXAR, ['de molho', 'descansar', 'esfriar', 'na geladeira']));
+  p('colher-de-pau', 'colher de pau', 3.5, ['colher de pau', 'colheres de pau', 'colher de sopa', 'colher de cha', 'colher de sobremesa']);
+  p('panela-de-pressao', 'panela de pressão', 3.0, ['panela de pressao', 'panelas de pressao', 'panela velha', 'panela de barro']);
+  p('banho-maria', 'banho-maria', 3.2, ['banho maria', 'em banho maria']);
+  p('rolo-de-macarrao', 'rolo de macarrão', 3.0, ['rolo de macarrao', 'rolo de massa', 'rolo compressor']);
+
+  /* ---------------------------------------------------------------
+   * Esporte e futebol
+   * ------------------------------------------------------------- */
+  w('bola', 'bola', 0.8, ['bola', 'bolas', 'bolinha', 'bolinhas', 'bolao']);
+  w('gol', 'gol', 0.8, ['gol', 'gols', 'golzinho', 'golzao']);
+  w('golaco', 'golaço', 1.8, ['golaco', 'golacos']);
+  w('goleada', 'goleada', 1.6, ['goleada', 'goleadas', 'golear', 'goleou', 'goleando']);
+  w('goleiro', 'goleiro', 1.2, ['goleiro', 'goleiros', 'goleira', 'goleirao', 'goleirinho']);
+  w('artilheiro', 'artilheiro', 1.8, ['artilheiro', 'artilheiros', 'artilheira']);
+  w('centroavante', 'centroavante', 1.6, ['centroavante', 'centroavantes']);
+  w('trave', 'trave', 1.4, ['trave', 'traves', 'travessao', 'travessoes']);
+  w('penalti', 'pênalti', 1.8, ['penalti', 'penaltis', 'penalty']);
+  w('bandeirinha', 'bandeirinha', 1.6, ['bandeirinha', 'bandeirinhas']);
+  w('apito', 'apito', 1.4, ['apito', 'apitos', 'apitar', 'apita', 'apitou', 'apitando', 'apitinho']);
+  w('chute', 'chute', 1.4, ['chute', 'chutes', 'chutar', 'chuta', 'chutou', 'chutando', 'chutinho', 'chutao', 'chutaco']);
+  w('drible', 'drible', 1.4, ['drible', 'dribles', 'driblar', 'dribla', 'driblou', 'driblando', 'driblei', 'driblada']);
+  w('tabelinha', 'tabelinha', 1.6, ['tabelinha', 'tabelinhas']);
+  w('bicuda', 'bicuda', 1.8, ['bicuda', 'bicudas', 'bicudinha', 'bicudao']);
+  w('chuveirinho', 'chuveirinho', 1.6, ['chuveirinho', 'chuveirinhos']);
+  p('entrar-rasgando', 'entrar rasgando', 4.0, x(ENTRARV, ['rasgando', 'rasgando a defesa', 'de sola', 'com tudo', 'com vontade', 'duro', 'firme', 'forte']));
+  p('bola-na-trave', 'bola na trave', 3.5, ['bola na trave', 'bateu na trave', 'bate na trave', 'beijou a trave', 'beijar a trave', 'acertou a trave', 'acerta a trave', 'na trave']);
+  p('meter-de-cabeca', 'meter de cabeça', 3.8, x(METER, ['de cabeca', 'de cabecada', 'de peito', 'de bico', 'de ponta', 'de canhota', 'de esquerda', 'de direita', 'de primeira', 'de letra', 'de sola']));
+  p('balancar-a-rede', 'balançar a rede', 3.8, x(['balancar', 'balanca', 'balancou', 'balancando', 'estufar', 'estufa', 'estufou', 'estufando'], ['a rede', 'as redes']).concat(['bola na rede'], x(CAIR, ['na rede'])));
+  p('dar-um-chapeu', 'dar um chapéu', 3.8, x(DAR, ['um chapeu', 'uma caneta', 'um drible', 'uma bicuda', 'uma bicudinha', 'um carrinho', 'uma lambreta', 'uma cavadinha', 'um toquinho', 'um corte']));
+  p('bater-penalti', 'bater pênalti', 3.5, x(BATER, ['penalti', 'um penalti', 'o penalti', 'falta', 'uma falta', 'a falta', 'escanteio', 'um escanteio', 'o escanteio', 'lateral', 'tiro de meta']));
+  p('furar-a-defesa', 'furar a defesa', 3.5, x(FURAR, ['a defesa', 'a zaga', 'o goleiro', 'a marcacao', 'a barreira']));
+  p('chutar-o-balde', 'chutar o balde', 3.0, x(CHUTAR, ['o balde', 'o pau da barraca', 'pra fora', 'para fora', 'pra longe', 'para longe', 'a porta', 'forte', 'de longe', 'de fora', 'de bico', 'de sola', 'de esquerda', 'de direita', 'pro gol', 'a gol']));
+  p('jogar-duro', 'jogar duro', 3.0, x(JOGAR, ['duro', 'sujo', 'pesado', 'bruto']));
+  p('bola-parada', 'bola parada', 3.0, ['bola parada', 'bola murcha', 'bola furada', 'bola alta', 'bola rasteira', 'bola cheia', 'bola quadrada']);
+  p('nos-acrescimos', 'nos acréscimos', 3.2, ['nos acrescimos', 'no apagar das luzes', 'aos 45 do segundo tempo', 'nos descontos', 'no ultimo minuto', 'no finalzinho', 'no fim do jogo', 'no final do jogo']);
+  p('gol-de-placa', 'gol de placa', 3.0, ['gol de placa', 'gol de letra', 'gol contra', 'gol de bicicleta', 'gol olimpico', 'gol de falta', 'gol de cabeca']);
+  p('pegar-de-jeito', 'pegar de jeito', 3.5, x(PEGAR, ['de jeito', 'de frente', 'de costas', 'de surpresa', 'de calcanhar']));
+  p('segurar-a-onda', 'segurar a onda', 3.0, x(SEGURAR, ['a onda', 'o jogo', 'o resultado', 'a bronca', 'a barra', 'a pressao']));
+  p('segurar-o-tesao', 'segurar o tesão', 3.8, x(SEGURAR, ['o tesao', 'o rojao', 'o gozo', 'a vontade', 'as pontas', 'o fogo']));
+
+  /* ---------------------------------------------------------------
+   * Ferramentas e obra
+   * ------------------------------------------------------------- */
+  w('serrote', 'serrote', 1.6, ['serrote', 'serrotes', 'serrotinho']);
+  w('alicate', 'alicate', 1.6, ['alicate', 'alicates']);
+  w('marreta', 'marreta', 2.0, ['marreta', 'marretas', 'marretada', 'marretadas', 'marretar', 'marretou']);
+  w('prego', 'prego', 1.8, ['prego', 'pregos', 'pregar', 'prega', 'pregou', 'pregando', 'pregado', 'pregada', 'preguinho']);
+  w('rejunte', 'rejunte', 2.0, ['rejunte', 'rejuntes', 'rejuntar', 'rejuntou', 'rejuntando', 'rejuntado']);
+  w('trena', 'trena', 1.8, ['trena', 'trenas']);
+  w('lixa', 'lixa', 1.6, ['lixa', 'lixas', 'lixar', 'lixou', 'lixando', 'lixado', 'lixada', 'lixadeira', 'lixadeiras']);
+  w('porca', 'porca', 1.6, ['porca', 'porcas']);
+  w('arruela', 'arruela', 1.8, ['arruela', 'arruelas']);
+  w('ventosa', 'ventosa', 1.8, ['ventosa', 'ventosas']);
+  w('cano', 'cano', 1.6, ['cano', 'canos', 'canudo', 'canudos', 'canudinho', 'canudinhos']);
+  w('torneira', 'torneira', 1.6, ['torneira', 'torneiras']);
+  w('ralo', 'ralo', 1.6, ['ralo', 'ralos']);
+  w('frouxo', 'frouxo', 1.6, ['frouxo', 'frouxa', 'frouxos', 'frouxas', 'frouxidao', 'afrouxar', 'afrouxa', 'afrouxou', 'afrouxando']);
+  w('estilete', 'estilete', 1.6, ['estilete', 'estiletes']);
+  w('canivete', 'canivete', 1.8, ['canivete', 'canivetes', 'canivetinho']);
+  w('vergalhao', 'vergalhão', 2.0, ['vergalhao', 'vergalhoes']);
+  p('chave-de-fenda', 'chave de fenda', 3.0, ['chave de fenda', 'chaves de fenda', 'chave philips', 'chave allen', 'chave inglesa', 'chave de grifo', 'chave de boca', 'chave de roda']);
+  p('porca-e-parafuso', 'porca e parafuso', 3.5, ['porca e parafuso', 'parafuso e porca', 'porca com parafuso', 'porca e rosca']);
+  p('apertar-o-parafuso', 'apertar o parafuso', 3.5, x(APERTAR, ['o parafuso', 'a porca', 'a rosca', 'os parafusos', 'a tampa']));
+  p('bater-prego', 'bater prego', 3.8, x(BATER, ['prego', 'o prego', 'um prego', 'pregos', 'estaca', 'estacas', 'a estaca']));
+  p('furar-a-parede', 'furar a parede', 3.2, x(FURAR, ['a parede', 'o muro', 'a laje', 'o concreto', 'o piso', 'o azulejo']));
+  p('massa-corrida', 'massa corrida', 3.0, ['massa corrida', 'massa fina', 'massa grossa', 'massa pronta']);
+  p('cabo-de-vassoura', 'cabo de vassoura', 3.5, ['cabo de vassoura', 'cabo de enxada', 'cabo de aco', 'cabo de guerra', 'cabo de panela']);
+  p('fita-isolante', 'fita isolante', 3.0, ['fita isolante', 'fita veda rosca', 'veda rosca', 'fita crepe']);
+  p('tomada-de-tres-pinos', 'tomada de três pinos', 3.5, ['tomada de tres pinos', 'tomada de dois pinos', 'macho e femea', 'plugue macho', 'plugue femea']);
+  p('entrar-pelo-cano', 'entrar pelo cano', 3.5, x(ENTRARV, ['pelo cano']));
+  p('descer-pelo-ralo', 'descer pelo ralo', 3.2, ['descer pelo ralo', 'desceu pelo ralo', 'descendo pelo ralo', 'desce pelo ralo', 'descem pelo ralo']);
+
+  /* ---------------------------------------------------------------
+   * Animais
+   * ------------------------------------------------------------- */
+  w('serpente', 'serpente', 1.8, ['serpente', 'serpentes', 'jiboia', 'jiboias', 'sucuri', 'sucuris', 'anaconda', 'anacondas', 'cobrinha', 'cobrinhas']);
+  w('coelho', 'coelho', 1.4, ['coelho', 'coelhos', 'coelhinho', 'coelhinha', 'coelhinhos', 'coelhinhas']);
+  w('cachorra', 'cachorra', 1.8, ['cachorra', 'cachorras', 'cachorrinha', 'cadela', 'cadelas', 'cadelinha']);
+  w('vaca', 'vaca', 1.5, ['vaca', 'vacas', 'vaquinha']);
+  w('touro', 'touro', 1.8, ['touro', 'touros', 'tourao']);
+  w('garanhao', 'garanhão', 2.0, ['garanhao', 'garanhoes']);
+  w('egua', 'égua', 1.8, ['egua', 'eguas', 'eguinha']);
+  w('jumento', 'jumento', 2.0, ['jumento', 'jumentos', 'jumenta', 'jegue', 'jegues']);
+  w('pomba', 'pomba', 1.5, ['pomba', 'pombas', 'pombinha', 'pombo', 'pombos', 'pombinho']);
+  w('minhoca', 'minhoca', 1.8, ['minhoca', 'minhocas', 'minhocao']);
+  w('tigresa', 'tigresa', 1.8, ['tigresa', 'tigresas', 'tigrao', 'leoa', 'leoas', 'pantera', 'panteras']);
+  w('zangao', 'zangão', 1.8, ['zangao', 'zangoes']);
+  w('ferrao', 'ferrão', 2.0, ['ferrao', 'ferroes', 'ferroar', 'ferroou', 'ferroada', 'ferroadas']);
+  w('siri', 'siri', 1.6, ['siri', 'siris', 'caranguejo', 'caranguejos']);
+  w('tentaculo', 'tentáculo', 2.0, ['tentaculo', 'tentaculos']);
+  w('cegonha', 'cegonha', 1.4, ['cegonha', 'cegonhas']);
+  p('pica-pau', 'pica-pau', 4.0, ['pica pau', 'pica paus']);
+  p('cavalo-de-pau', 'cavalo de pau', 4.0, ['cavalo de pau', 'cavalos de pau']);
+  p('como-coelhos', 'como coelhos', 3.5, ['como coelho', 'como coelhos', 'feito coelho', 'feito coelhos']);
+  p('a-cegonha-chegou', 'a cegonha chegou', 3.2, ['a cegonha chegou', 'a cegonha vai chegar', 'a cegonha trouxe', 'esperando a cegonha', 'chamar a cegonha']);
+
+  /* ---------------------------------------------------------------
+   * Música e instrumentos
+   * ------------------------------------------------------------- */
+  w('bumbo', 'bumbo', 1.6, ['bumbo', 'bumbos']);
+  w('baqueta', 'baqueta', 1.8, ['baqueta', 'baquetas']);
+  w('batuque', 'batuque', 1.6, ['batuque', 'batuques', 'batucada', 'batucadas', 'batucar', 'batuca', 'batucou', 'batucando']);
+  w('chocalho', 'chocalho', 1.8, ['chocalho', 'chocalhos', 'chacoalhar', 'chacoalha', 'chacoalhou', 'chacoalhando', 'chacoalhada']);
+  w('maraca', 'maraca', 1.8, ['maraca', 'maracas']);
+  w('cavaquinho', 'cavaquinho', 1.8, ['cavaquinho', 'cavaquinhos']);
+  w('saxofone', 'saxofone', 1.8, ['saxofone', 'saxofones', 'sax', 'saxofonista', 'saxofonistas']);
+  w('sanfona', 'sanfona', 1.6, ['sanfona', 'sanfonas', 'acordeao', 'acordeom', 'acordeon', 'acordeoes', 'fole', 'foles']);
+  w('cuica', 'cuíca', 2.0, ['cuica', 'cuicas']);
+  w('berimbau', 'berimbau', 1.8, ['berimbau', 'berimbaus']);
+  w('afinar', 'afinar', 1.4, ['afinar', 'afina', 'afinou', 'afinando', 'afinado', 'afinada', 'afinadinho']);
+  w('dedilhar', 'dedilhar', 2.0, ['dedilhar', 'dedilha', 'dedilhou', 'dedilhando', 'dedilhado', 'dedilhada']);
+  w('pancadao', 'pancadão', 2.0, ['pancadao', 'pancadoes']);
+  w('creu', 'créu', 2.0, ['creu', 'creus']);
+  p('tocar-instrumento', 'tocar instrumento', 3.0, x(TOCAR, ['sanfona', 'acordeao', 'fole', 'tambor', 'bumbo', 'pandeiro', 'violao', 'cavaquinho', 'guitarra', 'saxofone', 'sax', 'tuba', 'berimbau', 'cuica', 'baixo', 'bateria', 'teclado', 'violino', 'viola']));
+  p('afinar-o-instrumento', 'afinar o instrumento', 3.5, x(['afinar', 'afino', 'afinou', 'afinando', 'afina', 'afinei'], ['o instrumento', 'o violao', 'a guitarra', 'o pandeiro', 'a corda', 'o cavaquinho', 'o baixo']));
+  p('quadradinho-de-oito', 'quadradinho de oito', 3.8, ['quadradinho de oito', 'quadradinhos de oito']);
+  p('segura-o-tchan', 'segura o tchan', 3.5, x(SEGURAR, ['o tchan']));
+  p('danca-do-creu', 'dança do créu', 3.8, ['danca do creu', 'danca da garrafa', 'danca do quadrado', 'danca da manivela', 'danca do tchan']);
+
+  /* ---------------------------------------------------------------
+   * Trabalho e escritório
+   * ------------------------------------------------------------- */
+  w('tesoura', 'tesoura', 1.6, ['tesoura', 'tesouras']);
+  w('furador', 'furador', 1.8, ['furador', 'furadores']);
+  w('carimbo', 'carimbo', 1.8, ['carimbo', 'carimbos', 'carimbar', 'carimba', 'carimbou', 'carimbando', 'carimbado']);
+  w('estagiario', 'estagiário', 1.6, ['estagiario', 'estagiaria', 'estagiarios', 'estagiarias']);
+  w('gaveta', 'gaveta', 1.4, ['gaveta', 'gavetas', 'gavetinha', 'gavetao']);
+  p('hora-extra', 'hora extra', 3.0, ['hora extra', 'horas extras']);
+  p('dar-um-aumento', 'dar um aumento', 3.5, x(DAR, ['um aumento', 'um aumentinho', 'uma promocao', 'um bonus', 'um adiantamento']));
+  p('bater-o-ponto', 'bater o ponto', 3.2, x(BATER, ['o ponto', 'ponto', 'cartao de ponto']));
+  p('abrir-o-bico', 'abrir o bico', 3.0, x(ABRIR, ['o bico', 'a torneira', 'a guarda', 'a gaveta', 'as gavetas', 'a gavetinha']));
+  p('encher-linguica', 'encher linguiça', 3.8, x(ENCHER, ['linguica', 'a linguica', 'linguicas']));
+  p('tirar-o-corpo-fora', 'tirar o corpo fora', 3.2, x(TIRAR, ['o corpo fora', 'o time de campo', 'o time']));
+  p('fazer-corpo-mole', 'fazer corpo mole', 3.5, x(FAZER, ['corpo mole', 'um corpo mole', 'cera', 'hora']));
+  p('meter-a-colher', 'meter a colher', 3.2, x(METER, ['a colher', 'colher']));
+
+  /* ---------------------------------------------------------------
+   * Carro e mecânica
+   * ------------------------------------------------------------- */
+  w('embreagem', 'embreagem', 1.8, ['embreagem', 'embreagens']);
+  w('pistao', 'pistão', 2.0, ['pistao', 'pistoes']);
+  w('cilindro', 'cilindro', 1.8, ['cilindro', 'cilindros', 'cilindrada', 'cilindradas']);
+  w('biela', 'biela', 2.0, ['biela', 'bielas']);
+  w('bujao', 'bujão', 1.8, ['bujao', 'bujoes']);
+  w('estepe', 'estepe', 1.8, ['estepe', 'estepes']);
+  w('carburador', 'carburador', 1.6, ['carburador', 'carburadores']);
+  w('guincho', 'guincho', 1.6, ['guincho', 'guinchos', 'guinchar', 'guincha', 'guinchou']);
+  w('reboque', 'reboque', 1.6, ['reboque', 'reboques']);
+  w('borracheiro', 'borracheiro', 1.8, ['borracheiro', 'borracheiros']);
+  w('frentista', 'frentista', 1.8, ['frentista', 'frentistas']);
+  w('engatar', 'engatar', 1.8, ENGATAR.concat(['engate', 'engates', 'engatada', 'engatado']));
+  w('funilaria', 'funilaria', 1.6, ['funilaria', 'funilarias', 'funileiro', 'lataria', 'latarias']);
+  w('vareta', 'vareta', 1.8, ['vareta', 'varetas']);
+  p('engatar-a-marcha', 'engatar a marcha', 3.5, x(ENGATAR, ['a marcha', 'a re', 'a primeira', 'a segunda', 'a terceira', 'a quarta', 'a quinta', 'um namoro', 'um romance', 'um caso']));
+  p('pisar-fundo', 'pisar fundo', 3.8, x(PISAR, ['fundo', 'no acelerador', 'na embreagem', 'no freio', 'no pedal', 'com tudo', 'com forca']));
+  p('trocar-o-oleo', 'trocar o óleo', 3.2, x(TROCAR, ['o oleo', 'o filtro', 'o pneu', 'a vela', 'a correia']));
+  p('vareta-do-oleo', 'vareta do óleo', 3.5, ['vareta do oleo', 'vareta de oleo', 'medir o oleo', 'olhar o oleo']);
+  p('abrir-o-capo', 'abrir o capô', 3.0, x(ABRIR, ['o capo', 'o porta malas']));
+  p('porta-malas', 'porta-malas', 3.2, ['porta malas', 'porta mala']);
+  p('furar-o-pneu', 'furar o pneu', 3.5, x(FURAR, ['o pneu', 'o estepe']));
+  p('bico-injetor', 'bico injetor', 3.2, ['bico injetor', 'bicos injetores']);
+  p('pegar-no-tranco', 'pegar no tranco', 3.8, x(PEGAR, ['no tranco']).concat(x(DAR, ['um tranco', 'uns trancos'])));
+  p('encher-o-tanque', 'encher o tanque', 3.8, x(ENCHER, ['o tanque', 'o tanque de gasolina']).concat(['completar o tanque', 'completa o tanque', 'completou o tanque', 'completo o tanque']));
+  p('dar-carona', 'dar carona', 3.8, x(DAR, ['carona', 'caronas', 'uma carona']));
+  p('pegar-carona', 'pegar carona', 3.5, x(PEGAR, ['carona', 'caronas', 'uma carona']));
+  p('banco-de-tras', 'banco de trás', 3.5, ['banco de tras', 'banco traseiro', 'bancos de tras']);
+  p('dar-re', 'dar ré', 3.8, x(DAR, ['re', 'uma re']).concat(['marcha a re', 'marcha re']));
+
+  /* ---------------------------------------------------------------
+   * Verbos de ação, banho e pescaria
+   * ------------------------------------------------------------- */
+  w('cutucar', 'cutucar', 1.6, ['cutucar', 'cutuca', 'cutucou', 'cutucando', 'cutucada', 'cutucadinha']);
+  w('futucar', 'futucar', 1.8, ['futucar', 'futuca', 'futucou', 'futucando', 'futucada']);
+  w('bolinar', 'bolinar', 2.2, ['bolinar', 'bolina', 'bolinou', 'bolinando', 'bolinagem']);
+  w('alisar', 'alisar', 1.6, ['alisar', 'alisa', 'alisou', 'alisando', 'alisada', 'alisadinha', 'afagar', 'afaga', 'afagou', 'afagando', 'afago']);
+  w('acariciar', 'acariciar', 1.6, ['acariciar', 'acaricia', 'acariciou', 'acariciando', 'caricia', 'caricias']);
+  w('rocar', 'roçar', 1.6, ['rocar', 'rocou', 'rocando', 'rocada', 'rocadinha', 'rocadas']);
+  w('raspar', 'raspar', 1.4, RASPAR.concat(['raspada', 'raspadas']));
+  w('arrombar', 'arrombar', 2.6, ['arrombar', 'arromba', 'arrombou', 'arrombando', 'arrombado', 'arrombada'], ['arromb']);
+  w('estocar', 'estocar', 1.8, ['estocar', 'estoca', 'estocou', 'estocando', 'estocada', 'estocadas']);
+  w('sugar', 'sugar', 1.8, ['sugar', 'suga', 'sugou', 'sugando', 'sugada', 'sugado', 'sugadinha']);
+  w('encoxar', 'encoxar', 2.4, ['encoxar', 'encoxa', 'encoxou', 'encoxando', 'encoxada', 'encoxador'], ['encox']);
+  w('encurralar', 'encurralar', 2.0, ['encurralar', 'encurrala', 'encurralou', 'encurralando', 'encurralada', 'encurralado']);
+  w('surra', 'surra', 1.8, ['surra', 'surras', 'surrar', 'surrou', 'surrando', 'surrada', 'surrado']);
+  w('arrebentar', 'arrebentar', 1.8, ['arrebentar', 'arrebenta', 'arrebentou', 'arrebentando', 'arrebentada', 'arrebentado']);
+  w('arregacar', 'arregaçar', 2.0, ARREGACAR.concat(['arregacada', 'arregacado']));
+  w('escancarar', 'escancarar', 2.0, ['escancarar', 'escancara', 'escancarou', 'escancarando', 'escancarada', 'escancarado']);
+  w('entupir', 'entupir', 1.8, ['entupir', 'entope', 'entupiu', 'entupindo', 'entupida', 'entupido']);
+  w('transbordar', 'transbordar', 1.8, ['transbordar', 'transborda', 'transbordou', 'transbordando', 'transbordante']);
+  w('ensaboar', 'ensaboar', 1.6, ['ensaboar', 'ensaboa', 'ensaboou', 'ensaboando', 'ensaboada', 'ensaboado', 'ensaboadinha']);
+  w('sabonete', 'sabonete', 1.4, ['sabonete', 'sabonetes', 'saboneteira']);
+  w('isca', 'isca', 1.6, ['isca', 'iscas']);
+  w('anzol', 'anzol', 1.8, ['anzol', 'anzois']);
+  w('molinete', 'molinete', 1.8, ['molinete', 'molinetes']);
+  w('carretilha', 'carretilha', 1.8, ['carretilha', 'carretilhas']);
+  w('gandaia', 'gandaia', 1.8, ['gandaia', 'gandaias', 'gandaiar']);
+  w('engravidar', 'engravidar', 2.0, ['engravidar', 'engravida', 'engravidou', 'engravidando', 'engravidada']);
+  w('prenha', 'prenha', 1.8, ['prenha', 'prenhas', 'prenhe', 'prenhes']);
+  p('dar-uma-surra', 'dar uma surra', 3.8, x(DAR.concat(LEVAR), ['uma surra', 'uma sova', 'uma pisa', 'uma tunda', 'uma lavada', 'uma goleada', 'uma cacetada', 'uma porrada', 'uma paulada']));
+  p('enterrar-o-osso', 'enterrar o osso', 3.5, x(ENTERRAR, ['o osso', 'o ossinho']));
+  p('osso-duro-de-roer', 'osso duro de roer', 3.2, ['osso duro de roer', 'ossos duros de roer', 'duro de roer']);
+  p('deixar-o-sabonete-cair', 'deixar o sabonete cair', 4.0, x(DEIXAR, ['cair o sabonete', 'o sabonete cair', 'o sabonete']).concat(x(PEGAR, ['o sabonete', 'sabonete'])));
+  p('morder-a-isca', 'morder a isca', 3.5, x(MORDER.concat(ENGOLIR), ['a isca', 'o anzol']));
+  p('jogar-a-isca', 'jogar a isca', 3.2, x(JOGAR, ['a isca', 'o anzol', 'a rede', 'a linha']));
+  p('vara-de-pescar', 'vara de pescar', 3.5, ['vara de pescar', 'varas de pescar', 'vara de pesca']);
+  p('cair-de-boca', 'cair de boca', 3.8, x(CAIR, ['de boca']));
+  p('mergulhar-de-cabeca', 'mergulhar de cabeça', 3.5, x(MERGULHAR, ['de cabeca', 'fundo', 'sem medo']));
+  p('arregacar-as-mangas', 'arregaçar as mangas', 3.5, x(ARREGACAR, ['as mangas', 'as pernas']));
+  p('barriga-de-aluguel', 'barriga de aluguel', 3.0, ['barriga de aluguel', 'barriga de chope', 'barriga de cerveja']);
+
+  /* ---------------------------------------------------------------
+   * Adjetivos e estados
+   * ------------------------------------------------------------- */
+  w('rijo', 'rijo', 1.8, ['rijo', 'rija', 'rijos', 'rijas']);
+  w('turgido', 'túrgido', 2.2, ['turgido', 'turgida', 'turgidos', 'turgidas']);
+  w('avantajado', 'avantajado', 2.2, ['avantajado', 'avantajada', 'avantajados', 'avantajadas']);
+  w('pegajoso', 'pegajoso', 1.8, ['pegajoso', 'pegajosa', 'pegajosos', 'pegajosas', 'grudento', 'grudenta', 'grudentos', 'grudentas']);
+  w('escorregadio', 'escorregadio', 1.6, ['escorregadio', 'escorregadia', 'escorregadios', 'escorregadias']);
+  w('folgado', 'folgado', 1.8, ['folgado', 'folgada', 'folgados', 'folgadas', 'folgadao', 'folgadinho']);
+  w('estreito', 'estreito', 1.8, ['estreito', 'estreita', 'estreitos', 'estreitas', 'estreitinho', 'estreitinha']);
+  w('excitado', 'excitado', 2.0, ['excitado', 'excitada', 'excitados', 'excitadas', 'excitante', 'excitantes', 'excitacao', 'excitar', 'excita', 'excitou']);
+  w('assanhado', 'assanhado', 2.0, ['assanhado', 'assanhada', 'assanhados', 'assanhadas', 'assanhadinho', 'assanhadinha', 'assanhar', 'assanhou']);
+  w('aticado', 'atiçado', 2.0, ['aticado', 'aticada', 'aticados', 'aticadas', 'aticar', 'atica', 'aticou']);
+  w('devasso', 'devasso', 2.2, ['devasso', 'devassa', 'devassos', 'devassas', 'devassidao']);
+  w('libertino', 'libertino', 2.0, ['libertino', 'libertina', 'libertinos', 'libertinas', 'libertinagem']);
+  w('depravado', 'depravado', 2.4, ['depravado', 'depravada', 'depravados', 'depravadas', 'depravacao']);
+  w('lascivo', 'lascivo', 2.2, ['lascivo', 'lasciva', 'lascivos', 'lascivas', 'lascivia']);
+  w('luxurioso', 'luxurioso', 2.2, ['luxuria', 'luxurias', 'luxurioso', 'luxuriosa', 'luxuriosos', 'luxuriosas', 'luxuriante']);
+  w('libidinoso', 'libidinoso', 2.4, ['libidinoso', 'libidinosa', 'libido'], ['libidin']);
+  w('lubrico', 'lúbrico', 2.2, ['lubrico', 'lubrica', 'lubricos', 'lubricas']);
+  w('promiscuo', 'promíscuo', 2.2, ['promiscuo', 'promiscua', 'promiscuos', 'promiscuas', 'promiscuidade']);
+  w('castidade', 'castidade', 1.4, ['castidade', 'celibato', 'celibatario', 'abstinencia', 'abstinente']);
+  p('bem-servido', 'bem servido', 3.0, ['bem servido', 'bem servida', 'bem servidos', 'bem servidas', 'bem dotado', 'bem dotada']);
+  p('tamanho-importa', 'o tamanho importa', 3.5, ['o tamanho importa', 'tamanho importa', 'tamanho nao importa', 'tamanho nao e documento', 'tamanho e documento']);
+  p('no-cio', 'no cio', 3.2, ['no cio', 'em cio']);
+
+  /* ---------------------------------------------------------------
+   * Expressões populares e ditados
+   * ------------------------------------------------------------- */
+  w('galho', 'galho', 1.6, ['galho', 'galhos', 'galhinho']);
+  w('match', 'match', 1.0, ['match', 'matches']);
+  p('quebrar-o-galho', 'quebrar o galho', 3.2, x(QUEBRAR, ['o galho', 'um galho', 'galho']));
+  p('em-casa-de-ferreiro', 'em casa de ferreiro', 4.2, ['em casa de ferreiro espeto de pau', 'casa de ferreiro espeto de pau']);
+  p('pau-que-nasce-torto', 'pau que nasce torto', 4.5, ['pau que nasce torto', 'pau que nasce torto nunca se endireita']);
+  p('agua-mole-em-pedra-dura', 'água mole em pedra dura', 4.0, ['agua mole em pedra dura', 'tanto bate ate que fura']);
+  p('passaro-na-mao', 'pássaro na mão', 3.8, ['passaro na mao', 'passarinho na mao', 'mais vale um passaro na mao']);
+  p('pimenta-no-cu', 'pimenta no cu', 4.0, ['pimenta nos olhos dos outros', 'pimenta no cu dos outros', 'pimenta no cu', 'pimenta no rabo']);
+  p('devagar-com-o-andor', 'devagar com o andor', 3.8, ['devagar com o andor', 'devagar com o andor que o santo e de barro']);
+  p('de-grao-em-grao', 'de grão em grão', 3.5, ['de grao em grao', 'de grao em grao a galinha enche o papo']);
+  p('botar-a-boca-no-trombone', 'botar a boca no trombone', 4.5, x(BOTAR.concat(COLOCAR), ['a boca no trombone']));
+  p('tirar-o-cavalinho', 'tirar o cavalinho da chuva', 3.2, x(TIRAR, ['o cavalinho da chuva', 'o cavalo da chuva']));
+  p('pegar-o-bonde', 'pegar o bonde', 3.2, x(PEGAR, ['o bonde', 'o bonde andando']));
+  p('fazer-a-festa', 'fazer a festa', 3.2, x(FAZER, ['a festa', 'uma festa', 'uma festinha', 'a festinha']));
+  p('fazer-charme', 'fazer charme', 3.0, x(FAZER, ['charme', 'manha', 'fita', 'birra', 'doce', 'cu doce']));
+  p('fazer-a-barba', 'fazer a barba', 3.0, x(FAZER, ['a barba', 'o cabelo', 'o pe', 'as unhas', 'a mao', 'a depilacao', 'a sobrancelha', 'as sobrancelhas', 'o bigode']));
+  p('pegar-leve', 'pegar leve', 3.0, x(PEGAR, ['leve', 'pesado', 'forte', 'firme', 'duro']));
+  p('dar-um-perdido', 'dar um perdido', 3.2, x(DAR, ['um perdido', 'um branco', 'um sumico', 'um tempo', 'um tempinho', 'um role', 'um salto', 'um pulo', 'um pulinho', 'um grau']));
+  p('dar-uma-de', 'dar uma de', 3.8, x(DAR, ['uma de louco', 'uma de louca', 'uma de doido', 'uma de doida', 'uma de besta', 'uma de otario', 'uma de otaria', 'uma de esperto', 'uma de esperta', 'uma de santo', 'uma de santa', 'uma de macho', 'uma de joao sem braco']));
+  p('vai-que-cola', 'vai que cola', 3.2, ['vai que cola', 'vai que da', 'vai que rola']);
+  p('rolou-um-clima', 'rolou um clima', 3.5, ['rolou um clima', 'rola um clima', 'rolando um clima', 'rolou uma quimica', 'rolou um lance', 'rola um lance', 'rolou um beijo']);
+  p('dar-a-luz', 'dar à luz', 3.5, x(DAR, ['a luz', 'luz', 'luz verde']));
+  p('ficar-de-castigo', 'ficar de castigo', 3.0, x(FICAR, ['de castigo']));
+  p('agua-na-boca', 'água na boca', 3.2, ['agua na boca', 'aguinha na boca']);
+  p('dar-match', 'dar match', 2.8, x(DAR, ['match']));
+  p('pensa-que-e-mole', 'pensa que é mole', 3.2, ['pensando que e mole', 'pensa que e mole', 'acha que e mole']);
+  p('maria-chuteira', 'maria chuteira', 3.0, ['maria chuteira', 'marias chuteiras']);
+
+  /* ---------------------------------------------------------------
+   * Gírias
+   * ------------------------------------------------------------- */
+  w('tcheca', 'tcheca', 2.2, ['tcheca', 'tchecas']);
+  w('xana', 'xana', 2.4, ['xana', 'xanas', 'xaninha', 'xaninhas']);
+  w('xibiu', 'xibiu', 2.4, ['xibiu', 'xibius']);
+  w('bilola', 'bilola', 2.2, ['bilola', 'bilolas']);
+  w('jeba', 'jeba', 2.4, ['jeba', 'jebas']);
+  w('brinquedinho', 'brinquedinho', 1.8, ['brinquedinho', 'brinquedinhos']);
+  w('rapariga', 'rapariga', 2.0, ['rapariga', 'raparigas']);
+  w('quenga', 'quenga', 2.4, ['quenga', 'quengas']);
+  w('biscate', 'biscate', 2.4, ['biscate', 'biscates']);
+  w('periguete', 'periguete', 2.2, ['periguete', 'periguetes']);
+  w('bofe', 'bofe', 2.0, ['bofe', 'bofes']);
+  w('mulherengo', 'mulherengo', 2.0, ['mulherengo', 'mulherengos', 'mulherenga', 'mulherengas']);
 
   LaEle.dictionary = {
     version: 1,
