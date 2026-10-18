@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /*
  * Gera icons/icon16.png, icon32.png, icon48.png e icon128.png em Node puro.
- * Rasteriza o mesmo desenho de icons/icon.svg (quadrado arredondado com gradiente
- * e dois olhos olhando de lado) com antialiasing por supersampling e grava o PNG
- * RGBA na mão (zlib + CRC32).
+ * Rasteriza o mesmo desenho de icons/icon.svg (quadrado claro com dois olhos de contorno
+ * escuro olhando de lado e sobrancelha bronze) com antialiasing por supersampling e grava
+ * o PNG RGBA na mão (zlib + CRC32). Em 16 px a sobrancelha sai e o contorno fica mais fino.
  *
  * Uso: node scripts/make-icons.js
  */
@@ -14,36 +14,62 @@ const path = require('path');
 const zlib = require('zlib');
 
 const SIZES = [16, 32, 48, 128];
-const VIEW = 128; // sistema de coordenadas do SVG
 
-// ---------- desenho (coordenadas 0..128, iguais às do icon.svg) ----------
+// ---------- desenho ----------
 
-const CORNER = 30;
-const C1 = [0xff, 0x2e, 0x88];
-const C2 = [0xa8, 0x55, 0xf7];
+const BG = [0xf2, 0xef, 0xe9];
 const WHITE = [255, 255, 255];
-const PUPIL = [0x2a, 0x12, 0x45];
+const INK = [0x11, 0x11, 0x11];
+const BRONZE = [0xa0, 0x86, 0x72];
 
-const EYES = [
-  { cx: 42, cy: 64, rx: 20, ry: 28 },
-  { cx: 86, cy: 64, rx: 20, ry: 28 }
-];
-const PUPILS = [
-  { cx: 49, cy: 66, r: 11 },
-  { cx: 93, cy: 66, r: 11 }
-];
+// Coordenadas 0..128, iguais às do icon.svg.
+const GRANDE = {
+  view: 128,
+  corner: 30,
+  stroke: 6,
+  eyes: [
+    { cx: 41, cy: 70, rx: 20, ry: 25 },
+    { cx: 89, cy: 70, rx: 20, ry: 25 }
+  ],
+  pupils: [
+    { cx: 51, cy: 74, r: 9 },
+    { cx: 99, cy: 74, r: 9 }
+  ],
+  brow: { p0: [72, 35], c: [89, 25], p1: [107, 31], width: 6 }
+};
 
-function insideRoundRect(x, y) {
-  const r = CORNER;
-  const dx = Math.max(r - x, 0, x - (VIEW - r));
-  const dy = Math.max(r - y, 0, y - (VIEW - r));
-  return x >= 0 && y >= 0 && x <= VIEW && y <= VIEW && dx * dx + dy * dy <= r * r;
+// Coordenadas 0..16 (versão de 16 px: sem sobrancelha, contorno 1,1).
+const PEQUENO = {
+  view: 16,
+  corner: 4,
+  stroke: 1.1,
+  eyes: [
+    { cx: 5.1, cy: 8.9, rx: 2.6, ry: 3.2 },
+    { cx: 10.9, cy: 8.9, rx: 2.6, ry: 3.2 }
+  ],
+  pupils: [
+    { cx: 6.3, cy: 9.4, r: 1.25 },
+    { cx: 12.1, cy: 9.4, r: 1.25 }
+  ],
+  brow: null
+};
+
+function insideRoundRect(g, x, y) {
+  const r = g.corner;
+  const dx = Math.max(r - x, 0, x - (g.view - r));
+  const dy = Math.max(r - y, 0, y - (g.view - r));
+  return x >= 0 && y >= 0 && x <= g.view && y <= g.view && dx * dx + dy * dy <= r * r;
 }
 
-function insideEllipse(e, x, y) {
+// Distância assinada aproximada até a borda da elipse (negativa dentro).
+function ellipseDist(e, x, y) {
   const nx = (x - e.cx) / e.rx;
   const ny = (y - e.cy) / e.ry;
-  return nx * nx + ny * ny <= 1;
+  const gv = Math.sqrt(nx * nx + ny * ny);
+  if (gv === 0) return -Math.min(e.rx, e.ry);
+  const gx = nx / e.rx / gv;
+  const gy = ny / e.ry / gv;
+  return (gv - 1) / Math.sqrt(gx * gx + gy * gy);
 }
 
 function insideCircle(c, x, y) {
@@ -52,37 +78,81 @@ function insideCircle(c, x, y) {
   return dx * dx + dy * dy <= c.r * c.r;
 }
 
-// Cor de um ponto do desenho, ou null se transparente.
-function sample(x, y) {
-  if (!insideRoundRect(x, y)) return null;
-  for (const p of PUPILS) if (insideCircle(p, x, y) && EYES.some((e) => insideEllipse(e, x, y))) return PUPIL;
-  for (const e of EYES) if (insideEllipse(e, x, y)) return WHITE;
-  const t = (x + y) / (2 * VIEW);
-  return [0, 1, 2].map((i) => C1[i] + (C2[i] - C1[i]) * t);
+// Quadrática da sobrancelha vira polilinha; o traço com ponta redonda é a união de cápsulas.
+function browPolyline(brow) {
+  if (!brow) return null;
+  const pts = [];
+  const N = 48;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N;
+    const u = 1 - t;
+    pts.push([
+      u * u * brow.p0[0] + 2 * u * t * brow.c[0] + t * t * brow.p1[0],
+      u * u * brow.p0[1] + 2 * u * t * brow.c[1] + t * t * brow.p1[1]
+    ]);
+  }
+  return pts;
+}
+
+function distToSegment(px, py, a, b) {
+  const vx = b[0] - a[0];
+  const vy = b[1] - a[1];
+  const len2 = vx * vx + vy * vy;
+  let t = len2 ? ((px - a[0]) * vx + (py - a[1]) * vy) / len2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  const dx = px - (a[0] + t * vx);
+  const dy = py - (a[1] + t * vy);
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function insideBrow(g, poly, x, y) {
+  if (!poly) return false;
+  const half = g.brow.width / 2;
+  for (let i = 0; i < poly.length - 1; i++) {
+    if (distToSegment(x, y, poly[i], poly[i + 1]) <= half) return true;
+  }
+  return false;
+}
+
+// Cor de um ponto do desenho, ou null se transparente (mesma ordem de camadas do SVG).
+function sample(g, poly, x, y) {
+  if (!insideRoundRect(g, x, y)) return null;
+  let color = BG;
+  const half = g.stroke / 2;
+  for (const e of g.eyes) {
+    const d = ellipseDist(e, x, y);
+    if (d <= 0) color = WHITE;
+    if (Math.abs(d) <= half) color = INK;
+  }
+  for (const p of g.pupils) if (insideCircle(p, x, y)) color = INK;
+  if (insideBrow(g, poly, x, y)) color = BRONZE;
+  return color;
 }
 
 // ---------- rasterização ----------
 
 function render(size) {
+  const g = size <= 16 ? PEQUENO : GRANDE;
+  const poly = browPolyline(g.brow);
   const ss = size <= 48 ? 8 : 4; // subamostras por eixo
-  const scale = VIEW / size;
+  const scale = g.view / size;
   const buf = Buffer.alloc(size * size * 4);
   for (let py = 0; py < size; py++) {
     for (let px = 0; px < size; px++) {
-      let r = 0, g = 0, b = 0, a = 0;
+      let r = 0, gg = 0, b = 0, a = 0;
       for (let sy = 0; sy < ss; sy++) {
         for (let sx = 0; sx < ss; sx++) {
           const x = (px + (sx + 0.5) / ss) * scale;
           const y = (py + (sy + 0.5) / ss) * scale;
-          const c = sample(x, y);
-          if (c) { r += c[0]; g += c[1]; b += c[2]; a += 1; }
+          const c = sample(g, poly, x, y);
+          if (c) { r += c[0]; gg += c[1]; b += c[2]; a += 1; }
         }
       }
       const n = ss * ss;
       const o = (py * size + px) * 4;
       if (a > 0) {
         buf[o] = Math.round(r / a);
-        buf[o + 1] = Math.round(g / a);
+        buf[o + 1] = Math.round(gg / a);
         buf[o + 2] = Math.round(b / a);
         buf[o + 3] = Math.round((a / n) * 255);
       }
