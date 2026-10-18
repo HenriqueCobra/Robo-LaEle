@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lá ele, marca-texto</title>
+<style>
+@font-face { font-family: "LaEle Inter"; src: url('../../assets/fonts/inter-400.woff2') format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "LaEle Inter"; src: url('../../assets/fonts/inter-500.woff2') format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "LaEle Inter"; src: url('../../assets/fonts/inter-600.woff2') format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "LaEle Bricolage"; src: url('../../assets/fonts/bricolage-grotesque.woff2') format("woff2"); font-weight: 200 800; font-display: swap; }
+
+:root {
+  color-scheme: dark;
+  --f-ui: "LaEle Inter", "Helvetica Neue", Arial, sans-serif;
+  --f-voz: "LaEle Bricolage", "Arial Rounded MT Bold", "Helvetica Neue", Arial, sans-serif;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --mola: cubic-bezier(.34, 1.56, .64, 1);
+
+  /* página de apresentação */
+  --pg-bg: #100e15;
+  --pg-text: #f4f0e8;
+  --pg-muted: #a39cb3;
+  --pg-soft: #ddd7e8;
+  --pg-panel: #1a1722;
+
+  /* marca-texto: as quatro cores da extensão */
+  --mt-leve: #B8F27C;
+  --mt-comum: #FFE45C;
+  --mt-pesado: #FF9BD2;
+  --mt-lendario: #FFB054;
+  --mt-tinta: #17141f;
+  --mt-leve-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23B8F27C'/%3E%3C/svg%3E");
+  --mt-leve-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23B8F27C'/%3E%3C/svg%3E");
+  --mt-leve-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23B8F27C'/%3E%3C/svg%3E");
+  --mt-comum-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FFE45C'/%3E%3C/svg%3E");
+  --mt-comum-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23FFE45C'/%3E%3C/svg%3E");
+  --mt-comum-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23FFE45C'/%3E%3C/svg%3E");
+  --mt-pesado-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FF9BD2'/%3E%3C/svg%3E");
+  --mt-pesado-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23FF9BD2'/%3E%3C/svg%3E");
+  --mt-pesado-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23FF9BD2'/%3E%3C/svg%3E");
+  --mt-lendario-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FFB054'/%3E%3C/svg%3E");
+  --mt-lendario-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z' fill='%23FFB054'/%3E%3C/svg%3E");
+  --mt-lendario-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z' fill='%23FFB054'/%3E%3C/svg%3E");
+}
+
+/* duas peles para a extensão; a página de apresentação fica sempre escura */
+.pele, .pele[data-pele="tinta"] {
+  --bg: #17141f;
+  --panel: #201c2b;
+  --raised: #2b2639;
+  --line: #363046;
+  --text: #f6f2ea;
+  --soft: #cdc6da;
+  --muted: #a29bb5;
+  --moldura: #0c0a11;
+  --sw-off: #3a3449;
+  --nota-d: #4a4359;
+  --nota-d-txt: #f6f2ea;
+}
+.pele[data-pele="papel"] {
+  --bg: #fbf8f1;
+  --panel: #f3eee3;
+  --raised: #e9e2d4;
+  --line: #ddd4c2;
+  --text: #1b1822;
+  --soft: #4a4556;
+  --muted: #696374;
+  --moldura: #d9d1c0;
+  --sw-off: #cfc6b4;
+  --nota-d: #ddd4c2;
+  --nota-d-txt: #1b1822;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pg-bg); color: var(--pg-text); font: 17px/1.6 var(--f-ui); -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.num { font-variant-numeric: tabular-nums; }
+
+main { max-width: 1200px; margin: 0 auto; padding-block: 56px 96px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 112px; }
+
+/* ---------- marca-texto: o traço irregular ---------- */
+.mt { background-repeat: no-repeat; background-position: 50% 55%; background-size: 100% 100%; -webkit-box-decoration-break: clone; box-decoration-break: clone; color: var(--mt-tinta); padding: .08em .3em .1em; margin: 0 .02em; }
+.mt[data-t="leve"]     { background-image: var(--mt-leve-1); }
+.mt[data-t="comum"]    { background-image: var(--mt-comum-1); }
+.mt[data-t="pesado"]   { background-image: var(--mt-pesado-1); }
+.mt[data-t="lendario"] { background-image: var(--mt-lendario-1); }
+.mt[data-t="leve"][data-v="2"]     { background-image: var(--mt-leve-2); }
+.mt[data-t="comum"][data-v="2"]    { background-image: var(--mt-comum-2); }
+.mt[data-t="pesado"][data-v="2"]   { background-image: var(--mt-pesado-2); }
+.mt[data-t="lendario"][data-v="2"] { background-image: var(--mt-lendario-2); }
+.mt[data-t="leve"][data-v="3"]     { background-image: var(--mt-leve-3); }
+.mt[data-t="comum"][data-v="3"]    { background-image: var(--mt-comum-3); }
+.mt[data-t="pesado"][data-v="3"]   { background-image: var(--mt-pesado-3); }
+.mt[data-t="lendario"][data-v="3"] { background-image: var(--mt-lendario-3); }
+
+/* ---------- abertura ---------- */
+.abre { display: flex; flex-direction: column; gap: 40px; }
+.abre-txt { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 24px 56px; align-items: end; }
+.abre h1 { font-family: var(--f-voz); font-weight: 800; font-size: clamp(48px, 8vw, 112px); line-height: .98; letter-spacing: -.025em; margin: 0; text-wrap: balance; }
+.abre h1 .mt { padding: 0 .12em .04em; }
+.abre-txt p { margin: 0 0 24px; max-width: 46ch; color: var(--pg-soft); font-size: 18px; }
+.abre-txt p b { color: var(--pg-text); font-weight: 600; }
+.acoes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn-voz { border: 0; border-radius: 10px; background: var(--mt-comum); color: var(--mt-tinta); font-weight: 600; font-size: 15px; padding: 12px 20px; transition: transform 160ms var(--ease); }
+.btn-voz:hover { transform: translateY(-2px) rotate(-1deg); }
+.btn-voz:active { transform: translateY(0) scale(.97); }
+.pele-seg { display: inline-flex; background: var(--pg-panel); border-radius: 10px; padding: 3px; gap: 2px; }
+.pele-seg button { border: 0; background: none; padding: 9px 14px; border-radius: 8px; font-size: 14px; color: var(--pg-muted); transition: background 160ms var(--ease), color 160ms var(--ease); }
+.pele-seg button[aria-checked="true"] { background: #2e293b; color: var(--pg-text); }
+
+/* ---------- a página do site, com o HUD ---------- */
+.site { position: relative; background: #fbfaf7; color: #23222a; border-radius: 16px; padding: 36px clamp(20px, 4vw, 48px) 48px; font: 19px/1.7 Georgia, "Times New Roman", serif; min-height: 520px; overflow: hidden; }
+.site-topo { font: 600 14px/1 var(--f-ui); color: #6a6774; margin: 0 0 22px; display: flex; gap: 16px; flex-wrap: wrap; }
+.site h3 { font: 700 clamp(26px, 3.4vw, 38px)/1.12 Georgia, serif; margin: 0 0 18px; max-width: 20ch; letter-spacing: -.01em; }
+.site p { margin: 0 0 16px; max-width: 54ch; }
+.site .texto { max-width: 640px; }
+.site h3 { max-width: none; }
+
+mark.laele-hit { background-color: transparent; color: inherit; background-repeat: no-repeat; background-position: 0 70%; background-size: 0% 78%; -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-size var(--wipe, 260ms) var(--ease), color 0ms linear calc(var(--wipe, 260ms) / 2); }
+mark.laele-hit.laele-on { background-size: 100% 78%; color: var(--mt-tinta); }
+mark.laele-hit[data-t="leve"]     { background-image: var(--mt-leve-1); }
+mark.laele-hit[data-t="comum"]    { background-image: var(--mt-comum-1); }
+mark.laele-hit[data-t="pesado"]   { background-image: var(--mt-pesado-1); }
+mark.laele-hit[data-t="lendario"] { background-image: var(--mt-lendario-1); }
+mark.laele-hit[data-t="leve"][data-v="2"]     { background-image: var(--mt-leve-2); }
+mark.laele-hit[data-t="comum"][data-v="2"]    { background-image: var(--mt-comum-2); }
+mark.laele-hit[data-t="pesado"][data-v="2"]   { background-image: var(--mt-pesado-2); }
+mark.laele-hit[data-t="lendario"][data-v="2"] { background-image: var(--mt-lendario-2); }
+mark.laele-hit[data-t="leve"][data-v="3"]     { background-image: var(--mt-leve-3); }
+mark.laele-hit[data-t="comum"][data-v="3"]    { background-image: var(--mt-comum-3); }
+mark.laele-hit[data-t="pesado"][data-v="3"]   { background-image: var(--mt-pesado-3); }
+mark.laele-hit[data-t="lendario"][data-v="3"] { background-image: var(--mt-lendario-3); }
+
+.laele-float { position: absolute; pointer-events: none; z-index: 3; font: 800 17px/1 var(--f-voz); letter-spacing: -.02em; color: var(--mt-tinta); background: var(--fundo-float, var(--mt-comum)); padding: 4px 8px 5px; border-radius: 7px; white-space: nowrap; transform: rotate(var(--giro, -4deg)); animation: sobe 950ms var(--ease) forwards; box-shadow: 0 6px 16px rgba(23, 20, 31, .18); }
+.laele-float i { font: 600 12px/1 var(--f-ui); font-style: normal; margin-left: 5px; opacity: .78; }
+@keyframes sobe { 0% { opacity: 0; translate: 0 6px; scale: .6; } 18% { opacity: 1; translate: 0 -6px; scale: 1.08; } 70% { opacity: 1; translate: 0 -24px; scale: 1; } 100% { opacity: 0; translate: 0 -34px; scale: .96; } }
+
+/* HUD */
+.hud { position: absolute; right: 20px; bottom: 20px; width: 248px; background: var(--bg); color: var(--text); border-radius: 16px; padding: 12px 14px 14px; font-family: var(--f-ui); box-shadow: 0 16px 40px rgba(23, 20, 31, .28); z-index: 4; transition: background 240ms var(--ease), color 240ms var(--ease); }
+.hud-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.marca-nome { display: inline-flex; align-items: center; gap: 8px; font: 800 17px/1 var(--f-voz); letter-spacing: -.03em; }
+.marca-nome svg { width: 24px; height: 24px; flex: none; }
+.hud-btns { display: flex; gap: 2px; }
+.hud-btns button { width: 26px; height: 26px; border: 0; border-radius: 8px; background: none; color: var(--muted); display: grid; place-items: center; transition: background 160ms var(--ease), color 160ms var(--ease); }
+.hud-btns button:hover { background: var(--raised); color: var(--text); }
+.hud-btns svg { width: 14px; height: 14px; }
+.hud-meio { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.placar { font: 800 40px/1 var(--f-voz); letter-spacing: -.025em; display: inline-block; }
+.placar-wrap { position: relative; display: inline-block; }
+.placar-wrap::after { content: ""; position: absolute; left: -4px; right: -6px; bottom: 1px; height: 13px; background: var(--mt-comum-2) no-repeat 0 0 / 100% 100%; z-index: -1; transform-origin: left; transform: scaleX(var(--risco, 1)); transition: transform 380ms var(--ease); opacity: .9; }
+.placar-wrap { isolation: isolate; }
+.hud-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.nota { width: 46px; height: 46px; border-radius: 10px; display: grid; place-items: center; font: 800 26px/1 var(--f-voz); letter-spacing: -.025em; background: var(--nota-d); color: var(--nota-d-txt); transform: rotate(-6deg); flex: none; transition: background 200ms var(--ease); }
+.nota[data-g="C"] { background: var(--mt-leve); color: var(--mt-tinta); }
+.nota[data-g="B"] { background: var(--mt-comum); color: var(--mt-tinta); }
+.nota[data-g="A"] { background: var(--mt-pesado); color: var(--mt-tinta); }
+.nota[data-g="S"] { background: var(--mt-lendario); color: var(--mt-tinta); }
+.nota.pula { animation: carimbo 420ms var(--mola); }
+@keyframes carimbo { 0% { transform: rotate(-6deg) scale(1.45); } 60% { transform: rotate(3deg) scale(.94); } 100% { transform: rotate(-6deg) scale(1); } }
+.hud-rank { font-size: 13px; font-weight: 500; margin: 8px 0 10px; min-height: 18px; }
+.hud-combo { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-size: 12px; color: var(--muted); }
+.hud-bar { height: 8px; position: relative; }
+.hud-bar::before { content: ""; position: absolute; inset: 2px 0; background: var(--raised); border-radius: 3px; }
+.hud-bar i { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--mt-lendario-1) no-repeat 0 0 / 100% 100%; transition: width 260ms var(--ease); }
+.hud-mult { font: 800 15px/1 var(--f-voz); color: var(--text); }
+.hud-rec { margin-top: 10px; font-size: 13px; font-weight: 600; }
+.hud-rec[hidden] { display: none; }
+.olho-vivo .pupila { transition: transform 220ms var(--ease); }
+
+/* ---------- popup ---------- */
+.dupla { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 56px; align-items: start; }
+.janela { width: 374px; max-width: 100%; background: var(--moldura); padding: 6px; border-radius: 2px; border: 1px solid #3a3446; transition: background 240ms var(--ease); }
+.pp { width: 360px; max-width: 100%; background: var(--bg); color: var(--text); border-radius: 12px; font-size: 13px; line-height: 1.4; padding: 0 14px 14px; font-family: var(--f-ui); transition: background 240ms var(--ease), color 240ms var(--ease); }
+.pp-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 6px; }
+.pp-auto { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.sw { width: 30px; height: 18px; border-radius: 9px; background: var(--sw-off); border: 0; position: relative; padding: 0; flex: none; transition: background 180ms var(--ease); }
+.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 220ms var(--mola); }
+.sw[aria-checked="true"] { background: var(--mt-leve); }
+.sw[aria-checked="true"]::after { transform: translateX(12px); background: var(--mt-tinta); }
+.pp-host { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+.pp-host i { width: 14px; height: 14px; border-radius: 4px; display: grid; place-items: center; font: 600 8px/1 var(--f-ui); font-style: normal; color: #fff; background: #c4170c; }
+.pp-hero { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; padding: 8px 0 14px; }
+.pp-total { display: flex; align-items: baseline; gap: 6px; }
+.pp-total .placar { font-size: 54px; }
+.pp-total small { font-size: 13px; color: var(--muted); }
+.pp-hero .nota { width: 56px; height: 56px; font-size: 32px; border-radius: 12px; grid-row: span 2; }
+.pp-rank { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+.tag-rec { font-size: 12px; font-weight: 600; padding: 1px 7px; }
+.pp-nums { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--panel); border-radius: 10px; margin: 0 0 12px; }
+.pp-nums div { padding: 10px 12px; }
+.pp-nums dt { font-size: 11px; color: var(--muted); }
+.pp-nums dd { margin: 0 0 2px; font: 800 20px/1.1 var(--f-voz); letter-spacing: -.03em; order: -1; }
+.pp-nums div { display: flex; flex-direction: column; }
+.pp-termos { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-bottom: 12px; }
+.pp-termos .mt { font-size: 13px; font-weight: 500; }
+.pp-termos small { font-size: 11px; opacity: .7; margin-left: 2px; }
+.pp-scan { width: 100%; height: 42px; border: 0; border-radius: 10px; background: var(--mt-comum); color: var(--mt-tinta); font-weight: 600; font-size: 14px; transition: transform 160ms var(--ease); margin-bottom: 12px; }
+.pp-scan:hover { transform: translateY(-1px) rotate(-.6deg); }
+.pp-scan:active { transform: scale(.98); }
+.abas { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--panel); border-radius: 10px; padding: 3px; gap: 2px; margin-bottom: 12px; }
+.abas button { border: 0; background: no-repeat 50% 64% / 0% 62%; border-radius: 7px; padding: 8px 0; font-size: 13px; font-weight: 500; color: var(--muted); transition: background-size 280ms var(--ease), color 160ms var(--ease); }
+.abas button:hover { color: var(--text); }
+.abas button[aria-selected="true"] { background-image: var(--mt-comum-3); background-size: 86% 62%; color: var(--mt-tinta); font-weight: 600; }
+.painel[hidden] { display: none; }
+.painel { display: flex; flex-direction: column; gap: 10px; }
+.legenda { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+/* Recordes */
+.bloco { background: var(--panel); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: end; gap: 10px; }
+.bloco .placar { font-size: 30px; }
+.bloco small { display: block; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.bloco .meta { font-size: 12px; color: var(--muted); text-align: right; }
+.sites { list-style: none; margin: 0; padding: 0; }
+.sites li { display: grid; grid-template-columns: 16px 16px 1fr auto 22px; gap: 10px; align-items: center; height: 36px; padding: 0 6px; border-radius: 8px; transition: background 160ms var(--ease); }
+.sites li:hover { background: var(--panel); }
+.sites .pos { font-size: 12px; color: var(--muted); }
+.sites .fav { width: 16px; height: 16px; border-radius: 4px; font: 600 8px/16px var(--f-ui); text-align: center; color: #fff; }
+.sites .pts { font-weight: 600; }
+.sites .g { font: 800 14px/1 var(--f-voz); text-align: center; }
+
+/* Top lá ele */
+.top { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.top li { background: var(--panel); border-radius: 10px; padding: 10px 12px 10px 10px; display: grid; grid-template-columns: 26px 1fr; gap: 2px 8px; }
+.top .n { font: 800 20px/1 var(--f-voz); letter-spacing: -.025em; color: var(--muted); padding-top: 2px; }
+.top li:first-child { padding: 14px 14px 14px 12px; }
+.top li:first-child .n { font-size: 30px; color: var(--text); }
+.top li:first-child .frase { font-size: 15px; }
+.top .frase { font-size: 13px; line-height: 1.75; margin: 0; }
+.top .frase q { quotes: "“" "”" "…" "…"; }
+.top .info { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.top .info b { color: var(--text); font-weight: 600; }
+
+/* Laelédex (cartões da v0.1) */
+.dex-cab { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; }
+.dex-cab b { font: 800 18px/1 var(--f-voz); letter-spacing: -.03em; }
+.dex-barra { height: 8px; position: relative; }
+.dex-barra::before { content: ""; position: absolute; inset: 2px 0; background: var(--raised); border-radius: 3px; }
+.dex-barra i { position: absolute; inset: 0 auto 0 0; width: 40%; background: var(--mt-leve-2) no-repeat 0 0 / 100% 100%; }
+.busca { height: 36px; border-radius: 9px; background: var(--panel); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--muted); font-size: 13px; }
+.busca svg { width: 14px; height: 14px; }
+.filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.filtros button { border: 0; border-radius: 8px; background: var(--panel); color: var(--soft); padding: 6px 10px; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: transform 160ms var(--ease); }
+.filtros button:hover { transform: translateY(-1px); }
+.filtros button i { width: 8px; height: 8px; border-radius: 50%; }
+.filtros button[aria-checked="true"] { background: var(--text); color: var(--bg); }
+.dex { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dex li { background: var(--panel); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 92px; transition: transform 180ms var(--mola); }
+.dex li:hover { transform: rotate(-1deg) translateY(-2px); }
+.dex-top { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+.dex-top span:last-child { display: inline-flex; align-items: center; gap: 5px; }
+.dex-top i { width: 7px; height: 7px; border-radius: 50%; }
+.dex-name { font-size: 15px; font-weight: 600; align-self: flex-start; }
+.dex-name.oculto { color: var(--muted); font: 800 18px/1 var(--f-voz); }
+.dex-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: auto; }
+
+/* Ajustes */
+.grupo { background: var(--panel); border-radius: 10px; }
+.linha { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 12px; }
+.linha + .linha { box-shadow: 0 -1px 0 var(--line); } /* taste-skill-ignore: divisão interna do grupo de ajustes */
+.linha b { display: block; font-weight: 500; font-size: 13px; }
+.linha span { font-size: 12px; color: var(--muted); }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--panel); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: none; border-radius: 7px; padding: 7px 0; font-size: 13px; color: var(--muted); }
+.seg button[aria-checked="true"] { background: var(--raised); color: var(--text); font-weight: 600; }
+.rodape { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
+
+/* texto ao lado do popup */
+.explica h2, .sec-cab h2 { font-family: var(--f-voz); font-weight: 800; font-size: clamp(32px, 4.4vw, 56px); line-height: 1.02; letter-spacing: -.025em; margin: 0 0 18px; text-wrap: balance; }
+.explica > p, .sec-cab p { color: var(--pg-soft); max-width: 52ch; margin: 0 0 28px; font-size: 18px; }
+.mudancas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px; }
+.mudancas li { display: flex; flex-direction: column; gap: 8px; }
+.mudancas li b { font-family: var(--f-voz); font-weight: 800; font-size: 22px; letter-spacing: -.02em; line-height: 1.1; align-self: flex-start; }
+.mudancas li span { color: var(--pg-soft); font-size: 16px; }
+
+/* Top lá ele explicado */
+.top-dupla { display: grid; grid-template-columns: minmax(0, 1fr) 372px; gap: 56px; align-items: start; }
+.regras { display: flex; flex-direction: column; gap: 28px; }
+.regras div { display: grid; grid-template-columns: 150px 1fr; gap: 20px; align-items: baseline; }
+.regras b { font: 800 44px/1 var(--f-voz); letter-spacing: -.025em; }
+.regras p { margin: 0; color: var(--pg-soft); font-size: 16px; max-width: 46ch; }
+.regras p strong { color: var(--pg-text); font-weight: 500; }
+
+/* placar minimizado, um por nota */
+.notas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.hud-mini { background: var(--bg); color: var(--text); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 14px; }
+.hud-mini .nota { width: 40px; height: 40px; font-size: 22px; }
+.hud-mini b { display: block; font: 800 24px/1 var(--f-voz); letter-spacing: -.025em; margin-bottom: 4px; }
+.hud-mini span:last-child { font-size: 13px; color: var(--muted); }
+
+/* cores */
+.cores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.cor { border-radius: 14px; padding: 18px; color: var(--mt-tinta); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; }
+.cor b { font: 800 26px/1 var(--f-voz); letter-spacing: -.03em; }
+.cor span { font-size: 15px; font-weight: 500; }
+
+@media (max-width: 960px) {
+  .abre-txt, .dupla, .top-dupla { grid-template-columns: 1fr; }
+  .site .texto { padding-right: 0; padding-bottom: 260px; }
+  .cores, .notas { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .mudancas, .regras div, .notas { grid-template-columns: 1fr; }
+  .regras div { gap: 8px; }
+  .site { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation: none !important; }
+}
+:focus-visible { outline: 2px solid var(--mt-comum); outline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="marca" viewBox="0 0 128 128"><rect width="128" height="128" rx="30" fill="#FFE45C"/><ellipse cx="41" cy="70" rx="20" ry="25" fill="#fff" stroke="#17141f" stroke-width="7"/><ellipse cx="89" cy="70" rx="20" ry="25" fill="#fff" stroke="#17141f" stroke-width="7"/><circle cx="49" cy="72" r="10" fill="#17141f"/><circle cx="97" cy="72" r="10" fill="#17141f"/><path d="M72 35Q89 25 107 31" fill="none" stroke="#17141f" stroke-width="7" stroke-linecap="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-re" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5M19 4v4h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<main class="pele" id="raiz" data-pele="tinta">
+
+<section class="abre" aria-labelledby="t-abre">
+  <div class="abre-txt">
+    <h1 id="t-abre">Agora com <span class="mt" data-t="comum" data-v="2">caneta</span></h1>
+    <div>
+    <p>Mesma estrutura da D, com outra voz. O traço de <b>marca-texto</b> torto vira a assinatura: nas palavras, sob o placar, na aba ativa e na nota. Os números ganham uma fonte com mais graça, e cada nota tem uma cor.</p>
+    <div class="acoes">
+      <button type="button" class="btn-voz" id="replay">Passar o marca-texto de novo</button>
+      <div class="pele-seg" role="radiogroup" aria-label="Pele da extensão">
+        <button type="button" role="radio" aria-checked="true" data-pele="tinta">Tinta</button>
+        <button type="button" role="radio" aria-checked="false" data-pele="papel">Papel</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="site" id="site" data-ui>
+    <div class="site-topo"><span>receitasdavo.com.br</span><span>Roça</span><span>Doces</span></div>
+    <div class="texto">
+      <h3>A grande colheita de <mark class="laele-hit" data-t="comum" data-c="2" data-v="1">mandioca</mark></h3>
+      <p>O seu João acordou cedo e foi direto para a roça. Disse que ia <mark class="laele-hit" data-t="comum" data-c="2" data-v="2">dar uma</mark> <mark class="laele-hit" data-t="leve" data-c="1.2" data-v="3">passada</mark> no pé de <mark class="laele-hit" data-t="comum" data-c="2.4" data-v="1">mandioca</mark>, que estava <mark class="laele-hit" data-t="pesado" data-c="3" data-v="2">grossa</mark>, <mark class="laele-hit" data-t="pesado" data-c="3.2" data-v="3">dura</mark> e bem <mark class="laele-hit" data-t="leve" data-c="1.4" data-v="1">molhada</mark>.</p>
+      <p>Na feira, a dona Lúcia quis saber se o <mark class="laele-hit" data-t="comum" data-c="2.2" data-v="2">pepino</mark> estava <mark class="laele-hit" data-t="leve" data-c="1.1" data-v="3">apertado</mark> na caixa. O feirante jurou que cabia <mark class="laele-hit" data-t="lendario" data-c="4.5" data-v="1">até o talo</mark>.</p>
+    </div>
+    <div class="hud" id="hud" role="status" aria-live="polite">
+      <div class="hud-topo">
+        <span class="marca-nome"><svg viewBox="0 0 128 128" class="olho-vivo" aria-hidden="true"><rect width="128" height="128" rx="30" fill="#FFE45C"/><ellipse cx="41" cy="70" rx="20" ry="25" fill="#fff" stroke="#17141f" stroke-width="7"/><ellipse cx="89" cy="70" rx="20" ry="25" fill="#fff" stroke="#17141f" stroke-width="7"/><circle class="pupila" cx="41" cy="72" r="10" fill="#17141f"/><circle class="pupila" cx="89" cy="72" r="10" fill="#17141f"/><path d="M72 35Q89 25 107 31" fill="none" stroke="#17141f" stroke-width="7" stroke-linecap="round"/></svg>Lá ele</span>
+        <span class="hud-btns"><button type="button" aria-label="Minimizar"><svg aria-hidden="true"><use href="#i-min"/></svg></button><button type="button" aria-label="Varrer de novo" id="hud-re"><svg aria-hidden="true"><use href="#i-re"/></svg></button><button type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-x"/></svg></button></span>
+      </div>
+      <div class="hud-meio">
+        <div><span class="placar-wrap"><span class="placar num" id="hud-score">0</span></span><div class="hud-sub"><span id="hud-count">0</span> palavras</div></div>
+        <span class="nota" id="hud-nota" data-g="-" aria-label="Sem nota">–</span>
+      </div>
+      <div class="hud-rank" id="hud-rank">Procurando…</div>
+      <div class="hud-combo"><span id="hud-combo">Combo 0</span><span class="hud-bar"><i id="hud-bar"></i></span><span class="hud-mult num" id="hud-mult">×1</span></div>
+      <div class="hud-rec" id="hud-rec" hidden><span class="mt" data-t="pesado" data-v="2">Entrou no Top lá ele</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="dupla" aria-labelledby="t-popup">
+  <div class="janela" data-ui>
+    <div class="pp">
+      <div class="pp-top">
+        <span class="marca-nome"><svg aria-hidden="true"><use href="#marca"/></svg>Lá ele</span>
+        <span class="pp-auto">Auto <button type="button" class="sw" role="switch" aria-checked="true" aria-label="Varredura automática" data-sw></button></span>
+      </div>
+      <span class="pp-host"><i aria-hidden="true">g1</i>g1.globo.com</span>
+      <div class="pp-hero">
+        <div class="pp-total"><span class="placar-wrap"><span class="placar num">63.130</span></span><small>pts</small></div>
+        <span class="nota" data-g="S" aria-label="Nota S">S</span>
+        <div class="pp-rank">Lá ele supremo <span class="mt tag-rec" data-t="pesado" data-v="3">Recorde</span></div>
+      </div>
+      <dl class="pp-nums">
+        <div><dt>palavras</dt><dd class="num">85</dd></div>
+        <div><dt>maior combo</dt><dd class="num">28</dd></div>
+        <div><dt>multiplicador</dt><dd class="num">×14,5</dd></div>
+      </dl>
+      <div class="pp-termos"><span class="mt" data-t="pesado" data-v="1">mandioca <small>4</small></span><span class="mt" data-t="pesado" data-v="2">pau <small>3</small></span><span class="mt" data-t="comum" data-v="3">pepino <small>3</small></span><span class="mt" data-t="lendario" data-v="1">sentar em cima <small>1</small></span></div>
+      <button type="button" class="pp-scan">Varrer página</button>
+      <div class="abas" role="tablist" aria-label="Seções">
+        <button type="button" role="tab" aria-selected="false" data-aba="rec">Recordes</button>
+        <button type="button" role="tab" aria-selected="true" data-aba="top">Top</button>
+        <button type="button" role="tab" aria-selected="false" data-aba="dex">Laelédex</button>
+        <button type="button" role="tab" aria-selected="false" data-aba="aju">Ajustes</button>
+      </div>
+
+      <div class="painel" data-painel="rec" hidden>
+        <div class="bloco"><div><small>Recorde global</small><span class="placar-wrap"><span class="placar num">63.130</span></span></div><div class="meta">g1.globo.com<br>há 2 h</div></div>
+        <dl class="pp-nums"><div><dt>varreduras</dt><dd class="num">128</dd></div><div><dt>palavras</dt><dd class="num">4.210</dd></div><div><dt>pontos</dt><dd class="num">1,2M</dd></div></dl>
+        <span class="legenda">Melhores sites</span>
+        <ul class="sites">
+          <li><span class="pos">1</span><span class="fav" style="background:#c4170c">g1</span><span>g1.globo.com</span><span class="pts num">63.130</span><span class="g">S</span></li>
+          <li><span class="pos">2</span><span class="fav" style="background:#e8590c">tg</span><span>tudogostoso.com.br</span><span class="pts num">31.400</span><span class="g">S</span></li>
+          <li><span class="pos">3</span><span class="fav" style="background:#2b6cb0">ge</span><span>ge.globo.com</span><span class="pts num">7.920</span><span class="g">A</span></li>
+        </ul>
+      </div>
+
+      <div class="painel" data-painel="top">
+        <span class="legenda">As frases mais lá ele que você já varreu</span>
+        <ol class="top">
+          <li><span class="n">1</span><p class="frase"><q>Disse que ia <span class="mt" data-t="comum" data-v="2">dar uma</span> <span class="mt" data-t="leve" data-v="3">passada</span> no pé de <span class="mt" data-t="comum" data-v="1">mandioca</span>, que estava <span class="mt" data-t="pesado" data-v="2">grossa</span>, <span class="mt" data-t="pesado" data-v="3">dura</span> e bem <span class="mt" data-t="leve" data-v="1">molhada</span></q></p><div class="info"><b class="num">9.840 pts</b><span>combo 6</span><span>receitasdavo.com.br</span><span>ontem</span></div></li>
+          <li><span class="n">2</span><p class="frase"><q>o atacante <span class="mt" data-t="comum" data-v="1">meteu</span> por <span class="mt" data-t="pesado" data-v="2">trás</span>, o goleiro <span class="mt" data-t="comum" data-v="3">engoliu</span> e a torcida pediu <span class="mt" data-t="leve" data-v="1">mais</span></q></p><div class="info"><b class="num">5.210 pts</b><span>combo 4</span><span>ge.globo.com</span><span>sáb</span></div></li>
+          <li><span class="n">3</span><p class="frase"><q>deixe a <span class="mt" data-t="pesado" data-v="3">linguiça</span> de molho e <span class="mt" data-t="comum" data-v="2">enfie</span> no espeto <span class="mt" data-t="lendario" data-v="1">até o fundo</span></q></p><div class="info"><b class="num">4.780 pts</b><span>combo 3</span><span>tudogostoso.com.br</span><span>12 out</span></div></li>
+        </ol>
+      </div>
+
+      <div class="painel" data-painel="dex" hidden>
+        <div class="dex-cab"><span><b class="num">42</b> de 431 descobertas</span><span class="num">10%</span></div>
+        <div class="dex-barra"><i style="width:10%"></i></div>
+        <div class="busca"><svg aria-hidden="true"><use href="#i-lupa"/></svg>Buscar descobertas</div>
+        <div class="filtros" role="radiogroup" aria-label="Raridade">
+          <button type="button" role="radio" aria-checked="true">Todas</button>
+          <button type="button" role="radio" aria-checked="false"><i style="background:var(--mt-leve)"></i>Leve</button>
+          <button type="button" role="radio" aria-checked="false"><i style="background:var(--mt-comum)"></i>Comum</button>
+          <button type="button" role="radio" aria-checked="false"><i style="background:var(--mt-pesado)"></i>Pesado</button>
+          <button type="button" role="radio" aria-checked="false"><i style="background:var(--mt-lendario)"></i>Lendário</button>
+        </div>
+        <ul class="dex">
+          <li><div class="dex-top"><span>#001</span><span><i style="background:var(--mt-comum)"></i>Comum</span></div><span class="dex-name mt" data-t="comum" data-v="1">dar</span><div class="dex-meta"><span>×1,5</span><span>142 vezes</span></div></li>
+          <li><div class="dex-top"><span>#002</span><span><i style="background:var(--mt-pesado)"></i>Pesado</span></div><span class="dex-name mt" data-t="pesado" data-v="2">mandioca</span><div class="dex-meta"><span>×3</span><span>77 vezes</span></div></li>
+          <li><div class="dex-top"><span>#003</span><span><i style="background:var(--mt-lendario)"></i>Lendário</span></div><span class="dex-name oculto" aria-label="Palavra não descoberta">???</span><div class="dex-meta"><span>×4,5</span><span>nunca</span></div></li>
+          <li><div class="dex-top"><span>#004</span><span><i style="background:var(--mt-leve)"></i>Leve</span></div><span class="dex-name mt" data-t="leve" data-v="3">molhada</span><div class="dex-meta"><span>×1,4</span><span>31 vezes</span></div></li>
+        </ul>
+      </div>
+
+      <div class="painel" data-painel="aju" hidden>
+        <div class="grupo">
+          <div class="linha"><div><b>Varredura automática</b><span>Varre cada página assim que ela abre.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Varredura automática" data-sw></button></div>
+          <div class="linha"><div><b>Animações</b><span>Passa o marca-texto palavra por palavra.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Animações" data-sw></button></div>
+          <div class="linha"><div><b>Placar na página</b><span>Mostra o placar no canto da tela.</span></div><button type="button" class="sw" role="switch" aria-checked="false" aria-label="Placar na página" data-sw></button></div>
+        </div>
+        <span class="legenda">Velocidade</span>
+        <div class="seg" role="radiogroup" aria-label="Velocidade"><button type="button" role="radio" aria-checked="false">Lento</button><button type="button" role="radio" aria-checked="true">Normal</button><button type="button" role="radio" aria-checked="false">Rápido</button></div>
+        <p class="rodape">Tudo fica no seu navegador, inclusive o Top lá ele.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="explica">
+    <h2 id="t-popup">O popup, com cantos e com cor</h2>
+    <p>A janela do Chrome é sempre retangular e não aceita transparência, então o canto redondo vem de dentro: o popup vira um cartão de 12 px de raio sobre uma moldura de 6 px, como o quadro escuro em volta dele aqui.</p>
+    <ul class="mudancas">
+      <li><b>Placar sublinhado</b><span>O número sai na fonte Bricolage, com um traço amarelo que se redesenha quando a pontuação sobe.</span></li>
+      <li><b>Nota carimbada</b><span>Quadrado torto, com a cor da raridade: C verde, B amarelo, A rosa e S laranja. Ao trocar, ela bate e balança.</span></li>
+      <li><b>Aba no marca-texto</b><span>A aba ativa é riscada de amarelo. Os chips de palavras e a Laelédex usam o mesmo traço.</span></li>
+      <li><b>Duas peles</b><span>Tinta, escura e violeta, e Papel, clara e quente. Troque no botão do topo para comparar.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section aria-labelledby="t-top">
+  <div class="sec-cab">
+    <h2 id="t-top">Top lá ele: as frases ficam</h2>
+    <p>Cada varredura guarda os trechos onde o combo pegou fogo. O trecho é o texto da primeira à última palavra de uma mesma sequência de combo, com o resto da frase em volta. Os dez melhores de sempre ficam na aba Top.</p>
+  </div>
+  <div class="top-dupla">
+  <div class="regras">
+    <div><b>1 trecho</b><p>Uma sequência de combo vira <strong>um trecho</strong>. Ela começa na primeira palavra achada e acaba quando passam mais de 8 palavras sem outra.</p></div>
+    <div><b>Σ pontos</b><p>A nota do trecho é <strong>a soma dos pontos</strong> das palavras dele, já com o multiplicador. Também ficam guardados o maior combo, o site e a data.</p></div>
+    <div><b>Top 10</b><p>Só os <strong>dez melhores</strong> ficam, sem repetir o mesmo trecho. No placar da página aparece “Entrou no Top lá ele” quando algum entra.</p></div>
+  </div>
+  <div class="janela" data-ui><div class="pp" style="padding-top:14px"><div class="painel">
+    <span class="legenda">Do 4º ao 6º lugar</span>
+    <ol class="top" start="4">
+      <li><span class="n">4</span><p class="frase"><q>a vizinha pediu para ele <span class="mt" data-t="comum" data-v="3">tirar</span> o <span class="mt" data-t="pesado" data-v="1">pepino</span> da <span class="mt" data-t="leve" data-v="2">geladeira</span> com cuidado</q></p><div class="info"><b class="num">3.960 pts</b><span>combo 3</span><span>receitasdavo.com.br</span><span>10 out</span></div></li>
+      <li><span class="n">5</span><p class="frase"><q>o lateral <span class="mt" data-t="leve" data-v="1">cruzou</span>, o centroavante <span class="mt" data-t="comum" data-v="2">cabeceou</span> e a bola entrou <span class="mt" data-t="pesado" data-v="3">rasgando</span></q></p><div class="info"><b class="num">2.870 pts</b><span>combo 3</span><span>ge.globo.com</span><span>9 out</span></div></li>
+      <li><span class="n">6</span><p class="frase"><q>bata a massa até ficar <span class="mt" data-t="comum" data-v="1">dura</span> e <span class="mt" data-t="pesado" data-v="2">grossa</span></q></p><div class="info"><b class="num">1.900 pts</b><span>combo 2</span><span>tudogostoso.com.br</span><span>3 out</span></div></li>
+    </ol>
+  </div></div></div>
+  </div>
+</section>
+
+<section aria-labelledby="t-cores">
+  <div class="sec-cab">
+    <h2 id="t-cores">Quatro canetas, uma por raridade</h2>
+    <p>As mesmas quatro cores pintam as palavras na página, a nota, os chips e os filtros. O texto sobre elas é sempre a tinta escura.</p>
+  </div>
+  <div class="notas" data-ui aria-label="Placar minimizado em cada nota">
+    <div class="hud-mini"><span class="nota" data-g="C">C</span><span><b class="num">640</b>Lá ele tímido</span></div>
+    <div class="hud-mini"><span class="nota" data-g="B">B</span><span><b class="num">2.150</b>Lá ele</span></div>
+    <div class="hud-mini"><span class="nota" data-g="A">A</span><span><b class="num">5.480</b>Lá ele pesado</span></div>
+    <div class="hud-mini"><span class="nota" data-g="S">S</span><span><b class="num">63.130</b>Lá ele supremo</span></div>
+  </div>
+  <div class="cores">
+    <div class="cor" style="background:var(--mt-leve)"><b>Leve</b><span>#B8F27C · nota C</span></div>
+    <div class="cor" style="background:var(--mt-comum)"><b>Comum</b><span>#FFE45C · nota B e botões</span></div>
+    <div class="cor" style="background:var(--mt-pesado)"><b>Pesado</b><span>#FF9BD2 · nota A e recorde</span></div>
+    <div class="cor" style="background:var(--mt-lendario)"><b>Lendário</b><span>#FFB054 · nota S</span></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function () {
+  var raiz = document.getElementById('raiz');
+  var reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // pele
+  document.querySelectorAll('.pele-seg button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      raiz.dataset.pele = b.dataset.pele;
+      document.querySelectorAll('.pele-seg button').forEach(function (o) { o.setAttribute('aria-checked', String(o === b)); });
+    });
+  });
+
+  // abas do popup
+  var abas = document.querySelectorAll('.abas button');
+  abas.forEach(function (b) {
+    b.addEventListener('click', function () {
+      abas.forEach(function (o) { o.setAttribute('aria-selected', String(o === b)); });
+      document.querySelectorAll('.painel').forEach(function (p) { p.hidden = p.dataset.painel !== b.dataset.aba; });
+    });
+  });
+
+  // switches e segmentados
+  document.querySelectorAll('[data-sw]').forEach(function (s) {
+    s.addEventListener('click', function () { s.setAttribute('aria-checked', String(s.getAttribute('aria-checked') !== 'true')); });
+  });
+  document.querySelectorAll('.seg, .filtros').forEach(function (g) {
+    g.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () { g.querySelectorAll('button').forEach(function (o) { o.setAttribute('aria-checked', String(o === b)); }); });
+    });
+  });
+
+  // varredura de demonstração
+  var site = document.getElementById('site');
+  var marks = Array.prototype.slice.call(site.querySelectorAll('mark.laele-hit'));
+  var el = {
+    score: document.getElementById('hud-score'), count: document.getElementById('hud-count'),
+    nota: document.getElementById('hud-nota'), rank: document.getElementById('hud-rank'),
+    combo: document.getElementById('hud-combo'), bar: document.getElementById('hud-bar'),
+    mult: document.getElementById('hud-mult'), rec: document.getElementById('hud-rec')
+  };
+  var pupilas = site.querySelectorAll('.pupila');
+  var FAIXAS = [[0, 'D', 'Quase nada'], [300, 'C', 'Lá ele tímido'], [1000, 'B', 'Lá ele'], [3000, 'A', 'Lá ele pesado'], [8000, 'S', 'Lá ele supremo']];
+  var CORES = { leve: '#B8F27C', comum: '#FFE45C', pesado: '#FF9BD2', lendario: '#FFB054' };
+  var timers = [];
+  var fmt = function (n) { return Math.round(n).toLocaleString('pt-BR'); };
+
+  function faixa(t) { var f = FAIXAS[0]; FAIXAS.forEach(function (x) { if (t >= x[0]) f = x; }); return f; }
+  function olha(m) {
+    var h = el.score.closest('.hud').getBoundingClientRect(), r = m.getBoundingClientRect();
+    var dx = (r.left + r.width / 2) - (h.left + 30), dy = (r.top + r.height / 2) - (h.top + 20);
+    var d = Math.hypot(dx, dy) || 1;
+    pupilas.forEach(function (p) { p.style.transform = 'translate(' + (dx / d * 8).toFixed(1) + 'px,' + (dy / d * 8).toFixed(1) + 'px)'; });
+  }
+  function conta(de, ate) {
+    var t0 = performance.now();
+    (function passo(t) {
+      var k = Math.min(1, (t - t0) / 320), e = 1 - Math.pow(1 - k, 3);
+      el.score.textContent = fmt(de + (ate - de) * e);
+      if (k < 1) requestAnimationFrame(passo);
+    })(t0);
+  }
+  function varre() {
+    timers.forEach(clearTimeout); timers = [];
+    site.querySelectorAll('.laele-float').forEach(function (f) { f.remove(); });
+    marks.forEach(function (m) { m.classList.remove('laele-on'); });
+    var total = 0, combo = 0, nota = '-';
+    el.score.textContent = '0'; el.count.textContent = '0'; el.nota.textContent = '–'; el.nota.dataset.g = '-';
+    el.rank.textContent = 'Procurando…'; el.combo.textContent = 'Combo 0'; el.bar.style.width = '0%'; el.mult.textContent = '×1'; el.rec.hidden = true;
+    pupilas.forEach(function (p) { p.style.transform = ''; });
+    marks.forEach(function (m, i) {
+      timers.push(setTimeout(function () {
+        combo++;
+        var mult = Math.min(10, 1 + .5 * (combo - 1));
+        var pts = Math.round(100 * parseFloat(m.dataset.c) * mult);
+        var antes = total; total += pts;
+        m.classList.add('laele-on');
+        if (!reduz) olha(m);
+        conta(antes, total);
+        el.count.textContent = String(i + 1);
+        el.combo.textContent = 'Combo ' + combo;
+        el.bar.style.width = Math.min(100, combo * 12) + '%';
+        el.mult.textContent = '×' + String(mult).replace('.', ',');
+        var f = faixa(total);
+        el.rank.textContent = f[2];
+        if (f[1] !== nota) {
+          nota = f[1]; el.nota.textContent = nota; el.nota.dataset.g = nota; el.nota.setAttribute('aria-label', 'Nota ' + nota);
+          el.nota.classList.remove('pula'); void el.nota.offsetWidth; el.nota.classList.add('pula');
+        }
+        if (!reduz) {
+          var r = m.getBoundingClientRect(), s = site.getBoundingClientRect();
+          var fl = document.createElement('span');
+          fl.className = 'laele-float';
+          fl.style.left = (r.left - s.left + r.width / 2 - 20) + 'px';
+          fl.style.top = (r.top - s.top - 30) + 'px';
+          fl.style.setProperty('--fundo-float', CORES[m.dataset.t]);
+          fl.style.setProperty('--giro', (i % 2 ? 4 : -4) + 'deg');
+          fl.innerHTML = '+' + fmt(pts) + (mult > 1 ? '<i>×' + String(mult).replace('.', ',') + '</i>' : '');
+          site.appendChild(fl);
+          timers.push(setTimeout(function () { fl.remove(); }, 1000));
+        }
+      }, (reduz ? 0 : 500) + i * (reduz ? 0 : 520)));
+    });
+    timers.push(setTimeout(function () {
+      pupilas.forEach(function (p) { p.style.transform = ''; });
+      el.rec.hidden = false;
+    }, (reduz ? 0 : 500) + marks.length * (reduz ? 0 : 520) + 300));
+  }
+  document.getElementById('replay').addEventListener('click', varre);
+  document.getElementById('hud-re').addEventListener('click', varre);
+  varre();
+})();
+</script>
+
+</body>
+</html>

@@ -1,179 +1,191 @@
 # Design — Robo-LaEle
 
-Este documento manda no visual do popup, do HUD, dos destaques na página e dos ícones. Os contratos de dados e mensagens continuam em `docs/PLANO.md`; nada aqui muda IDs, mensagens ou chaves de storage.
+Este documento manda no visual do popup, do HUD, dos destaques na página e dos ícones. Os contratos de dados e mensagens continuam em `docs/PLANO.md`.
 
-Direção escolhida: **opção D, "em silêncio"**. O protótipo de referência, em tamanho real e funcionando, está em `docs/prototipos/opcao-d-silencio.html`. As opções A, B e C ficam na mesma pasta só como registro. As cores podem mudar depois; a estrutura, a tipografia e os componentes estão fechados. Única diferença para o protótipo: a fonte é Inter, não Switzer (ver Tipografia).
+Direção escolhida: **opção E, "caneta"**. O protótipo de referência, em tamanho real e funcionando, está em `docs/prototipos/opcao-e-caneta.html`. As opções A a D ficam na mesma pasta só como registro. A E mantém a estrutura da D (popup de 360 px, grade de números, abas segmentadas, HUD no canto) e troca a voz: traço de marca-texto torto como assinatura, quatro canetas por raridade, números em Bricolage Grotesque e duas peles, Tinta (escura, padrão) e Papel (clara).
 
 ## A ideia
 
-A moldura é escura, quieta e exata, e a graça fica nas palavras. A interface tem acabamento de app de sistema: fios de 1 px, controles segmentados, números tabulares e nenhum enfeite. A única cor forte da extensão é o marca-texto que ela passa nas palavras do site. O mascote, dois olhos olhando de lado, aparece pequeno e bem desenhado: no ícone, no cabeçalho do popup e no placar, onde as pupilas viram para a palavra que acabou de ser achada.
+A extensão passa a caneta nas palavras do site, e a interface usa a mesma caneta. O traço irregular de marca-texto aparece nas palavras, sob o número do placar, na aba ativa, nos chips de palavras e nas frases do Top lá ele. A moldura continua limpa e exata; a graça vem das quatro cores e de pouca coisa torta (a nota carimbada, a etiqueta de pontos). O mascote, dois olhos olhando de lado, fica num quadrado amarelo e no HUD as pupilas viram para a palavra achada.
 
-O que sai da v0.1: gradiente rosa→roxo, glow, faixa colorida no topo do HUD, rótulos em CAIXA ALTA espaçada, pills, cantos de 14–16 px e animação de entrada em tudo.
+Fica de fora: gradiente de verdade (o traço é um SVG de cor única), glow, caixa alta, emoji, ícone decorativo e sombra fora do HUD e da etiqueta de pontos.
 
 ## Paleta
 
-### Interface (popup e HUD)
+### Peles
 
-| Token | Hex | Papel |
+Os mesmos nomes de token nas duas peles. Tinta é o padrão; Papel entra com `settings.theme = 'light'`.
+
+| Token | Tinta | Papel | Uso |
+|---|---|---|---|
+| `--bg` | `#17141f` | `#fbf8f1` | Fundo do popup e do HUD. |
+| `--panel` | `#201c2b` | `#f3eee3` | Blocos, grupos, cartões, trilho de abas. |
+| `--raised` | `#2b2639` | `#e9e2d4` | Segmento ativo neutro, trilho de barras, hover forte. |
+| `--line` | `#363046` | `#ddd4c2` | Divisão entre linhas de um grupo de ajustes. |
+| `--text` | `#f6f2ea` | `#1b1822` | Texto principal. |
+| `--soft` | `#cdc6da` | `#4a4556` | Texto secundário dentro de linhas. |
+| `--muted` | `#a29bb5` | `#696374` | Legendas, host, rótulos (≥ 4,5:1 nas duas). |
+| `--moldura` | `#0c0a11` | `#d9d1c0` | Fundo do `html` do popup, em volta do cartão. |
+| `--sw-off` | `#3a3449` | `#cfc6b4` | Trilho do switch desligado. |
+| `--nota-d` / `--nota-d-txt` | `#4a4359` / `#f6f2ea` | `#ddd4c2` / `#1b1822` | Quadrado da nota D e sem nota. |
+
+### Canetas (iguais nas duas peles)
+
+| Raridade | Cor | Também é |
 |---|---|---|
-| `--bg` | `#161616` | Fundo do popup e do HUD. |
-| `--panel` | `#1e1e1e` | Bloco destacado (recorde global), hover de linha. |
-| `--raised` | `#262626` | Quadrado da nota, trilho de barra, botões secundários. |
-| `--line` | `#2a2a2a` | Fios de 1 px: borda do popup/HUD, grupos de ajustes, campos, divisões da grade de números. |
-| `--text` | `#ededed` | Texto principal. |
-| `--soft` | `#a3a3a3` | Texto secundário dentro das linhas (formas, coeficiente, contagem). |
-| `--muted` | `#8a8a8a` | Rótulos pequenos (host, legendas dos números). |
-| `--bronze` | `#a08672` | Único acento: botão "Varrer página", nota S (fundo), switch ligado, barra de progresso e de combo. Texto sobre bronze é `#111111` (5,5:1). |
-| `--bronze-claro` | `#c9a27c` | "Recorde" e "Novo recorde" em texto, ponto da raridade lendária. |
-| `--perigo` | `#3a1a1a` / `#ffb4a8` | Só o botão "Apagar tudo" da confirmação de zerar. |
+| leve | `#B8F27C` | nota C, switch ligado, barra da Laelédex |
+| comum | `#FFE45C` | nota B, botão "Varrer página", aba ativa, traço sob o placar, quadrado do logo |
+| pesado | `#FF9BD2` | nota A, etiqueta "Recorde", aviso "Entrou no Top lá ele" |
+| lendário | `#FFB054` | nota S, barra de combo |
 
-Seletor ativo de abas e de segmentos: fundo `#333333`, texto `#f2f2f2`; trilho `#1f1f1f`.
+Texto sobre qualquer caneta: `--mt-tinta: #17141f`.
 
-### Raridades
+### O traço
 
-Cada raridade tem duas cores: o marca-texto (sobre o site, claro) e o ponto (sobre a interface escura).
+Três formas de traço, todas em `viewBox="0 0 100 20"` com `preserveAspectRatio="none"`, preenchidas com a cor da caneta:
 
-| Raridade | Marca-texto | Ponto |
-|---|---|---|
-| leve | `#D3EFB1` | `#9ED37A` |
-| comum | `#FFE38A` | `#EFCD4B` |
-| pesado | `#FFBFA8` | `#EF8B70` |
-| lendário | `#D6B58F` | `#C9A27C` |
+1. `M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z`
+2. `M1 4C30 6 60 1 99 5L98 16C66 18 36 14 2 17Z`
+3. `M3 3C34 5 70 2 97 4L99 18C62 16 30 19 1 16Z`
 
-Sobre o marca-texto, o texto é sempre `#1d1d1f` (todos acima de 12:1).
+Viram `background-image` em data URI (`--mt-<raridade>-<1|2|3>`), com `background-repeat: no-repeat` e `box-decoration-break: clone`. A forma alterna pela ordem (1, 2, 3, 1…) para os traços não ficarem iguais.
+
+- **Na interface** (chips, frases, nomes da Laelédex, etiquetas): o traço cobre a altura toda, `background-size: 100% 100%`, `padding: .08em .3em .1em`, texto `--mt-tinta`.
+- **Na página do site**: o traço cobre 78% da altura, posicionado a 70% (`background-position: 0 70%`), sem padding nem margin.
 
 ### Badge da barra do Chrome
 
-Fundo bronze `#A08672`, texto `#111111` (`chrome.action.setBadgeBackgroundColor` + `setBadgeTextColor`). Substitui o `#ff2e88` do `service-worker.js`.
+Fundo `#FFE45C`, texto `#17141f` (`setBadgeBackgroundColor` + `setBadgeTextColor`).
 
 ## Tipografia
 
-Uma família só: **Inter**, pesos 400, 500 e 600. Números sempre com `font-variant-numeric: tabular-nums`. Nada de caixa alta nem `letter-spacing` positivo; títulos e números grandes com tracking negativo (−0,02 a −0,04 em).
+- **Inter** (OFL) 400/500/600 para todo texto de interface. Arquivos `assets/fonts/inter-*.woff2`, família `"LaEle Inter"`.
+- **Bricolage Grotesque** (OFL) 800 para a voz: placar, números da grade, nota, número do Top, nome "Lá ele", contador da Laelédex, etiqueta de pontos, multiplicador do HUD. Arquivo `assets/fonts/bricolage-grotesque.woff2` (variável, pesos 200–800), família `"LaEle Bricolage"`, licença `assets/fonts/OFL-BricolageGrotesque.txt`.
+- Fallback: `"Helvetica Neue", Arial, sans-serif`. Números com `tabular-nums`. Bricolage com `letter-spacing: -.025em`. Nada de caixa alta nem tracking positivo.
+- Popup: `@font-face` em `popup.css` com `url('../../assets/fonts/...')`. Página e HUD: `@font-face` em `content.css` com `chrome-extension://__MSG_@@extension_id__/assets/fonts/...` (o Chrome ignora `@font-face` dentro de Shadow DOM); `web_accessible_resources` já cobre `assets/fonts/*.woff2`.
 
-Escala do popup (360 px):
+Escala do popup:
 
 | Tamanho | Uso |
 |---|---|
-| 44 px / 600 | pontuação da aba atual (`#score`) |
-| 22–24 px / 600 | recorde global, letra da nota, título de estado |
-| 17 px / 500 | números da grade (palavras, combo, multiplicador) |
-| 13–14 px / 400–600 | texto, linhas, abas, botões |
-| 11–12 px | legendas e rótulos de seção |
+| 54 px Bricolage 800 | `#score` |
+| 32 px Bricolage 800 | letra da nota (quadrado 56 px) |
+| 30 px Bricolage 800 | recorde global, número do 1º do Top |
+| 20 px Bricolage 800 | números da grade, números do Top |
+| 17 px Bricolage 800 | nome "Lá ele" |
+| 13–15 px Inter 400–600 | texto, linhas, abas, botões |
+| 11–12 px Inter | legendas e rótulos |
 
-HUD: pontuação 32 px / 600, resto 12–13 px.
-
-### Licença e carga da fonte
-
-- Inter 4.1, sob a **SIL Open Font License 1.1**, que permite levar a fonte no repositório e na extensão. Arquivos: `assets/fonts/inter-400.woff2`, `inter-500.woff2`, `inter-600.woff2`, com a licença em `assets/fonts/OFL-Inter.txt`.
-- O protótipo da opção D usa Switzer. Ela foi trocada porque a ITF Free Font License proíbe distribuir os arquivos da fonte por repositório público. Fora a fonte, nada mudou.
-- Popup: `@font-face` em `popup.css` com `url('../../assets/fonts/...')`.
-- Página e HUD: `@font-face` em `content.css` com `url('chrome-extension://__MSG_@@extension_id__/assets/fonts/...')`, porque o Chrome ignora `@font-face` dentro de Shadow DOM; o HUD só usa o nome da família. `manifest.json` ganha `web_accessible_resources` com `assets/fonts/*.woff2` para `<all_urls>`.
-- Nome no `@font-face`: `"LaEle Inter"`, para não colidir com a Inter que muitos sites já carregam. `font-display: swap`; fallback `"Helvetica Neue", Arial, sans-serif`.
-- As fontes antigas de `assets/fonts/` (Permanent Marker, Bricolage Grotesque) não são usadas nesta direção.
+HUD: placar 40 px, nota 46 px de quadrado com letra 26 px, resto 12–13 px.
 
 ## Formas
 
-- **Cantos:** 12 px no HUD (o popup usa a janela do próprio Chrome, sem contorno); 10 px em grupos e blocos internos; 8 px em botões, campos, segmentados e no quadrado da nota; 6 px em chips e linhas; 4 px na página de apresentação.
-- **Fios:** 1 px `--line` só para contornar o HUD, os grupos de ajustes, os campos e a grade de números. Nada de divisória solta entre seções.
-- **Sombra:** só no HUD, porque ele flutua sobre o site: `0 12px 32px rgba(0,0,0,.28)`. Nenhuma outra.
-- **Sem** gradiente, glow, glass, emoji, caixa alta ou ícone decorativo. Ícones de traço 2 px só para fechar, minimizar, varrer de novo, adicionar e a lupa.
+- **Cantos:** 16 px no HUD; 12 px no cartão do popup; 10 px em grupos, blocos, botões grandes, abas e cartões; 8 px em campos e segmentos; 7 px nos segmentos internos.
+- **Fios:** só entre linhas de um mesmo grupo de Ajustes. Blocos se separam por fundo (`--panel`), não por contorno.
+- **Sombra:** HUD `0 16px 40px rgba(23,20,31,.28)`; etiqueta de pontos `0 6px 16px rgba(23,20,31,.18)`. Nenhuma outra.
+- **Torto de propósito:** nota `rotate(-6deg)`; etiqueta de pontos ±4°; hover do botão principal `translateY(-1px) rotate(-.6deg)`; hover dos cartões da Laelédex `rotate(-1deg) translateY(-2px)`. Nada mais gira.
 
-## Popup (360 × até 600 px, rola por dentro)
+## Popup
+
+### Janela com cantos
+
+O Chrome desenha a janela do popup sempre retangular e não aceita fundo transparente. Por isso o canto redondo é desenhado por dentro: o `html`/`body` pinta `--moldura` e o conteúdo é um cartão `--bg` com raio 12 e 6 px de folga em volta. A janela fica com 372 px de largura (6 + 360 + 6) e a altura máxima do cartão é 600 px, com rolagem só dentro do cartão.
+
+### Topo e resultado
 
 ```
 ┌──────────────────────────────────────────┐
-│ (olhos) Lá ele                 Auto (●)  │  ← logo 22 px + 14/600; #autoHeader switch 28×16
-│ [g1] g1.globo.com                         │  ← #heroHost 12 --muted, favicon 14 px
-│ 63.130 pts                         ┌───┐  │  ← #score 44/600; "pts" 13 --muted
-│                                    │ S │  │  ← #grade 48×48 raio 10, #gradeLetter 24/600
-│ Lá ele supremo  • Recorde          └───┘  │  ← #gradeLabel 13; #recordPill = ponto + texto bronze-claro
+│ [olhos] Lá ele        (☀|☾●)   Auto (●)  │  ← logo 24 px + Bricolage 17; #themeToggle; #autoHeader
+│ [g1] g1.globo.com                         │  ← #heroHost 12 --muted, favicon 14 px raio 4
+│ 63.130 pts                         ┌───┐  │  ← #score 54 Bricolage, traço comum-2 sob o número
+│ ‾‾‾‾‾‾‾‾‾‾                          │ S │  │  ← #grade 56 px, raio 12, rotate(-6deg), cor da nota
+│ Lá ele supremo  [Recorde]          └───┘  │  ← #gradeLabel 14/500; #recordPill = traço pesado-3
 │ ┌────────────┬────────────┬────────────┐ │
-│ │ 85         │ 28         │ ×14,5      │ │  ← #statWords / #statCombo / #statMult 17/500
-│ │ palavras   │ maior combo│ multiplic. │ │     legendas 11 --muted, grade com fio 1 px
+│ │ 85         │ 28         │ ×14,5      │ │  ← grade --panel raio 10; número 20 Bricolage, legenda 11
 │ └────────────┴────────────┴────────────┘ │
-│ [• mandioca 4] [• pau 3] [• pepino 3]    │  ← #terms: chip raio 6, fio 1 px, ponto da raridade
-│ ┌──────────────────────────────────────┐ │
-│ │            Varrer página             │ │  ← #scanBtn 38 px, bronze, texto #111 13/600
-│ └──────────────────────────────────────┘ │
-│ ( Recordes | Laelédex | Ajustes )        │  ← #tabs segmentado; ativo #333
+│ [mandioca 4] [pau 3] [pepino 3]          │  ← #terms: cada chip é um traço da raridade
+│ [         Varrer página                ] │  ← #scanBtn 42 px, comum, texto tinta 14/600
+│ ( Recordes | Top | Laelédex | Ajustes )  │  ← #tabs 4 segmentos; ativo = traço comum-3 86% × 62%
 ```
 
-- A nota fica num quadrado `--raised` com a letra; **só a nota S** ganha fundo bronze e letra escura.
-- `#scanPill` vira o texto "varrendo" depois do host, em `--muted`. Durante a varredura, o botão mostra "Varrendo…" e um traço de 2 px escuro corre na base (loop de 1,1 s, some com movimento reduzido).
-- Estados (`data-state` ≠ resultado): `#msgTitle` 20/600 e `#msgText` 13 `--muted`, sem ícone. Página proibida: botão desabilitado `#262626` com texto `#6f6f6f`.
-- `.tab-indicator` e `.seg-thumb` podem ficar, mas sem deslizar: o ativo é só o fundo `#333`.
+- **Traço do placar:** pseudo-elemento sob o número (`--mt-comum-2`, 13 px de altura, `z-index: -1` num contêiner com `isolation: isolate`). Quando a pontuação muda, ele se redesenha da esquerda (`scaleX` 0→1, 380 ms).
+- **Nota:** fundo pela nota (D `--nota-d`, C leve, B comum, A pesado, S lendário), letra `--mt-tinta` nas coloridas. Ao trocar, `carimbo`: escala 1,45 → giro 3° a 0,94 → volta a −6° e 1, em 420 ms com `cubic-bezier(.34,1.56,.64,1)`.
+- **Estados** (`data-state` ≠ resultado): `#msgTitle` 22 Bricolage, `#msgText` 13 `--muted`. Página proibida: botão `--raised` com texto `--muted`.
+
+### Seletor de modo (`#themeToggle`)
+
+Um switch deslizante com sol e lua, 46 × 26 px, raio 13, trilho `--panel`. O sol (claro) fica à esquerda e a lua (escuro) à direita, ícones de traço 2 px em 14 px, cor `--muted`. O botão redondo de 20 px é `--mt-comum` e carrega o ícone do modo atual em `--mt-tinta`; desliza em 220 ms com a curva de mola. `role="switch"`, `aria-label="Modo escuro"`, `aria-checked="true"` no escuro (padrão). Grava `settings.theme` (`'dark'` | `'light'`); o popup troca a pele na hora (`data-theme` no `html`) e o HUD de todas as abas abertas acompanha via `chrome.storage.onChanged`.
 
 ### Recordes
 
-- Bloco `--panel` raio 10: "Recorde global" 12 `--muted`, `#bestScore` 22/600, `#bestMeta` à direita.
-- `#totScans` / `#totWords` / `#totPoints`: três colunas, número 15/500 em cima, legenda 11 embaixo.
-- "Melhores sites" 11/500 `--muted`, depois `#sites` em linhas de 36 px: posição (12 `--muted`), favicon 16 px raio 4, host, pontos à direita, nota. A nota do primeiro em bronze-claro. Hover: fundo `--panel`.
+- Bloco `--panel`: "Recorde global" 12 `--muted`, `#bestScore` 30 Bricolage com o traço do placar, `#bestMeta` à direita.
+- `#totScans` / `#totWords` / `#totPoints` na mesma grade de números do topo.
+- "Melhores sites" e `#sites` em linhas de 36 px: posição, favicon 16 px, host, pontos 600, nota em Bricolage. Hover `--panel`.
+
+### Top lá ele (aba nova)
+
+- Legenda "As frases mais lá ele que você já varreu".
+- Lista ordenada de até 10 cartões `--panel` raio 10: número em Bricolage (20 px, `--muted`; o 1º com 30 px em `--text` e mais folga), a frase entre aspas com cada palavra achada no traço da sua raridade (13 px, entrelinha 1,75; o 1º com 15 px), e embaixo "9.840 pts" (600), "combo 6", host e data curta em 11 px `--muted`.
+- Vazio: "Nenhuma frase ainda" + "Varra uma página com combo de 2 ou mais palavras."
+- A frase vem de sites: monte sempre com nós de texto (`textContent`), nunca com `innerHTML`.
 
 ### Laelédex
 
-- `#dexFound` de `#dexTotal` descobertas e `#dexPct` à direita; `#dexBar` com 4 px de altura, trilho `--raised`, preenchimento bronze.
-- `#dexSearch`: campo de 34 px, fio 1 px, lupa 14 px.
-- `#dexFilters`: segmentado de cinco (Todas, Leve, Comum, Pesado, Lendário).
-- `#dexGrid`: mantém a grade de cartões da v0.1 (`li.dex-card`): número `#001` e etiqueta da raridade com o ponto no topo, nome da palavra ou "???" quando não descoberta, coeficiente e contagem embaixo. Só a pele muda para os tokens desta direção (fundo `--panel`, fio 1 px, raio 8, Inter, ponto da raridade). A busca só procura entre as descobertas.
+Mantém os cartões da v0.1 (`li.dex-card`, `#001`, raridade, nome ou "???", coeficiente, contagem) em grade de 2 colunas, cartões `--panel` raio 10. Nome descoberto vai no traço da raridade; "???" em Bricolage 18 `--muted`. Cabeçalho: contador em Bricolage, barra de 8 px com trilho `--raised` e preenchimento no traço leve-2, busca `--panel` 36 px, filtros em botões soltos com ponto da raridade (ativo: fundo `--text`, texto `--bg`).
 
 ### Ajustes
 
-- Grupo com fio 1 px e raio 10, uma linha por switch (título 13/500 + descrição 12 `--muted`): `#setAutoScan`, `#setAnimations`, `#setShowHud`.
-- "Velocidade" + `#speedSeg` segmentado de três.
-- "Palavras próprias": `#wordInput` + botão "+" 34 px; `#coefInput` range com `accent-color` bronze e `#coefValue` "×2 · comum" (raridade calculada pelo coeficiente); `#customList` em linhas com o ponto da raridade e "×" para remover.
-- Zerar: `#resetBtn` contornado; confirmação `#resetConfirm` com "Cancelar" e "Apagar tudo" (cor de perigo).
-- Rodapé 11 `--muted`: "Tudo fica no seu navegador."
+Grupo `--panel` raio 10, linhas com título 13/500 e descrição 12 `--muted`, divididas por 1 px `--line`; switches 30 × 18 (ligado: leve com bolinha tinta). Velocidade em segmentado de três (ativo `--raised`). Palavras próprias, coeficiente "×2 · comum" e zerar como na v0.1, com as cores desta direção. Rodapé: "Tudo fica no seu navegador, inclusive o Top lá ele."
 
 ## HUD na página (Shadow DOM, canto inferior direito)
 
 ```
 ┌───────────────────────────────┐
-│ (olhos) Lá ele       −  ↻  × │  ← olhos 22 px com pupilas vivas; .btns 24 px
-│ 12.450               ┌───┐   │  ← .score 32/600
-│ 23 palavras          │ A │   │  ← .sub 12 --muted; .stamp = quadrado da nota 40 px
-│ Lá ele pesado        └───┘   │  ← .rank-label 12 #cfcfcf
-│ Combo 7  ━━━━━━━──────  ×4   │  ← .combo-n, .bar 4 px bronze, .mult 12/500
-│───────────────────────────────│
-│ Novo recorde                  │  ← .banner bronze-claro 12/500, separado por fio
+│ [olhos] Lá ele        −  ↻  × │  ← olhos vivos 24 px; Bricolage 17; botões 26 px
+│ 12.450               ┌───┐    │  ← placar 40 Bricolage com traço comum-2 embaixo
+│ 23 palavras          │ A │    │  ← nota 46 px girada −6°
+│ Lá ele pesado        └───┘    │  ← 13/500
+│ Combo 7  ━━━━━━──────  ×4     │  ← barra 8 px: trilho --raised, preenchimento traço lendário-1
+│ [Novo recorde]                │  ← aviso no traço pesado
 └───────────────────────────────┘
 ```
 
-- Caixa `--bg` de 232 px, fio 1 px, raio 12, sombra do HUD. Sem faixa colorida no topo.
-- **Olhar:** a cada palavra marcada, as pupilas do logo do HUD andam até 8 unidades (em 128) na direção da palavra, em 220 ms. No fim da varredura voltam ao centro.
-- A nota troca de letra quando a soma muda de faixa e dá um pulo de 1,3× para 1 em 320 ms. Na nota S, o quadrado fica bronze.
-- Minimizado (`.min`): só o cabeçalho e `.mini` com a pontuação.
+- Caixa `--bg` de 248 px, raio 16, sombra do HUD, pele conforme `settings.theme`.
+- Pupilas: até 8/128 na direção da palavra, 220 ms; voltam ao centro no fim.
+- Aviso no fim, por prioridade: "Novo recorde" > "Entrou no Top lá ele" > "Recorde do site".
+- Minimizado (`.min`): cabeçalho + placar.
 
 ## Destaque na palavra
 
-- `mark.laele-hit` começa sem fundo e com a cor herdada. Com `.laele-on`, ganha o marca-texto da raridade (`data-laele-tier`), raio 3 px, e o texto passa a `#1d1d1f !important`.
-- O preenchimento cresce da esquerda (`background-size` de `0% 100%` a `100% 100%` com cor sólida, ou pseudo-elemento com `scaleX`) em 240 ms. `box-decoration-break: clone` para quebrar linha. Nada de `padding`, `margin`, `font-size` ou `line-height`: o texto do site não se mexe.
-- Pontos flutuantes (`.laele-float`): etiqueta `#161616` raio 6, texto `#f2f2f2` 12/500 "+260", multiplicador em bronze-claro "×1,5". Sobe 26 px e some em 900 ms.
-- Tudo com prefixo `laele-` e `!important`.
+- `mark.laele-hit` começa com `background-size: 0% 78%` e cor herdada. Com `.laele-on`, cresce para `100% 78%` em `--laele-wipe` (240 ms no normal) e o texto vira `#17141f !important` na metade do traço.
+- Traço pela raridade (`data-laele-tier`) e forma pela ordem (`data-laele-v` 1–3).
+- Nada de `padding`, `margin`, `font-size` ou `line-height` no `mark`: o texto do site não se mexe. Tudo com prefixo `laele-` e `!important`.
+- Etiqueta de pontos (`.laele-float`): papelzinho da cor da caneta da palavra, raio 7, Bricolage 800 17 px "+240" e Inter 600 12 px "×2" ao lado, texto tinta, girada ±4° alternando. Entra com escala 0,6 → 1,08 → 1, sobe 34 px e some em 950 ms.
 
 ## Ícone
 
-Quadrado claro `#F2EFE9` com cantos de 30/128, dois olhos brancos com contorno `#111111` de 6/128, pupilas `#111111` encostadas à direita e uma sobrancelha bronze `#A08672` sobre o olho direito. Em 16 px a sobrancelha sai e o contorno fica em 1,1/16. O quadrado claro aparece tanto na barra clara quanto na escura do Chrome. SVG de referência no protótipo (`#marca` e `#marca16`).
+Quadrado `#FFE45C` com cantos 30/128, dois olhos brancos com contorno `#17141f` de 7/128, pupilas `#17141f` encostadas à direita e sobrancelha `#17141f` sobre o olho direito. Em 16 px a sobrancelha sai e o contorno fica em 1,2/16. SVG de referência: `#marca` no protótipo.
 
 ## Movimento
 
-A interface parada já está pronta; só o jogo se mexe.
-
 | Onde | O quê | Duração | Movimento reduzido |
 |---|---|---|---|
-| Página | Marca-texto cresce da esquerda | 240 ms (lento 420, rápido 120); 520 ms entre palavras no normal (900 / 200) | aparece cheio |
-| Página | Etiqueta de pontos sobe 26 px e some | 900 ms | não aparece |
-| HUD | Pupilas viram para a palavra | 220 ms | paradas |
-| HUD | Contagem dos pontos | 320 ms, ease-out | salta para o valor |
-| HUD | Nota troca e pula 1,3× → 1 | 320 ms | troca sem pulo |
-| Popup | Traço sob "Varrendo…" | loop 1,1 s | estático |
-| Popup | Hover de botão, linha e segmento | 160 ms | igual |
+| Página | Traço cresce da esquerda | 240 ms (lento 420, rápido 120); 520 ms entre palavras no normal (900 / 200) | aparece cheio |
+| Página | Etiqueta de pontos | 950 ms | não aparece |
+| HUD | Pupilas | 220 ms | paradas |
+| HUD e popup | Contagem dos pontos | 320 ms ease-out | salta |
+| HUD e popup | Nota carimba | 420 ms, mola | troca sem pulo |
+| HUD e popup | Traço sob o placar se redesenha | 380 ms | parado |
+| Popup | Aba ativa: traço cresce | 280 ms | parado |
+| Popup | Seletor de modo e switches | 220 ms, mola | sem deslize |
+| Popup | Hover de botão, linha, cartão | 160–180 ms | igual |
 
-Curva padrão: `cubic-bezier(.2, .8, .2, 1)`. Só `transform`, `opacity` e `background-size`.
+Curvas: padrão `cubic-bezier(.2,.8,.2,1)`; mola `cubic-bezier(.34,1.56,.64,1)`. Só `transform`, `opacity`, `background-size` e cor.
 
 ## Acessibilidade
 
-- Texto secundário nunca abaixo de 4,5:1 sobre `#161616` (`--muted` dá 5,6:1; `--soft` 7,7:1).
-- Foco visível: `outline: 2px solid #a08672; outline-offset: 3px`.
-- Switches com `role="switch"`; segmentados com `role="radiogroup"`/`radio` ou `tablist`/`tab`, como hoje.
-- A nota tem `aria-label="Nota S"`; os cartões não descobertos têm `aria-label="Palavra não descoberta"`.
+- Texto secundário ≥ 4,5:1 nas duas peles; texto sobre caneta sempre `#17141f` (≥ 11:1).
+- Foco: `outline: 2px solid #FFE45C; outline-offset: 3px` (na pele Papel, `#17141f`).
+- Switches com `role="switch"`; abas `tablist`/`tab`; segmentados `radiogroup`/`radio`.
+- Nota com `aria-label="Nota S"`; cartão oculto com `aria-label="Palavra não descoberta"`.
 - `prefers-reduced-motion: reduce` conforme a tabela.
