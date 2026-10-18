@@ -394,7 +394,7 @@ test('addCustomWord: id, forms, tier e phrase', async () => {
 });
 
 test('addCustomWord: expressão com espaço vira phrase e slug sem acento', async () => {
-  const w = await storage.addCustomWord({ label: 'Bola de Cristal', coef: 3.5 });
+  const w = await storage.addCustomWord({ label: 'Bola de Cristal', coef: 3 });
   assert.equal(w.phrase, true);
   assert.equal(w.tier, 'pesado');
   assert.match(w.id, /^custom-bola-de-cristal-/);
@@ -409,10 +409,10 @@ test('addCustomWord: tiers pelos limites de coef', async () => {
   assert.equal(await tier(0.5), 'leve');
   assert.equal(await tier(1.49), 'leve');
   assert.equal(await tier(1.5), 'comum');
-  assert.equal(await tier(2.99), 'comum');
-  assert.equal(await tier(3), 'pesado');
-  assert.equal(await tier(3.99), 'pesado');
-  assert.equal(await tier(4), 'lendario');
+  assert.equal(await tier(2.49), 'comum');
+  assert.equal(await tier(2.5), 'pesado');
+  assert.equal(await tier(3.49), 'pesado');
+  assert.equal(await tier(3.5), 'lendario');
   assert.equal(await tier(5), 'lendario');
 });
 

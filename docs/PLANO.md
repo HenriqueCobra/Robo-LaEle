@@ -52,7 +52,7 @@ LaEle.dictionary = {
       id: 'dar',              // único, kebab-case ascii
       label: 'dar',           // como mostrar na interface
       coef: 1.5,              // coeficiente lá ele (0.5 a 5). Mais safado = maior
-      tier: 'comum',          // 'leve' | 'comum' | 'pesado' | 'lendario' (raridade na Laelédex)
+      tier: 'comum',          // 'leve' (< 1.5) | 'comum' (< 2.5) | 'pesado' (< 3.5) | 'lendario' — calculado por dictionary.tierOf(coef)
       forms: ['dar','dou','deu','dando','dei','dava','daria','dá'], // formas exatas (palavra inteira)
       stems: [],              // opcional: prefixos; casa token que começa com o prefixo e tem até +5 letras
       phrase: false           // true se for expressão de várias palavras

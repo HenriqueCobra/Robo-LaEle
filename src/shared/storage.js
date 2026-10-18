@@ -114,10 +114,16 @@ LaEle.storage = (function () {
     return isFinite(v) ? v : 0;
   }
 
+  // mesmas faixas do dicionário (dictionary.tierOf); a cópia local só vale se ele não carregou
   function tierFromCoef(coef) {
+    var dict = globalThis.LaEle && globalThis.LaEle.dictionary;
+    if (!dict && typeof require === 'function') {
+      try { dict = require('./dictionary.js'); } catch (err) { /* sem dicionário: usa as faixas locais */ }
+    }
+    if (dict && typeof dict.tierOf === 'function') return dict.tierOf(coef);
     if (coef < 1.5) return 'leve';
-    if (coef < 3) return 'comum';
-    if (coef < 4) return 'pesado';
+    if (coef < 2.5) return 'comum';
+    if (coef < 3.5) return 'pesado';
     return 'lendario';
   }
 

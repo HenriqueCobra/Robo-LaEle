@@ -238,12 +238,14 @@
     return tierMap[entryId] || null;
   }
 
-  // mesma faixa de coeficiente que o storage usa ao salvar uma palavra própria
+  // mesmas faixas do dicionário e do storage
   function tierOfCoef(coef) {
+    var dict = LaEle.dictionary;
+    if (dict && typeof dict.tierOf === 'function') return dict.tierOf(coef);
     coef = Number(coef) || 0;
     if (coef < 1.5) return 'leve';
-    if (coef < 3) return 'comum';
-    if (coef < 4) return 'pesado';
+    if (coef < 2.5) return 'comum';
+    if (coef < 3.5) return 'pesado';
     return 'lendario';
   }
 

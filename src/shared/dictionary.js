@@ -8,7 +8,9 @@ var LaEle = globalThis.LaEle = globalThis.LaEle || {};
 
   var entries = [];
 
+  // única fonte das faixas de raridade: storage e popup usam esta mesma função
   function tierOf(coef) {
+    coef = Number(coef) || 0;
     if (coef < 1.5) return 'leve';
     if (coef < 2.5) return 'comum';
     if (coef < 3.5) return 'pesado';
@@ -559,7 +561,8 @@ var LaEle = globalThis.LaEle = globalThis.LaEle || {};
 
   LaEle.dictionary = {
     version: 1,
-    entries: entries
+    entries: entries,
+    tierOf: tierOf
   };
 })();
 
