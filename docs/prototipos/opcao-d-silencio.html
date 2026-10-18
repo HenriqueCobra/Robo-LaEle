@@ -1,0 +1,925 @@
+<title>Robo-LaEle em silêncio</title>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap">
+<style>
+/* Layout: página escura e quieta, tudo pendurado num alinhamento a 27% da esquerda; a cor vem só da própria interface. */
+:root {
+  color-scheme: dark;
+  --bg: #111111;
+  --surface: #1c1c1c;
+  --surface-2: #232323;
+  --ink: #f2f2f2;
+  --muted: #8f8f8f;
+  --texto: #c4c4c4;
+  --accent: #a08672;
+  --accent-ink: #111111;
+  --linha: #2b2b2b;
+  --site-bg: #ffffff;
+  --site-ink: #1d1d1f;
+  --site-muted: #6e6e73;
+  --m-leve: #d3efb1;
+  --m-comum: #ffe38a;
+  --m-pesado: #ffbfa8;
+  --m-lendario: #d6b58f;
+  --d-leve: #9ed37a;
+  --d-comum: #efcd4b;
+  --d-pesado: #ef8b70;
+  --d-lendario: #c9a27c;
+  --f: "Switzer", "Helvetica Neue", Arial, sans-serif;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --eixo: 27%;
+  --ml: max(24px, env(safe-area-inset-left, 0px));
+  --mr: max(24px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 900px) { :root { --ml: max(40px, env(safe-area-inset-left, 0px)); --mr: max(40px, env(safe-area-inset-right, 0px)); } }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f); font-size: 17px; line-height: 1.5; letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { margin: 0; font-weight: 600; text-wrap: balance; }
+p { margin: 0; }
+button, input { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.num { font-variant-numeric: tabular-nums; }
+.mudo { color: var(--muted); }
+.dentro { max-width: 1440px; margin: 0 auto; padding-left: var(--ml); padding-right: var(--mr); }
+
+.botao { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border: 0; border-radius: 4px; background: var(--accent); color: var(--accent-ink); font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer; transition: transform 160ms var(--ease), background 160ms; }
+.botao:hover { background: #b09684; transform: translateY(-1px); }
+.botao:active { transform: translateY(1px); }
+.link-seta { font-size: 15px; text-decoration: none; color: var(--ink); display: inline-flex; gap: 6px; align-items: center; min-height: 44px; }
+.link-seta span { transition: transform 160ms var(--ease); }
+.link-seta:hover span { transform: translateX(3px); }
+
+/* ---------- Abertura: coluna num alinhamento ---------- */
+.heroi { position: relative; min-height: max(700px, 94svh); overflow: hidden; }
+.heroi-marca { position: absolute; top: 56px; left: var(--eixo); }
+.heroi-marca svg { width: 32px; height: 32px; display: block; }
+.heroi-canto { position: absolute; top: 52px; right: var(--mr); font-size: 14px; color: var(--muted); text-decoration: none; min-height: 44px; display: flex; align-items: center; }
+.heroi-canto:hover { color: var(--ink); }
+.heroi-col { position: absolute; left: var(--eixo); top: 276px; width: 380px; max-width: calc(100% - var(--eixo) - 24px); display: flex; flex-direction: column; gap: 14px; }
+.heroi-col h1 { font-size: 27px; font-weight: 500; line-height: 1.25; letter-spacing: -0.02em; }
+.heroi-col p { font-size: 15px; color: var(--texto); }
+.heroi-acoes { display: flex; align-items: center; gap: 20px; margin-top: 14px; }
+.espia { position: absolute; left: var(--eixo); bottom: 0; width: 368px; height: 132px; background: var(--surface); border-radius: 6px 6px 0 0; padding: 14px 16px 0; overflow: hidden; }
+.espia-set { position: absolute; inset: 14px 16px auto; display: flex; flex-direction: column; gap: 4px; opacity: 0; transition: opacity 1600ms ease; }
+.espia-set.on { opacity: 1; }
+.espia .cursor { position: absolute; width: 16px; height: 20px; right: 92px; top: 30px; z-index: 2; }
+@media (max-width: 899px) {
+  :root { --eixo: 24px; }
+  .heroi { min-height: max(640px, 100svh); }
+  .heroi-marca { top: 32px; }
+  .heroi-canto { top: 26px; }
+  .heroi-col { top: 30%; width: auto; right: 24px; max-width: none; }
+  .heroi-col h1 { font-size: 24px; }
+  .espia { left: 24px; right: 24px; width: auto; height: 132px; }
+}
+
+/* ---------- Linha de uma interface: palavra encontrada ---------- */
+.ui-linha { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 10px; align-items: center; height: 38px; padding: 0 10px; border-radius: 6px; font-size: 13px; color: #ededed; }
+.ui-linha.sel { background: #262626; }
+.ui-linha .pt { width: 8px; height: 8px; border-radius: 50%; background: var(--d); }
+.ui-linha b { font-weight: 500; }
+.ui-linha small { color: #a3a3a3; font-size: 13px; margin-left: 6px; }
+.ui-linha .v { color: #a3a3a3; }
+[data-t="leve"] { --d: var(--d-leve); --m: var(--m-leve); }
+[data-t="comum"] { --d: var(--d-comum); --m: var(--m-comum); }
+[data-t="pesado"] { --d: var(--d-pesado); --m: var(--m-pesado); }
+[data-t="lendario"] { --d: var(--d-lendario); --m: var(--m-lendario); }
+
+/* ---------- Seções ---------- */
+.sec { padding-block: clamp(80px, 9vw, 128px); }
+.titulo-2 { font-size: clamp(32px, 3.2vw, 52px); line-height: 1.05; letter-spacing: -0.035em; }
+.titulo-2 .mudo { display: block; }
+
+/* Livro-razão: números alinhados na vírgula */
+.campo-razao { background: var(--surface); }
+.razao { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: center; }
+.razao-h { grid-column: 1 / span 5; display: flex; flex-direction: column; gap: 20px; }
+.razao-h p { font-size: 17px; color: var(--texto); max-width: 36ch; }
+.razao-lista { grid-column: 7 / -1; margin: 0; display: flex; flex-direction: column; gap: 72px; }
+.razao-lista div { display: grid; grid-template-columns: 5.8ch minmax(0, 1fr); column-gap: 0; align-items: start; font-size: clamp(64px, 7vw, 112px); line-height: 1; letter-spacing: -0.04em; }
+.razao-lista dt { order: 2; font-size: 16px; line-height: 1.35; letter-spacing: 0; color: var(--muted); padding-left: 28px; padding-top: 0.9em; max-width: 26ch; }
+.razao-lista dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums lining-nums; display: grid; grid-template-columns: 4.2ch 1.6ch; }
+.razao-lista .int { text-align: right; }
+.razao-lista .dec { text-align: left; }
+.razao-lista .s { color: var(--accent); }
+@media (max-width: 899px) {
+  .razao-h, .razao-lista { grid-column: 1 / -1; }
+  .razao-h { margin-bottom: 40px; }
+  .razao-h .titulo-2 { font-size: 28px; }
+  .titulo-2, .dex-cab .titulo-2 { font-size: 28px; }
+  .razao-lista { gap: 28px; }
+  .razao-lista div { grid-template-columns: minmax(0, 1fr); font-size: 15vw; row-gap: 6px; }
+  .razao-lista dd { grid-template-columns: 52% minmax(0, 1fr); }
+  .razao-lista dt { grid-row: 2; padding-left: 0; font-size: 15px; }
+}
+
+/* Laelédex: abas de raridade + faixas */
+.dex-cab { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 56px; }
+.dex-cab .titulo-2 { font-size: clamp(36px, 4vw, 60px); }
+.dex { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: 40px; }
+.dex-tabs { display: flex; flex-direction: column; gap: 6px; }
+.dex-tab { width: 150px; height: 64px; border: 0; border-radius: 4px; background: var(--surface); text-align: left; padding: 0 14px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; gap: 2px; transition: background 160ms; }
+.dex-tab:hover { background: var(--surface-2); }
+.dex-tab b { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.dex-tab b i { width: 8px; height: 8px; border-radius: 50%; background: var(--d); }
+.dex-tab span { font-size: 13px; color: var(--muted); }
+.dex-tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.dex-tab[aria-selected="true"] span { color: #555; }
+.faixas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.faixa { display: grid; grid-template-columns: 76px minmax(0, 22%) minmax(0, 1fr) auto; align-items: center; column-gap: 20px; min-height: 76px; padding: 0 20px; border-radius: 4px; background: var(--surface); animation: entra 420ms var(--ease) both; }
+.faixa:nth-child(even) { background: var(--surface-2); }
+.faixa .k { font-size: 20px; font-variant-numeric: tabular-nums; }
+.faixa .w { display: flex; flex-direction: column; grid-column: 2 / span 2; }
+.faixa .w b { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+.faixa .w span { font-size: 13px; color: var(--muted); }
+.faixa .quem { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); }
+.rostos { display: flex; }
+.rostos i { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 600; color: #111; background: var(--c); margin-left: -8px; outline: 2px solid var(--surface); } /* taste-skill-ignore: as bolinhas dos sites são favicons, que o Chrome desenha nesse tamanho */
+.faixa:nth-child(even) .rostos i { outline-color: var(--surface-2); }
+.faixa.falta .w b { color: var(--muted); letter-spacing: 0.2em; }
+@keyframes entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (max-width: 899px) {
+  .dex { grid-template-columns: minmax(0, 1fr); row-gap: 16px; }
+  .dex-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dex-tab { width: auto; height: 56px; padding: 0 12px; }
+  .dex-tab b { font-size: 15px; }
+  .faixa { grid-template-columns: minmax(0, 1fr) auto; row-gap: 2px; padding: 12px 14px; min-height: 0; }
+  .faixa .k { grid-column: 2; grid-row: 1; font-size: 16px; text-align: right; }
+  .faixa .quem { grid-column: 2; grid-row: 2; font-size: 13px; gap: 8px; }
+  .faixa .w { grid-column: 1; grid-row: 1 / span 2; }
+  .rostos i { width: 22px; height: 22px; font-size: 9px; margin-left: -6px; }
+  .dex-cab .titulo-2 { font-size: 28px; }
+}
+
+/* Na página: saída fixa à esquerda, controles à direita */
+.fixa { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; }
+.fixa-palco { grid-column: 1 / span 6; position: sticky; top: 0; height: 100svh; background: var(--surface); display: grid; place-items: center; overflow: hidden; margin-left: calc(-1 * var(--ml)); }
+.fixa-col { grid-column: 8 / span 5; max-width: 44ch; padding-top: 72px; padding-bottom: 30vh; }
+.fixa-col h2 { font-size: clamp(40px, 3.4vw, 44px); letter-spacing: -0.035em; line-height: 1.05; margin-bottom: 14vh; }
+.cap { min-height: 44vh; display: flex; flex-direction: column; gap: 14px; }
+.cap h3 { font-size: clamp(28px, 2.2vw, 32px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.15; }
+.cap p { font-size: 17px; color: var(--texto); }
+.controle { margin-top: 10px; }
+@media (max-width: 899px) {
+  .fixa-palco, .fixa-col { grid-column: 1 / -1; }
+  .fixa-palco { position: relative; height: auto; padding-block: 40px; margin-left: calc(-1 * var(--ml)); margin-right: calc(-1 * var(--mr)); }
+  .fixa-col { padding-top: 48px; padding-bottom: 20vh; }
+  .fixa-col h2 { margin-bottom: 64px; }
+  .cap { min-height: 0; margin-bottom: 72px; }
+  .cap h3 { font-size: 22px; }
+  .cap p { font-size: 16px; }
+}
+
+/* Controles da página (mesma linguagem da extensão) */
+.sw { display: inline-flex; align-items: center; gap: 12px; border: 0; background: none; padding: 0; cursor: pointer; min-height: 44px; font-size: 15px; color: var(--ink); }
+.sw-t { width: 36px; height: 20px; border-radius: 10px; background: #3a3a3a; position: relative; flex: none; transition: background 160ms; }
+.sw-t::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #f2f2f2; transition: transform 200ms var(--ease); }
+.sw[aria-checked="true"] .sw-t { background: var(--accent); }
+.sw[aria-checked="true"] .sw-t::after { transform: translateX(16px); }
+.seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; padding: 2px; border-radius: 8px; background: #1f1f1f; }
+.seg button { min-height: 40px; min-width: 88px; padding: 0 12px; border: 0; border-radius: 6px; background: none; color: #a8a8a8; font-size: 14px; cursor: pointer; }
+.seg [aria-checked="true"], .seg [aria-selected="true"], .seg [aria-pressed="true"] { background: #333; color: #f2f2f2; }
+.campo { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.campo input[type="text"] { min-height: 44px; width: 180px; border: 1px solid #3a3a3a; border-radius: 6px; background: #161616; padding: 0 12px; font-size: 15px; } /* taste-skill-ignore: campo de texto da interface da extensão */
+.campo input[type="range"] { width: 160px; accent-color: var(--accent); }
+.campo output { font-size: 15px; min-width: 7ch; }
+.campo .botao { min-height: 44px; }
+
+/* ---------- Página de exemplo + placar (fragmento) ---------- */
+.site { position: relative; width: 440px; max-width: calc(100% - 32px); background: var(--site-bg); color: var(--site-ink); border-radius: 8px; padding: 28px 28px 24px; font-size: 15px; line-height: 1.65; }
+.site-mast { display: flex; justify-content: space-between; font-size: 12px; color: var(--site-muted); padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid #e5e5ea; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.site-mast b { color: var(--site-ink); font-weight: 600; font-size: 13px; }
+.site-h { font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 12px; max-width: 16ch; }
+.site p + p { margin-top: 10px; }
+mark.laele-hit { background: none; color: inherit; position: relative; z-index: 0; }
+mark.laele-hit::before { content: ""; position: absolute; inset: 0 -0.12em; border-radius: 3px; background: var(--m); transform: scaleX(0); transform-origin: left center; transition: transform var(--wipe, 240ms) var(--ease); z-index: -1; }
+mark.laele-hit.laele-on::before { transform: none; }
+mark.laele-hit.laele-on { background-color: var(--m); transition: background-color 0s linear var(--wipe, 240ms); }
+.sem-anim mark.laele-hit, .sem-anim mark.laele-hit::before { transition: none; }
+.laele-float { position: absolute; z-index: 6; pointer-events: none; background: #161616; color: #f2f2f2; font-family: var(--f); font-size: 12px; font-weight: 500; padding: 3px 7px; border-radius: 6px; white-space: nowrap; animation: flutua 900ms var(--ease) forwards; }
+.laele-float i { font-style: normal; color: var(--d-lendario); margin-left: 5px; }
+@keyframes flutua { 0% { transform: translateY(4px); opacity: 0; } 20% { transform: none; opacity: 1; } 100% { transform: translateY(-26px); opacity: 0; } }
+
+.hud { position: absolute; top: -18px; right: -64px; width: 232px; background: #161616; color: #ededed; border: 1px solid #2e2e2e; border-radius: 12px; padding: 12px; font-size: 12px; line-height: 1.35; box-shadow: 0 12px 32px rgba(0, 0, 0, .28); z-index: 5; transition: opacity 200ms, transform 200ms var(--ease); } /* taste-skill-ignore: o placar flutua sobre o site, a sombra é dele */
+.hud.fora { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+.hud-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.hud-marca { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 13px; }
+.hud-marca svg { width: 22px; height: 22px; }
+.hud-btns { display: flex; gap: 2px; color: #8a8a8a; }
+.hud-btns button { width: 24px; height: 24px; border: 0; background: none; border-radius: 6px; cursor: pointer; display: grid; place-items: center; }
+.hud-btns button:hover { background: #262626; color: #f2f2f2; }
+.hud-btns svg { width: 13px; height: 13px; }
+.hud-main { display: flex; align-items: flex-end; justify-content: space-between; }
+.hud-score { font-size: 32px; font-weight: 600; letter-spacing: -0.035em; line-height: 1; }
+.hud-sub { color: #8a8a8a; margin-top: 4px; }
+.nota { width: 40px; height: 40px; border-radius: 8px; background: #262626; display: grid; place-items: center; font-size: 20px; font-weight: 600; transition: background 200ms; }
+.nota[data-g="S"] { background: var(--accent); color: #111; }
+.nota.pula { animation: pula 320ms var(--ease); }
+@keyframes pula { 0% { transform: scale(1.3); } 100% { transform: none; } }
+.hud-rank { margin-top: 8px; color: #cfcfcf; min-height: 16px; }
+.hud-combo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; margin-top: 10px; color: #8a8a8a; }
+.hud-bar { height: 4px; border-radius: 2px; background: #2a2a2a; overflow: hidden; }
+.hud-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 240ms var(--ease); }
+.hud-mult { color: #f2f2f2; font-weight: 500; }
+.hud-rec { margin-top: 10px; padding-top: 10px; border-top: 1px solid #2a2a2a; color: var(--d-lendario); font-weight: 500; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.olho-vivo .pupila { transition: transform 220ms var(--ease); }
+@media (max-width: 899px) {
+  .site { width: 360px; padding: 20px; font-size: 14px; }
+  .hud { position: relative; right: auto; top: auto; width: 100%; margin-bottom: 18px; box-shadow: none; } /* taste-skill-ignore: aqui a sombra é removida, não adicionada */
+}
+
+/* ---------- Popup ---------- */
+.linha-cap { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start; }
+.linha-cap + .linha-cap { margin-top: clamp(96px, 10vw, 160px); }
+.linha-cap .txt { display: flex; flex-direction: column; gap: 14px; max-width: 40ch; }
+.linha-cap .txt h3 { font-size: clamp(28px, 2.2vw, 32px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.15; }
+.linha-cap .txt p { color: var(--texto); }
+.lc-a .txt { grid-column: 1 / span 4; padding-top: 40px; }
+.lc-a .frag { grid-column: 6 / -1; }
+.lc-b .frag { grid-column: 1 / span 7; display: flex; gap: 24px; align-items: flex-start; }
+.lc-b .txt { grid-column: 9 / -1; padding-top: 40px; }
+.lc-c .txt { grid-column: 1 / span 4; }
+.lc-c .frag { grid-column: 5 / -1; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+.lc-d .frag { grid-column: 1 / span 5; }
+.lc-d .txt { grid-column: 7 / -1; }
+.recorte { flex: none; }
+.recorte .pp { max-height: 520px; }
+@media (max-width: 899px) {
+  .linha-cap .txt, .linha-cap .frag { grid-column: 1 / -1 !important; }
+  .linha-cap .txt { padding-top: 0; margin-bottom: 32px; }
+  .lc-b .frag { order: 2; }
+  .lc-b .recorte + .recorte { display: none; }
+  .lc-b .txt { order: 1; }
+  .lc-d .txt { order: 1; }
+  .lc-d .frag { order: 2; }
+}
+
+.pp { width: 360px; max-width: 100%; max-height: 600px; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; background: #161616; color: #ededed; border: 1px solid #2a2a2a; border-radius: 12px; font-family: var(--f); font-size: 13px; line-height: 1.4; scrollbar-width: thin; scrollbar-color: #333 transparent; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.pp-top { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; }
+.pp-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+.pp-brand svg { width: 22px; height: 22px; }
+.pp .sw { font-size: 12px; color: #8a8a8a; min-height: 32px; gap: 8px; }
+.pp .sw-t { width: 28px; height: 16px; border-radius: 8px; }
+.pp .sw-t::after { width: 12px; height: 12px; }
+.pp .sw[aria-checked="true"] .sw-t::after { transform: translateX(12px); }
+.pp-hero { padding: 4px 14px 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: end; }
+.pp-host { grid-column: 1 / -1; color: #8a8a8a; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.pp-host i { width: 14px; height: 14px; border-radius: 4px; background: #c4172c; display: grid; place-items: center; font-style: normal; font-size: 7px; font-weight: 600; color: #fff; }
+.pp-total { font-size: 44px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+.pp-total small { font-size: 13px; font-weight: 400; color: #8a8a8a; letter-spacing: 0; margin-left: 4px; }
+.pp-hero .nota { width: 48px; height: 48px; font-size: 24px; border-radius: 10px; }
+.pp-rank { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #cfcfcf; }
+.pp-rec { color: var(--d-lendario); display: inline-flex; align-items: center; gap: 5px; }
+.pp-rec::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pp-nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 14px; border: 1px solid #262626; border-radius: 10px; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.pp-nums div { padding: 10px 12px; display: flex; flex-direction: column; }
+.pp-nums div + div { border-left: 1px solid #262626; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.pp-nums dt { order: 2; color: #8a8a8a; font-size: 11px; }
+.pp-nums dd { margin: 0; font-size: 17px; font-weight: 500; }
+.pp-termos { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 14px 0; }
+.pp-termos span { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 9px; border: 1px solid #2a2a2a; border-radius: 6px; font-size: 12px; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.pp-termos span::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--d); }
+.pp-termos small { color: #8a8a8a; font-size: 12px; }
+.pp-scan { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 28px); margin: 14px; height: 38px; border: 0; border-radius: 8px; background: var(--accent); color: #111; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 160ms; position: relative; overflow: hidden; }
+.pp-scan:hover { background: #b09684; }
+.pp-scan:disabled { cursor: default; }
+.pp-scan.parado { background: #262626; color: #6f6f6f; }
+.pp-scan.varrendo::after { content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: 40%; background: #111; animation: corre 1100ms var(--ease) infinite; }
+@keyframes corre { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+.pp-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 14px; }
+.pp-tabs button { min-width: 0; min-height: 32px; font-size: 13px; }
+.pp-panel { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.pp-sub { font-size: 11px; color: #8a8a8a; font-weight: 500; }
+.pp-msg { padding: 4px 14px 2px; display: flex; flex-direction: column; gap: 6px; }
+.pp-msg b { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+.pp-msg p { color: #8a8a8a; max-width: 30ch; }
+
+.rec-best { display: flex; justify-content: space-between; align-items: flex-end; padding: 12px; border-radius: 10px; background: #1e1e1e; }
+.rec-best b { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; display: block; }
+.rec-best span { color: #8a8a8a; font-size: 12px; }
+.rec-tot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.rec-tot dt { color: #8a8a8a; font-size: 11px; }
+.rec-tot dd { margin: 0; font-size: 15px; font-weight: 500; }
+.rec-tot div { display: flex; flex-direction: column-reverse; }
+.sites { list-style: none; margin: 0; padding: 0; }
+.sites li { display: grid; grid-template-columns: 18px 16px minmax(0, 1fr) auto 20px; gap: 8px; align-items: center; height: 36px; padding: 0 6px; border-radius: 6px; }
+.sites li:hover { background: #1e1e1e; }
+.sites .r { color: #6f6f6f; font-size: 12px; }
+.sites .fav { width: 16px; height: 16px; border-radius: 4px; background: var(--c); }
+.sites .p { color: #cfcfcf; }
+.sites .g { color: #8a8a8a; font-size: 12px; text-align: right; }
+.sites li:first-child .g { color: var(--d-lendario); }
+
+.dex-prog { display: flex; flex-direction: column; gap: 6px; }
+.dex-prog div { display: flex; justify-content: space-between; color: #8a8a8a; font-size: 12px; }
+.dex-prog b { color: #ededed; font-weight: 500; font-size: 13px; }
+.dex-prog .barra { height: 4px; border-radius: 2px; background: #262626; overflow: hidden; }
+.dex-prog .barra i { display: block; width: 10%; height: 100%; background: var(--accent); }
+.busca { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border: 1px solid #2a2a2a; border-radius: 8px; color: #8a8a8a; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.busca:focus-within { border-color: #555; }
+.busca svg { width: 14px; height: 14px; flex: none; }
+.busca input { border: 0; background: none; outline: none; width: 100%; font-size: 13px; color: #ededed; height: 32px; }
+.pp-filtros { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.pp-filtros button { min-width: 0; min-height: 30px; font-size: 12px; padding: 0 4px; }
+.pp-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pp-lista .ui-linha { height: 34px; }
+.pp-lista .ui-linha:hover { background: #1e1e1e; }
+.pp-lista .falta b { color: #5f5f5f; letter-spacing: 0.15em; }
+.pp-vazio { color: #8a8a8a; }
+
+.aj-grupo { border: 1px solid #262626; border-radius: 10px; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.aj-linha { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; }
+.aj-linha + .aj-linha { border-top: 1px solid #262626; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.aj-linha b { font-weight: 500; display: block; }
+.aj-linha span { color: #8a8a8a; font-size: 12px; }
+.pp .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pp .seg button { min-width: 0; min-height: 30px; font-size: 12px; }
+.aj-add { display: flex; gap: 6px; }
+.aj-add input { flex: 1; min-width: 0; height: 34px; border: 1px solid #2a2a2a; border-radius: 8px; background: none; padding: 0 10px; font-size: 13px; color: #ededed; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.aj-add button { width: 34px; height: 34px; border: 0; border-radius: 8px; background: #262626; color: #ededed; cursor: pointer; display: grid; place-items: center; }
+.aj-add button:hover { background: #333; }
+.aj-add svg, .aj-x svg { width: 14px; height: 14px; }
+.aj-coef { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; color: #8a8a8a; font-size: 12px; }
+.aj-coef input { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); }
+.aj-coef output { color: #ededed; }
+.aj-proprias { list-style: none; margin: 0; padding: 0; }
+.aj-proprias .ui-linha { padding-right: 2px; }
+.aj-x { width: 28px; height: 28px; border: 0; background: none; border-radius: 6px; color: #8a8a8a; cursor: pointer; display: grid; place-items: center; }
+.aj-x:hover { background: #262626; color: #ededed; }
+.aj-zerar { display: flex; gap: 6px; }
+.aj-zerar button { height: 32px; padding: 0 12px; border: 1px solid #2a2a2a; border-radius: 8px; background: none; cursor: pointer; font-size: 12px; } /* taste-skill-ignore: fio de 1 px da interface da extensão */
+.aj-zerar .perigo { background: #3a1a1a; border-color: #5a2626; color: #ffb4a8; }
+.pp-nota-rodape { color: #6f6f6f; font-size: 11px; }
+
+/* Ícone */
+.icones { display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
+.icones figure { margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: var(--muted); }
+.icones svg { display: block; }
+.barra-chrome { margin-top: 32px; display: flex; align-items: center; gap: 12px; width: 300px; max-width: 100%; height: 40px; padding: 0 12px; border-radius: 8px; background: #2a2a2c; font-size: 13px; color: #c7c7cc; }
+.barra-chrome .url { flex: 1; height: 28px; border-radius: 14px; background: #1c1c1e; display: flex; align-items: center; padding: 0 12px; } /* taste-skill-ignore: barra de endereço do Chrome, desenhada como ela é */
+.ext { position: relative; width: 20px; height: 20px; }
+.ext svg { width: 20px; height: 20px; display: block; }
+.badge { position: absolute; right: -11px; bottom: -6px; background: var(--accent); color: #111; font-size: 9px; font-weight: 600; line-height: 1; padding: 2px 3px; border-radius: 3px; } /* taste-skill-ignore: o badge do Chrome é desenhado pelo próprio navegador nesse tamanho */
+
+/* Detalhes: linhas de duas pontas */
+.detalhes { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; }
+.detalhes h2 { grid-column: 1 / span 5; }
+.detalhes dl { grid-column: 6 / -1; margin: 0; }
+.detalhes dl div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: baseline; min-height: 60px; padding-block: 16px; }
+.detalhes dt { font-size: 18px; display: flex; align-items: center; gap: 10px; }
+.detalhes dd { margin: 0; color: var(--muted); font-size: 15px; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.campo-detalhes { background: var(--surface); }
+.amostra { width: 14px; height: 14px; border-radius: 4px; background: var(--c); flex: none; }
+.rodape { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding-block: 48px 64px; font-size: 14px; color: var(--muted); }
+.rodape a { color: var(--ink); text-underline-offset: 4px; }
+@media (max-width: 899px) {
+  .detalhes h2, .detalhes dl { grid-column: 1 / -1; }
+  .detalhes h2 { margin-bottom: 32px; }
+  .detalhes dl div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .detalhes dd { text-align: left; justify-content: flex-start; }
+}
+
+/* Entradas */
+.js .sobe { opacity: 0; transform: translateY(20px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+.js .visto .sobe, .js .sobe.visto { opacity: 1; transform: none; }
+.js .visto .sobe:nth-child(2) { transition-delay: 80ms; }
+.js .visto .sobe:nth-child(3) { transition-delay: 160ms; }
+.js .visto .sobe:nth-child(4) { transition-delay: 240ms; }
+.heroi-col > * { animation: sobe 800ms var(--ease) both; }
+.heroi-col > :nth-child(2) { animation-delay: 90ms; }
+.heroi-col > :nth-child(3) { animation-delay: 180ms; }
+.espia { animation: espia 900ms var(--ease) 400ms both; }
+@keyframes sobe { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes espia { from { transform: translateY(100%); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
+  .js .sobe { opacity: 1; transform: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="marca" viewBox="0 0 128 128">
+    <rect width="128" height="128" rx="30" fill="#f2efe9"/>
+    <ellipse cx="41" cy="70" rx="20" ry="25" fill="#ffffff" stroke="#111111" stroke-width="6"/>
+    <ellipse cx="89" cy="70" rx="20" ry="25" fill="#ffffff" stroke="#111111" stroke-width="6"/>
+    <circle cx="51" cy="74" r="9" fill="#111111"/>
+    <circle cx="99" cy="74" r="9" fill="#111111"/>
+    <path d="M72 35Q89 25 107 31" fill="none" stroke="#a08672" stroke-width="6" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="marca16" viewBox="0 0 16 16">
+    <rect width="16" height="16" rx="4" fill="#f2efe9"/>
+    <ellipse cx="5.1" cy="8.9" rx="2.6" ry="3.2" fill="#ffffff" stroke="#111111" stroke-width="1.1"/>
+    <ellipse cx="10.9" cy="8.9" rx="2.6" ry="3.2" fill="#ffffff" stroke="#111111" stroke-width="1.1"/>
+    <circle cx="6.3" cy="9.4" r="1.25" fill="#111111"/>
+    <circle cx="12.1" cy="9.4" r="1.25" fill="#111111"/>
+  </symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-re" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5M19 4v4h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- ===================== ABERTURA ===================== -->
+<header class="heroi">
+  <span class="heroi-marca"><svg role="img" aria-label="Lá ele"><use href="#marca"/></svg></span>
+  <a class="heroi-canto" href="#t-detalhes">Opções A, B e C</a>
+  <div class="heroi-col">
+    <h1>Acha o duplo sentido de qualquer página. E dá nota.</h1>
+    <p>Opção D do Robo-LaEle: escura, quieta e exata. A graça fica nas palavras que ela marca, não na moldura em volta.</p>
+    <div class="heroi-acoes"><a class="botao" href="#t-pagina">Ver a varredura</a><a class="link-seta" href="#t-popup">Ver o popup <span aria-hidden="true">→</span></a></div>
+  </div>
+  <div class="espia" data-ui aria-hidden="true">
+    <div class="espia-set on">
+      <div class="ui-linha sel" data-t="pesado"><i class="pt"></i><span><b>mandioca</b><small>pesado</small></span><span class="v num">+260</span></div>
+      <div class="ui-linha" data-t="comum"><i class="pt"></i><span><b>pepino</b><small>comum</small></span><span class="v num">+240 ×1,5</span></div>
+    </div>
+    <div class="espia-set">
+      <div class="ui-linha sel" data-t="lendario"><i class="pt"></i><span><b>sentar em cima</b><small>lendário</small></span><span class="v num">+900 ×2</span></div>
+      <div class="ui-linha" data-t="leve"><i class="pt"></i><span><b>molhada</b><small>leve</small></span><span class="v num">+135 ×1,5</span></div>
+    </div>
+    <div class="espia-set">
+      <div class="ui-linha sel" data-t="pesado"><i class="pt"></i><span><b>pau</b><small>pesado</small></span><span class="v num">+300</span></div>
+      <div class="ui-linha" data-t="comum"><i class="pt"></i><span><b>banana</b><small>comum</small></span><span class="v num">+270 ×1,5</span></div>
+    </div>
+    <svg class="cursor" viewBox="0 0 16 20"><path d="M1 1v15l4-4 3 7 3-1-3-7h6z" fill="#f2f2f2" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></svg>
+  </div>
+</header>
+
+<main>
+<!-- ===================== REFERÊNCIA ===================== -->
+<div class="campo-razao"><section class="dentro sec razao" aria-labelledby="t-ref">
+  <div class="razao-h sobe">
+    <h2 class="titulo-2" id="t-ref"><span class="mudo">Uma notícia do g1,</span>varrida de ponta a ponta</h2>
+    <p>A varredura de referência da versão 0.1, na velocidade normal. Os números da direita são dela.</p>
+  </div>
+  <dl class="razao-lista sobe">
+    <div><dt>pontos, nota S</dt><dd class="s"><span class="int">63.130</span><span class="dec"></span></dd></div>
+    <div><dt>palavras marcadas na página</dt><dd><span class="int">85</span><span class="dec"></span></dd></div>
+    <div><dt>palavras seguidas no maior combo</dt><dd><span class="int">28</span><span class="dec"></span></dd></div>
+    <div><dt>multiplicador no pico do combo</dt><dd><span class="int">14</span><span class="dec">,5</span></dd></div>
+    <div><dt>erros no console</dt><dd><span class="int">0</span><span class="dec"></span></dd></div>
+  </dl>
+</section></div>
+
+<!-- ===================== LAELÉDEX ===================== -->
+<section class="dentro sec" aria-labelledby="t-dex">
+  <div class="dex-cab sobe">
+    <h2 class="titulo-2" id="t-dex"><span class="mudo">Laelédex,</span>42 de 431 descobertas</h2>
+    <a class="link-seta" href="#t-popup">Ver no popup <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="dex sobe">
+    <div class="dex-tabs" role="tablist" aria-label="Raridade">
+      <button type="button" class="dex-tab" role="tab" aria-selected="false" data-t="lendario" data-tier="lendario"><b><i></i>Lendário</b><span>2 de 38</span></button>
+      <button type="button" class="dex-tab" role="tab" aria-selected="false" data-t="pesado" data-tier="pesado"><b><i></i>Pesado</b><span>9 de 104</span></button>
+      <button type="button" class="dex-tab" role="tab" aria-selected="true" data-t="comum" data-tier="comum"><b><i></i>Comum</b><span>21 de 170</span></button>
+      <button type="button" class="dex-tab" role="tab" aria-selected="false" data-t="leve" data-tier="leve"><b><i></i>Leve</b><span>10 de 119</span></button>
+    </div>
+    <ul class="faixas" id="faixas" role="tabpanel" aria-live="polite"></ul>
+  </div>
+</section>
+
+<!-- ===================== NA PÁGINA ===================== -->
+<section class="dentro fixa" aria-labelledby="t-pagina" id="sec-pagina">
+  <div class="fixa-palco">
+    <div class="site" id="site" data-ui>
+      <div class="hud" id="hud" role="status" aria-live="polite">
+        <div class="hud-top">
+          <span class="hud-marca"><svg viewBox="0 0 128 128" class="olho-vivo" id="hud-olho" aria-hidden="true"><rect width="128" height="128" rx="30" fill="#f2efe9"/><ellipse cx="41" cy="70" rx="20" ry="25" fill="#fff" stroke="#111" stroke-width="7"/><ellipse cx="89" cy="70" rx="20" ry="25" fill="#fff" stroke="#111" stroke-width="7"/><circle class="pupila" cx="41" cy="72" r="10" fill="#111"/><circle class="pupila" cx="89" cy="72" r="10" fill="#111"/><path d="M72 35Q89 25 107 31" fill="none" stroke="#a08672" stroke-width="7" stroke-linecap="round"/></svg>Lá ele</span>
+          <span class="hud-btns">
+            <button type="button" aria-label="Minimizar"><svg aria-hidden="true"><use href="#i-min"/></svg></button>
+            <button type="button" aria-label="Varrer de novo" id="hud-re"><svg aria-hidden="true"><use href="#i-re"/></svg></button>
+            <button type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+          </span>
+        </div>
+        <div class="hud-main">
+          <div><div class="hud-score num" id="hud-score">0</div><div class="hud-sub"><span id="hud-count">0</span> palavras</div></div>
+          <span class="nota" id="hud-nota" data-g="-" aria-label="Sem nota">–</span>
+        </div>
+        <div class="hud-rank" id="hud-rank"></div>
+        <div class="hud-combo"><span id="hud-combo">Combo 0</span><span class="hud-bar"><i id="hud-bar"></i></span><span class="hud-mult num" id="hud-mult">×1</span></div>
+        <div class="hud-rec" id="hud-rec" hidden>Novo recorde</div>
+      </div>
+      <div class="site-mast"><b>Diário do Bairro</b><span>sábado, 18 de outubro</span></div>
+      <p class="site-h">Feira da praça volta com fila desde cedo</p>
+      <p>O seu Valdir abriu a barraca às cinco. "Hoje a <mark class="laele-hit" data-t="pesado" data-coef="2.6">mandioca</mark> veio boa", gritava, enquanto a freguesa escolhia o <mark class="laele-hit" data-t="comum" data-coef="1.6">pepino</mark> mais <mark class="laele-hit" data-t="leve" data-coef="1">comprido</mark>.</p>
+      <p>Dona Cida vendia <mark class="laele-hit" data-t="comum" data-coef="1.6">linguiça</mark> e jurava que o segredo é a carne bem <mark class="laele-hit" data-t="leve" data-coef="0.9">molhada</mark>. Quem chegou tarde teve que <mark class="laele-hit" data-t="lendario" data-coef="4.5">sentar em cima</mark> do caixote.</p>
+      <p>No fim, levou <span id="propria-wrap"><mark class="laele-hit" data-t="comum" data-coef="2" id="propria">cenoura</mark></span> para casa e prometeu voltar sábado que vem.</p>
+    </div>
+  </div>
+  <div class="fixa-col">
+    <h2 id="t-pagina">Na página</h2>
+    <div class="cap sobe">
+      <h3>Varre sozinha quando a página abre.</h3>
+      <p>O marca-texto passa palavra por palavra e cada uma solta seus pontos. O olhinho do placar vira para a palavra que acabou de achar.</p>
+      <div class="controle"><button type="button" class="sw" role="switch" aria-checked="true" id="c-auto"><span class="sw-t" aria-hidden="true"></span>Varredura automática</button></div>
+    </div>
+    <div class="cap sobe">
+      <h3>No seu ritmo.</h3>
+      <p>Três velocidades. A rápida termina uma página longa em poucos segundos.</p>
+      <div class="controle"><div class="seg" role="radiogroup" aria-label="Velocidade" id="c-vel"><button type="button" role="radio" aria-checked="false" data-v="lento">Lento</button><button type="button" role="radio" aria-checked="true" data-v="normal">Normal</button><button type="button" role="radio" aria-checked="false" data-v="rapido">Rápido</button></div></div>
+    </div>
+    <div class="cap sobe">
+      <h3>O placar fica num canto, discreto.</h3>
+      <p>Pontos, nota, combo e multiplicador. Dá para esconder e continuar marcando.</p>
+      <div class="controle"><button type="button" class="sw" role="switch" aria-checked="true" id="c-hud"><span class="sw-t" aria-hidden="true"></span>Placar na página</button></div>
+    </div>
+    <div class="cap sobe">
+      <h3>Aprende as suas palavras.</h3>
+      <p>Escreva uma palavra e escolha o peso. A raridade sai do coeficiente, e ela aparece na última linha da notícia.</p>
+      <div class="controle campo"><input type="text" id="c-palavra" value="cenoura" aria-label="Palavra própria"><input type="range" id="c-coef" min="0.5" max="5" step="0.5" value="2" aria-label="Coeficiente"><output id="c-coef-out" class="num">×2 comum</output></div>
+    </div>
+    <div class="cap sobe">
+      <h3>E sem animação, se preferir.</h3>
+      <p>Tudo aparece de uma vez, e o sistema também respeita o movimento reduzido do aparelho.</p>
+      <div class="controle"><button type="button" class="sw" role="switch" aria-checked="true" id="c-anim"><span class="sw-t" aria-hidden="true"></span>Animações</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== POPUP ===================== -->
+<section class="dentro sec" aria-labelledby="t-popup">
+  <h2 class="titulo-2 sobe" id="t-popup" style="margin-bottom: 72px"><span class="mudo">O popup,</span>360 pixels de largura</h2>
+
+  <div class="linha-cap lc-a">
+    <div class="txt sobe">
+      <h3>A nota já está lá quando você abre.</h3>
+      <p>Pontos grandes, a nota num quadrado ao lado e os números do combo embaixo. O bronze aparece só no botão, no recorde e na nota S. Clique em "Varrer página" para ver a nota subir.</p>
+    </div>
+    <div class="frag sobe">
+      <div class="pp" data-pp data-ui>
+        <div class="pp-top">
+          <span class="pp-brand"><svg aria-hidden="true"><use href="#marca"/></svg>Lá ele</span>
+          <button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto<span class="sw-t" aria-hidden="true"></span></button>
+        </div>
+        <div class="pp-hero">
+          <span class="pp-host"><i aria-hidden="true">g1</i>g1.globo.com</span>
+          <div class="pp-total"><span class="num" data-total>63.130</span><small>pts</small></div>
+          <span class="nota" data-nota data-g="S" aria-label="Nota S">S</span>
+          <div class="pp-rank"><span data-rank>Lá ele supremo</span><span class="pp-rec" data-rec>Recorde</span></div>
+        </div>
+        <dl class="pp-nums">
+          <div><dt>palavras</dt><dd class="num" data-palavras>85</dd></div>
+          <div><dt>maior combo</dt><dd class="num">28</dd></div>
+          <div><dt>multiplicador</dt><dd class="num">×14,5</dd></div>
+        </dl>
+        <div class="pp-termos"><span data-t="pesado">mandioca <small>4</small></span><span data-t="pesado">pau <small>3</small></span><span data-t="comum">pepino <small>3</small></span><span data-t="lendario">sentar em cima <small>1</small></span></div>
+        <button type="button" class="pp-scan" data-scan><span class="lbl">Varrer página</span></button>
+        <div class="seg pp-tabs" role="tablist" aria-label="Seções do popup">
+          <button type="button" role="tab" aria-selected="true" data-tab="rec">Recordes</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="dex">Laelédex</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="aju">Ajustes</button>
+        </div>
+
+        <div class="pp-panel" data-panel="rec">
+          <div class="rec-best"><div><span>Recorde global</span><b class="num">63.130 pts</b></div><span>g1.globo.com · 18 out</span></div>
+          <dl class="rec-tot">
+            <div><dt>varreduras</dt><dd class="num">12</dd></div>
+            <div><dt>palavras</dt><dd class="num">340</dd></div>
+            <div><dt>pontos</dt><dd class="num">210 mil</dd></div>
+          </dl>
+          <span class="pp-sub">Melhores sites</span>
+          <ol class="sites">
+            <li><span class="r num">1</span><i class="fav" style="--c:#c4172c"></i><span>g1.globo.com</span><span class="p num">63.130</span><span class="g">S</span></li>
+            <li><span class="r num">2</span><i class="fav" style="--c:#2f8f46"></i><span>hortifruti.com.br</span><span class="p num">41.200</span><span class="g">S</span></li>
+            <li><span class="r num">3</span><i class="fav" style="--c:#e8590c"></i><span>tudogostoso.com.br</span><span class="p num">12.900</span><span class="g">S</span></li>
+            <li><span class="r num">4</span><i class="fav" style="--c:#d4d4d4"></i><span>pt.wikipedia.org</span><span class="p num">6.450</span><span class="g">A</span></li>
+            <li><span class="r num">5</span><i class="fav" style="--c:#1d6fb8"></i><span>ceagesp.gov.br</span><span class="p num">3.020</span><span class="g">A</span></li>
+          </ol>
+        </div>
+
+        <div class="pp-panel" data-panel="dex" hidden>
+          <div class="dex-prog"><div><span><b class="num">42</b> de 431 descobertas</span><span class="num">10%</span></div><span class="barra"><i></i></span></div>
+          <label class="busca"><svg aria-hidden="true"><use href="#i-lupa"/></svg><input type="search" placeholder="Buscar descobertas" aria-label="Buscar palavra descoberta" data-busca></label>
+          <div class="seg pp-filtros" role="group" aria-label="Raridade">
+            <button type="button" aria-pressed="true" data-f="todas">Todas</button>
+            <button type="button" aria-pressed="false" data-f="leve">Leve</button>
+            <button type="button" aria-pressed="false" data-f="comum">Comum</button>
+            <button type="button" aria-pressed="false" data-f="pesado">Pesado</button>
+            <button type="button" aria-pressed="false" data-f="lendario">Lendário</button>
+          </div>
+          <ul class="pp-lista" data-lista></ul>
+          <p class="pp-vazio" data-vazio hidden>Nenhuma descoberta com esse nome.</p>
+        </div>
+
+        <div class="pp-panel" data-panel="aju" hidden>
+          <div class="aj-grupo">
+            <div class="aj-linha"><div><b>Varredura automática</b><span>Varre cada página ao abrir.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Varredura automática" data-sw><span class="sw-t" aria-hidden="true"></span></button></div>
+            <div class="aj-linha"><div><b>Animações</b><span>Marca palavra por palavra.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Animações" data-sw><span class="sw-t" aria-hidden="true"></span></button></div>
+            <div class="aj-linha"><div><b>Placar na página</b><span>Mostra o placar no canto.</span></div><button type="button" class="sw" role="switch" aria-checked="false" aria-label="Placar na página" data-sw><span class="sw-t" aria-hidden="true"></span></button></div>
+          </div>
+          <span class="pp-sub">Velocidade</span>
+          <div class="seg" role="radiogroup" aria-label="Velocidade da animação">
+            <button type="button" role="radio" aria-checked="false">Lento</button>
+            <button type="button" role="radio" aria-checked="true">Normal</button>
+            <button type="button" role="radio" aria-checked="false">Rápido</button>
+          </div>
+          <span class="pp-sub">Palavras próprias</span>
+          <div class="aj-add"><input type="text" placeholder="Nova palavra ou expressão" aria-label="Nova palavra ou expressão" data-nova><button type="button" aria-label="Adicionar palavra" data-add><svg aria-hidden="true"><use href="#i-plus"/></svg></button></div>
+          <label class="aj-coef"><span>Coeficiente</span><output class="num" data-coef-out>×2 · comum</output><input type="range" min="0.5" max="5" step="0.5" value="2" data-coef></label>
+          <ul class="aj-proprias" data-proprias>
+            <li class="ui-linha" data-t="comum"><i class="pt"></i><span><b>cenoura</b><small>×2</small></span><button type="button" class="aj-x" aria-label="Remover cenoura"><svg aria-hidden="true"><use href="#i-x"/></svg></button></li>
+            <li class="ui-linha" data-t="pesado"><i class="pt"></i><span><b>abacaxi grande</b><small>×3,5</small></span><button type="button" class="aj-x" aria-label="Remover abacaxi grande"><svg aria-hidden="true"><use href="#i-x"/></svg></button></li>
+          </ul>
+          <div class="aj-zerar" data-zerar-idle><button type="button" data-zerar>Zerar recordes</button></div>
+          <div class="aj-zerar" data-zerar-conf hidden><button type="button" data-zerar-nao>Cancelar</button><button type="button" class="perigo" data-zerar-sim>Apagar tudo</button></div>
+          <p class="pp-nota-rodape">Tudo fica no seu navegador.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="linha-cap lc-b">
+    <div class="frag sobe">
+      <div class="recorte"><div class="pp" data-ui data-pp data-start="dex"></div></div>
+      <div class="recorte"><div class="pp" data-ui data-pp data-start="aju"></div></div>
+    </div>
+    <div class="txt sobe">
+      <h3>Laelédex e ajustes, cortados aqui pela metade.</h3>
+      <p>Na Laelédex, cada palavra tem a bolinha da raridade; as que faltam mostram só o tamanho. Nos ajustes, grupos com fio de 1 px, como num painel de sistema.</p>
+    </div>
+  </div>
+
+  <div class="linha-cap lc-c">
+    <div class="txt sobe">
+      <h3>Três estados, uma frase cada.</h3>
+      <p>Varrendo, nada encontrado e página proibida. O botão continua no mesmo lugar nos três.</p>
+    </div>
+    <div class="frag sobe">
+      <div class="pp" data-ui style="width:250px;padding-top:10px">
+        <div class="pp-hero"><span class="pp-host"><i aria-hidden="true" style="background:#e8590c">tg</i>receitas.com · varrendo</span><div class="pp-total"><span class="num">4.250</span><small>pts</small></div><span class="nota" data-g="A" aria-label="Nota A até agora">A</span><div class="pp-rank">17 palavras até agora</div></div>
+        <button type="button" class="pp-scan varrendo" disabled>Varrendo…</button>
+      </div>
+      <div class="pp" data-ui style="width:250px;padding-top:10px">
+        <div class="pp-msg"><span class="pp-host">bancodobrasil.com.br</span><b>Nada de lá ele por aqui… ainda</b><p>Página limpinha. Tente uma receita ou a seção de esportes.</p></div>
+        <button type="button" class="pp-scan">Varrer de novo</button>
+      </div>
+      <div class="pp" data-ui style="width:250px;padding-top:10px">
+        <div class="pp-msg"><span class="pp-host">chrome://extensions</span><b>Aqui o Chrome não deixa</b><p>Páginas do navegador, a Web Store e PDFs ficam de fora.</p></div>
+        <button type="button" class="pp-scan parado" disabled>Varrer página</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="linha-cap lc-d">
+    <div class="frag sobe">
+      <div class="icones">
+        <figure><svg width="128" height="128" role="img" aria-label="Ícone 128 px"><use href="#marca"/></svg>128</figure>
+        <figure><svg width="48" height="48" role="img" aria-label="Ícone 48 px"><use href="#marca"/></svg>48</figure>
+        <figure><svg width="32" height="32" role="img" aria-label="Ícone 32 px"><use href="#marca"/></svg>32</figure>
+        <figure><svg width="16" height="16" role="img" aria-label="Ícone 16 px"><use href="#marca16"/></svg>16</figure>
+      </div>
+      <div class="barra-chrome" data-ui><span class="url">g1.globo.com</span><span class="ext"><svg aria-hidden="true"><use href="#marca16"/></svg><span class="badge num">63k</span></span></div>
+    </div>
+    <div class="txt sobe">
+      <h3>O ícone ainda olha de lado.</h3>
+      <p>Mesma ideia da logo, desenhada mais fina: contorno de 6 px em 128, quadrado claro para aparecer em barra clara ou escura e a sobrancelha em bronze. Em 16 px a sobrancelha sai. O badge também é bronze.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DETALHES ===================== -->
+<div class="campo-detalhes"><section class="dentro sec detalhes" aria-labelledby="t-detalhes">
+  <h2 class="titulo-2 sobe" id="t-detalhes"><span class="mudo">Detalhes</span>de implementação</h2>
+  <dl class="sobe">
+    <div><dt>Fundo da página e do popup</dt><dd class="num"><span class="amostra" style="--c:#2b2b2b"></span>#111111 · #161616</dd></div>
+    <div><dt>Bronze, só ação principal, nota S e recorde</dt><dd class="num"><span class="amostra" style="--c:#a08672"></span>#A08672</dd></div>
+    <div><dt>Marca-texto leve</dt><dd class="num"><span class="amostra" style="--c:var(--m-leve)"></span>#D3EFB1 · ponto #9ED37A</dd></div>
+    <div><dt>Marca-texto comum</dt><dd class="num"><span class="amostra" style="--c:var(--m-comum)"></span>#FFE38A · ponto #EFCD4B</dd></div>
+    <div><dt>Marca-texto pesado</dt><dd class="num"><span class="amostra" style="--c:var(--m-pesado)"></span>#FFBFA8 · ponto #EF8B70</dd></div>
+    <div><dt>Marca-texto lendário</dt><dd class="num"><span class="amostra" style="--c:var(--m-lendario)"></span>#D6B58F · ponto #C9A27C</dd></div>
+    <div><dt>Letra</dt><dd>Switzer 400, 500 e 600, da Fontshare</dd></div>
+    <div><dt>Cantos</dt><dd>4 px na página; 6 a 12 px dentro da extensão</dd></div>
+    <div><dt>Marca-texto</dt><dd>cresce da esquerda em 240 ms; 520 ms entre palavras</dd></div>
+    <div><dt>Olhar do placar</dt><dd>a pupila vira para a palavra em 220 ms</dd></div>
+    <div><dt>Movimento reduzido</dt><dd>tudo aparece pronto, sem deslocamento</dd></div>
+  </dl>
+</section>
+</div>
+<footer class="dentro rodape"><span>Opção D · quieta, escura e exata</span><span><a href="opcao-a-feira.html">A, na feira</a> · <a href="opcao-b-cores.html">B, em cores</a> · <a href="opcao-c-olhos.html">C, de olho</a></span></footer>
+</main>
+
+<script>
+(function () {
+  document.documentElement.classList.add('js');
+  var reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt = new Intl.NumberFormat('pt-BR');
+  var RANKS = [[300, 'D', 'Quase inocente'], [1000, 'C', 'Lá ele de leve'], [3000, 'B', 'Tá ficando safado'], [8000, 'A', 'Lá ele pesado'], [Infinity, 'S', 'Lá ele supremo']];
+  function rank(t) { if (t <= 0) return [0, '-', '']; return RANKS.filter(function (x) { return t < x[0]; })[0]; }
+  function tierDe(c) { return c < 1.5 ? 'leve' : c < 2.5 ? 'comum' : c < 3.5 ? 'pesado' : 'lendario'; }
+  var NOME = { leve: 'leve', comum: 'comum', pesado: 'pesado', lendario: 'lendário' };
+  function virg(n) { return String(n).replace('.', ','); }
+  function poeNota(el, g, pula) {
+    el.setAttribute('data-g', g); el.textContent = g === '-' ? '–' : g;
+    el.setAttribute('aria-label', g === '-' ? 'Sem nota' : 'Nota ' + g);
+    if (pula && !reduz) { el.classList.remove('pula'); void el.offsetWidth; el.classList.add('pula'); }
+  }
+
+  // Entradas
+  var obs = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('visto'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 }) : null;
+  document.querySelectorAll('.sobe').forEach(function (c) { if (obs) obs.observe(c); else c.classList.add('visto'); });
+
+  // Abertura: as linhas que espiam trocam devagar
+  var sets = document.querySelectorAll('.espia-set'), si = 0;
+  if (!reduz) setInterval(function () {
+    if (document.hidden) return;
+    sets[si].classList.remove('on'); si = (si + 1) % sets.length; sets[si].classList.add('on');
+  }, 5600);
+
+  // ---------- Dados da Laelédex ----------
+  var DEX = {
+    lendario: [['segura no pau da barraca', 5, 'expressão inteira', 1, ['g1']], ['sentar em cima', 4.5, 'sentar em cima, sentou em cima', 1, ['g1']], [null, 0, 9]],
+    pesado: [['até o talo', 3.4, 'expressão inteira', 1, ['tg']], ['pau', 3, 'pau, paus, pauzão', 3, ['g1', 'hf', 'tg']], ['de quatro', 3, 'expressão inteira', 1, ['wk']], ['mandioca', 2.6, 'mandioca, mandiocas, mandiocão', 4, ['g1', 'hf']], [null, 0, 6]],
+    comum: [['salsicha', 2, 'salsicha, salsichão', 1, ['tg']], ['banana', 1.8, 'banana, bananas, bananão', 2, ['hf', 'ce']], ['pepino', 1.6, 'pepino, pepinos, pepinão', 3, ['g1', 'hf', 'tg']], ['linguiça', 1.6, 'linguiça, linguiças', 2, ['tg']], ['berinjela', 1.5, 'berinjela, berinjelas', 1, ['ce']], [null, 0, 8]],
+    leve: [['grossa', 1.2, 'grosso, grossa, grossão', 3, ['g1', 'tg', 'wk']], ['comprido', 1, 'comprido, comprida', 2, ['hf']], ['molhada', 0.9, 'molhado, molhada', 1, ['tg']], [null, 0, 7]]
+  };
+  var COR = { g1: '#e5484d', hf: '#46a758', tg: '#f76b15', wk: '#d4d4d4', ce: '#3e93de' };
+  var faixas = document.getElementById('faixas');
+  function mostraTier(t) {
+    faixas.innerHTML = DEX[t].map(function (w) {
+      if (!w[0]) return '<li class="faixa falta"><span class="k mudo">?</span><span class="w"><b aria-label="Palavra não descoberta">' + '•'.repeat(w[2]) + '</b><span>ainda não achada · ' + w[2] + ' letras</span></span><span class="quem"></span></li>';
+      return '<li class="faixa"><span class="k">×' + virg(w[1]) + '</span><span class="w"><b>' + w[0] + '</b><span>' + w[2] + '</span></span><span class="quem">' + w[3] + (w[3] > 1 ? ' vezes' : ' vez') + '<span class="rostos">' + w[4].map(function (s) { return '<i style="--c:' + COR[s] + '">' + s + '</i>'; }).join('') + '</span></span></li>';
+    }).join('');
+  }
+  document.querySelectorAll('.dex-tab').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.dex-tab').forEach(function (o) { o.setAttribute('aria-selected', String(o === b)); });
+      mostraTier(b.getAttribute('data-tier'));
+    });
+  });
+  mostraTier('comum');
+
+  // ---------- Popups (2 e 3 são cópias do primeiro) ----------
+  var modelo = document.querySelector('[data-pp]:not([data-start])');
+  document.querySelectorAll('[data-pp][data-start]').forEach(function (alvo) {
+    var copia = modelo.cloneNode(true);
+    copia.setAttribute('data-start', alvo.getAttribute('data-start'));
+    alvo.replaceWith(copia);
+  });
+  // Nos recortes, só as abas e o painel aparecem
+  document.querySelectorAll('.recorte .pp').forEach(function (pp) { var t = pp.querySelector('.pp-tabs'); while (t.previousElementSibling) t.previousElementSibling.remove(); t.style.marginTop = '14px'; });
+  function linhaDex(t, w) {
+    if (!w[0]) return '<li class="ui-linha falta" data-t="' + t + '" data-falta><i class="pt"></i><span><b>' + '•'.repeat(w[2]) + '</b><small>' + w[2] + ' letras</small></span><span class="v"></span></li>';
+    return '<li class="ui-linha" data-t="' + t + '"><i class="pt"></i><span><b>' + w[0] + '</b><small>×' + virg(w[1]) + '</small></span><span class="v num">' + w[3] + '×</span></li>';
+  }
+  document.querySelectorAll('[data-pp]').forEach(function (pp) {
+    pp.querySelectorAll('[data-sw]').forEach(function (s) { s.addEventListener('click', function () { s.setAttribute('aria-checked', String(s.getAttribute('aria-checked') !== 'true')); }); });
+    var tabs = pp.querySelectorAll('[data-tab]');
+    function abre(n) {
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.getAttribute('data-tab') === n)); });
+      pp.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== n; });
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { abre(t.getAttribute('data-tab')); }); });
+    abre(pp.getAttribute('data-start') || 'rec');
+
+    var lista = pp.querySelector('[data-lista]'), vazio = pp.querySelector('[data-vazio]'), busca = pp.querySelector('[data-busca]'), filtro = 'todas';
+    lista.innerHTML = ['lendario', 'pesado', 'comum', 'leve'].map(function (t) { return DEX[t].map(function (w) { return linhaDex(t, w); }).join(''); }).join('');
+    function filtra() {
+      var q = (busca.value || '').trim().toLowerCase(), vis = 0;
+      lista.querySelectorAll('li').forEach(function (li) {
+        var ok = (filtro === 'todas' || li.getAttribute('data-t') === filtro) && (!q || (!li.hasAttribute('data-falta') && li.textContent.toLowerCase().indexOf(q) !== -1));
+        li.hidden = !ok; if (ok) vis++;
+      });
+      vazio.hidden = vis > 0;
+    }
+    pp.querySelectorAll('[data-f]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        pp.querySelectorAll('[data-f]').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+        filtro = b.getAttribute('data-f'); filtra();
+      });
+    });
+    busca.addEventListener('input', filtra);
+
+    pp.querySelectorAll('[role=radio]').forEach(function (r) {
+      r.addEventListener('click', function () { r.parentNode.querySelectorAll('[role=radio]').forEach(function (o) { o.setAttribute('aria-checked', String(o === r)); }); });
+    });
+    var coef = pp.querySelector('[data-coef]'), nova = pp.querySelector('[data-nova]'), props = pp.querySelector('[data-proprias]');
+    coef.addEventListener('input', function () { var c = parseFloat(coef.value); pp.querySelector('[data-coef-out]').textContent = '×' + virg(c) + ' · ' + NOME[tierDe(c)]; });
+    function ligaX(li) { li.querySelector('.aj-x').addEventListener('click', function () { li.remove(); }); }
+    props.querySelectorAll('li').forEach(ligaX);
+    pp.querySelector('[data-add]').addEventListener('click', function () {
+      var w = (nova.value || '').trim(); if (!w) { nova.focus(); return; }
+      var c = parseFloat(coef.value), li = document.createElement('li');
+      li.className = 'ui-linha'; li.setAttribute('data-t', tierDe(c));
+      li.innerHTML = '<i class="pt"></i><span><b></b><small>×' + virg(c) + '</small></span><button type="button" class="aj-x"><svg aria-hidden="true"><use href="#i-x"/></svg></button>';
+      li.querySelector('b').textContent = w; li.querySelector('.aj-x').setAttribute('aria-label', 'Remover ' + w);
+      props.prepend(li); ligaX(li); nova.value = '';
+    });
+    var idle = pp.querySelector('[data-zerar-idle]'), conf = pp.querySelector('[data-zerar-conf]');
+    pp.querySelector('[data-zerar]').addEventListener('click', function () { idle.hidden = true; conf.hidden = false; });
+    pp.querySelector('[data-zerar-nao]').addEventListener('click', function () { idle.hidden = false; conf.hidden = true; });
+    pp.querySelector('[data-zerar-sim]').addEventListener('click', function () { idle.hidden = false; conf.hidden = true; });
+
+    // Varrer: soma em escala de log, cada nota fica um tempo parecido na tela
+    var scan = pp.querySelector('[data-scan]'), nota = pp.querySelector('[data-nota]'), tot = pp.querySelector('[data-total]');
+    var rk = pp.querySelector('[data-rank]'), rec = pp.querySelector('[data-rec]'), pal = pp.querySelector('[data-palavras]'), ALVO = 63130, raf = 0;
+    function mostra(v) {
+      var r = rank(v);
+      tot.textContent = fmt.format(v);
+      pal.textContent = String(Math.max(1, Math.round(85 * Math.log(v) / Math.log(ALVO))));
+      if (nota.getAttribute('data-g') !== r[1]) { poeNota(nota, r[1], true); rk.textContent = r[2]; }
+    }
+    if (scan) scan.addEventListener('click', function () {
+      cancelAnimationFrame(raf);
+      scan.disabled = true; scan.classList.add('varrendo'); scan.querySelector('.lbl').textContent = 'Varrendo…'; rec.hidden = true;
+      function fim() { mostra(ALVO); pal.textContent = '85'; rec.hidden = false; scan.disabled = false; scan.classList.remove('varrendo'); scan.querySelector('.lbl').textContent = 'Varrer página'; }
+      if (reduz) { fim(); return; }
+      var t0 = performance.now(), dur = 3200, lo = Math.log(40), hi = Math.log(ALVO);
+      nota.setAttribute('data-g', '');
+      (function passo(t) { var k = Math.min(1, (t - t0) / dur); mostra(Math.round(Math.exp(lo + (hi - lo) * k))); if (k < 1) raf = requestAnimationFrame(passo); else fim(); })(t0);
+    });
+  });
+
+
+  // ---------- Na página: saída fixa + controles ----------
+  var site = document.getElementById('site'), hud = document.getElementById('hud');
+  var olho = document.getElementById('hud-olho'), pupilas = olho.querySelectorAll('.pupila');
+  var el = { score: document.getElementById('hud-score'), count: document.getElementById('hud-count'), nota: document.getElementById('hud-nota'), rank: document.getElementById('hud-rank'), combo: document.getElementById('hud-combo'), bar: document.getElementById('hud-bar'), mult: document.getElementById('hud-mult'), rec: document.getElementById('hud-rec') };
+  var VEL = { lento: [420, 900], normal: [240, 520], rapido: [120, 200] }, vel = 'normal', anim = true;
+  var timers = [], shown = 0, raf2 = 0;
+  function olha(vx, vy) {
+    var m = Math.sqrt(vx * vx + vy * vy) || 1;
+    var dx = vx / m * 8, dy = vy / m * 8;
+    if (vx === 0 && vy === 0) { dx = 0; dy = 0; }
+    pupilas.forEach(function (p) { p.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)'; });
+  }
+  function mira(m) {
+    var a = m.getBoundingClientRect(), b = olho.getBoundingClientRect();
+    olha(a.left + a.width / 2 - (b.left + b.width / 2), a.top + a.height / 2 - (b.top + b.height / 2));
+  }
+  function conta(alvo) {
+    cancelAnimationFrame(raf2);
+    var semAnim = !anim || reduz;
+    function aplica(v) { el.score.textContent = fmt.format(v); var r = rank(v); if (el.nota.getAttribute('data-g') !== r[1]) poeNota(el.nota, r[1], !semAnim); }
+    if (semAnim) { shown = alvo; aplica(alvo); return; }
+    var de = shown, t0 = performance.now();
+    (function passo(t) { var k = Math.min(1, (t - t0) / 320); shown = Math.round(de + (alvo - de) * (1 - Math.pow(1 - k, 3))); aplica(shown); if (k < 1) raf2 = requestAnimationFrame(passo); })(t0);
+  }
+  function solta(m, pts, mult) {
+    var r = m.getBoundingClientRect(), s = site.getBoundingClientRect(), f = document.createElement('span');
+    f.className = 'laele-float'; f.setAttribute('aria-hidden', 'true'); f.textContent = '+' + fmt.format(pts);
+    if (mult > 1) { var i = document.createElement('i'); i.textContent = '×' + virg(mult); f.appendChild(i); }
+    f.style.left = (r.left - s.left) + 'px'; f.style.top = (r.top - s.top - 26) + 'px';
+    site.appendChild(f); setTimeout(function () { f.remove(); }, 950);
+  }
+  function limpa() {
+    timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf2);
+    site.querySelectorAll('mark').forEach(function (m) { m.classList.remove('laele-on'); });
+    site.querySelectorAll('.laele-float').forEach(function (f) { f.remove(); });
+    shown = 0; el.score.textContent = '0'; el.count.textContent = '0'; el.combo.textContent = 'Combo 0'; el.bar.style.width = '0';
+    el.mult.textContent = '×1'; el.rank.textContent = ''; el.rec.hidden = true; poeNota(el.nota, '-'); olha(0, 0);
+  }
+  function varre() {
+    limpa();
+    var semAnim = !anim || reduz;
+    site.classList.toggle('sem-anim', semAnim);
+    site.style.setProperty('--wipe', VEL[vel][0] + 'ms');
+    var marks = Array.prototype.slice.call(site.querySelectorAll('mark.laele-hit'));
+    var total = 0, combo = 0, ultP = null, passo = semAnim ? 0 : VEL[vel][1];
+    marks.forEach(function (m, idx) {
+      var p = m.closest('p'); combo = p === ultP ? combo + 1 : 1; ultP = p;
+      var mult = Math.min(10, 1 + 0.5 * (combo - 1)), c = combo;
+      var pts = Math.round(100 * parseFloat(m.getAttribute('data-coef')) * mult);
+      if (!semAnim) timers.push(setTimeout(function () { mira(m); }, 160 + idx * passo));
+      timers.push(setTimeout(function () {
+        m.classList.add('laele-on'); total += pts; conta(total);
+        el.count.textContent = String(idx + 1); el.combo.textContent = 'Combo ' + c;
+        el.bar.style.width = Math.min(100, c * 20) + '%'; el.mult.textContent = '×' + virg(mult);
+        if (!semAnim) solta(m, pts, mult);
+      }, semAnim ? 0 : 320 + idx * passo));
+    });
+    timers.push(setTimeout(function () {
+      var r = rank(total); el.rank.textContent = r[2]; poeNota(el.nota, r[1], !semAnim); el.rec.hidden = false; olha(0, 0);
+    }, semAnim ? 0 : 320 + marks.length * passo + 400));
+  }
+  function liga(id, fn) { var b = document.getElementById(id); b.addEventListener('click', function () { var on = b.getAttribute('aria-checked') !== 'true'; b.setAttribute('aria-checked', String(on)); fn(on); }); }
+  liga('c-auto', function (on) { if (on) varre(); else { limpa(); el.rank.textContent = 'Pausado. Clique no ícone para varrer.'; } });
+  liga('c-hud', function (on) { hud.classList.toggle('fora', !on); });
+  liga('c-anim', function (on) { anim = on; varre(); });
+  document.querySelectorAll('#c-vel [data-v]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('#c-vel [data-v]').forEach(function (o) { o.setAttribute('aria-checked', String(o === b)); });
+      vel = b.getAttribute('data-v'); varre();
+    });
+  });
+  var palavra = document.getElementById('c-palavra'), coefC = document.getElementById('c-coef'), propria = document.getElementById('propria');
+  function atualizaPropria() {
+    var c = parseFloat(coefC.value), t = tierDe(c);
+    propria.textContent = (palavra.value || '').trim() || 'cenoura';
+    propria.setAttribute('data-t', t); propria.setAttribute('data-coef', String(c));
+    document.getElementById('c-coef-out').textContent = '×' + virg(c) + ' ' + NOME[t];
+  }
+  palavra.addEventListener('input', atualizaPropria);
+  coefC.addEventListener('input', atualizaPropria);
+  palavra.addEventListener('change', varre);
+  coefC.addEventListener('change', varre);
+  document.getElementById('hud-re').addEventListener('click', varre);
+  var visto = false;
+  var obsSite = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { if (es[0].isIntersecting && !visto) { visto = true; varre(); } }, { threshold: 0.4 }) : null;
+  if (obsSite) obsSite.observe(site); else varre();
+})();
+</script>

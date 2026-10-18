@@ -1,0 +1,1023 @@
+<title>Robo-LaEle em cores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&display=swap">
+<style>
+/* Layout: capítulos de cor chapada, um por seção, encostados sem divisória. A nota da página escolhe a cor do popup. */
+:root {
+  color-scheme: light;
+  --laranja: #ff8126;
+  --laranja-2: #f26f12;
+  --ceu: #4db3ff;
+  --ceu-2: #36a2f2;
+  --limao: #c5f53d;
+  --limao-2: #b2e52a;
+  --breu: #161615;
+  --carmim: #de194b;
+  --carmim-2: #c4103e;
+  --papel: #f3f4ee;
+  --papel-2: #e1e3d9;
+  --branco: #ffffff;
+  --tinta: #111111;
+  --tinta-clara: #f2f2f2;
+  --site-ink: #26272b;
+  --f: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--laranja); color: var(--tinta); font-family: var(--f); font-size: 18px; line-height: 1.45; letter-spacing: -0.005em; }
+h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
+p { margin: 0; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Capítulos ---------- */
+.cap { background: var(--cf); color: var(--ci); }
+.cap[data-cor="laranja"] { --cf: var(--laranja); --ci: var(--tinta); }
+.cap[data-cor="breu"]    { --cf: var(--breu);    --ci: var(--tinta-clara); }
+.cap[data-cor="papel"]   { --cf: var(--papel);   --ci: var(--tinta); }
+.cap[data-cor="ceu"]     { --cf: var(--ceu);     --ci: var(--tinta); }
+.cap[data-cor="limao"]   { --cf: var(--limao);   --ci: var(--tinta); }
+.cap-in {
+  max-width: 1440px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: clamp(64px, 9vw, 128px);
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px;
+}
+.cap-cab { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 20px; align-items: end; }
+.cap-cab h2 { grid-column: 1 / span 7; font-size: clamp(56px, 8vw, 120px); letter-spacing: -0.05em; line-height: 0.9; }
+.cap-cab p { grid-column: 9 / -1; font-size: 18px; max-width: 44ch; }
+@media (max-width: 900px) {
+  .cap-cab h2, .cap-cab p { grid-column: 1 / -1; }
+}
+
+/* ---------- Abertura: faixa de mosaico + título no eixo ---------- */
+.topo { display: flex; align-items: stretch; height: 56px; }
+.topo-marca { background: var(--breu); color: var(--tinta-clara); display: flex; align-items: center; gap: 10px; padding: 0 20px 0 max(16px, env(safe-area-inset-left, 0px)); font-size: 20px; font-weight: 500; letter-spacing: -0.03em; }
+.topo-marca svg { width: 28px; height: 28px; }
+.topo-aba { background: var(--carmim); color: var(--branco); display: flex; align-items: center; gap: 28px; padding: 0 24px; width: calc(42% - 150px); min-width: 0; }
+.topo-aba a { color: inherit; text-decoration: none; font-size: 16px; }
+.topo-aba a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.topo-acao { margin-left: auto; display: flex; align-items: center; padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.botao { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; background: var(--breu); color: var(--tinta-clara); border: 0; font-size: 16px; font-weight: 500; text-decoration: none; cursor: pointer; transition: transform 160ms var(--ease); }
+.botao:hover { transform: translateY(-2px); }
+.botao:active { transform: translateY(1px); }
+
+.mosaico { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); height: max(340px, 52vh); }
+.mosaico > * { min-width: 0; min-height: 0; overflow: hidden; position: relative; }
+.t-ceu { background: var(--ceu); } .t-limao { background: var(--limao); } .t-breu { background: var(--breu); } .t-carmim { background: var(--carmim); } .t-papel { background: var(--papel); }
+.m-site { grid-column: 1 / span 2; grid-row: 1; background: var(--branco); color: var(--site-ink); padding: 18px 24px 0; font-size: 20px; line-height: 1.5; letter-spacing: -0.01em; display: flex; flex-direction: column; gap: 10px; }
+.m-site-t { font-size: 13px; font-weight: 500; padding-bottom: 8px; border-bottom: 3px solid var(--site-ink); }
+.m-ceu { grid-column: 3; grid-row: 1 / span 2; }
+.m-total { grid-column: 4; grid-row: 1; background: var(--carmim); color: var(--branco); padding: 16px; display: flex; flex-direction: column; justify-content: flex-start; }
+.m-total b { font-weight: 500; font-size: clamp(28px, 2.6vw, 40px); letter-spacing: -0.05em; line-height: 1; }
+.m-total span { font-size: 13px; }
+.m-total i { position: absolute; right: -0.06em; bottom: -0.16em; font-style: normal; font-weight: 500; font-size: clamp(72px, 6.6vw, 100px); line-height: 1; letter-spacing: -0.06em; }
+.m-icone { grid-column: 6; grid-row: 1; background: var(--breu); display: grid; place-items: center; }
+.m-icone svg { width: 46%; height: auto; aspect-ratio: 1; max-width: 100%; }
+.m-hud { grid-column: 1; grid-row: 2; background: var(--limao); display: flex; flex-direction: column; }
+.m-hud .h { background: var(--breu); color: var(--tinta-clara); font-size: 13px; padding: 8px 14px; }
+.m-hud .s { padding: 10px 14px; font-weight: 500; font-size: clamp(30px, 2.8vw, 44px); letter-spacing: -0.05em; line-height: 1; }
+.m-hud .c { padding: 0 14px; font-size: 13px; }
+.m-banda { grid-column: 4; grid-row: 2; background: var(--papel); padding: 14px; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.m-banda div { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; padding: 10px 12px; font-size: 16px; }
+.m-banda div:nth-child(1) { background: var(--laranja); }
+.m-banda div:nth-child(2) { background: var(--laranja-2); }
+.m-banda div:nth-child(3) { background: var(--limao); }
+.m-banda b { font-weight: 500; }
+
+.abre { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 110px 120px; display: grid; grid-template-columns: 42% minmax(0, 1fr); column-gap: 0; align-items: start; max-width: 1440px; margin: 0 auto; }
+.abre-lede { grid-column: 1; grid-row: 1; font-size: 20px; max-width: 30ch; padding-top: 14px; display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+.abre h1 { grid-column: 2; grid-row: 1; font-size: clamp(56px, 8vw, 120px); letter-spacing: -0.06em; line-height: 0.9; }
+.linha { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.linha > span { display: block; animation: sobeLinha 900ms var(--ease) both; }
+.linha:nth-child(2) > span { animation-delay: 110ms; }
+.abre-lede { animation: aparece 600ms var(--ease) 520ms both; }
+@keyframes sobeLinha { from { transform: translateY(105%); } to { transform: none; } }
+@keyframes aparece { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 760px) {
+  .topo-aba { display: none; }
+  .topo-acao { display: none; }
+  .mosaico { grid-template-columns: repeat(3, minmax(0, 1fr)); height: 38svh; min-height: 260px; }
+  .so-largo { display: none; }
+  .m-site { grid-column: 1 / span 2; grid-row: 1; padding: 16px 16px 0; font-size: 18px; }
+  .m-limao-cel { grid-column: 3; grid-row: 1; }
+  .m-total { grid-column: 1; grid-row: 2; padding: 10px; }
+  .m-total b { font-size: 20px; }
+  .m-ceu { grid-column: 2; grid-row: 2; }
+  .m-carmim-cel { grid-column: 3; grid-row: 2; }
+  .abre { grid-template-columns: minmax(0, 1fr); padding-block: 48px 64px; row-gap: 28px; }
+  .abre h1 { grid-column: 1; grid-row: 1; font-size: 15vw; }
+  .abre-lede { grid-column: 1; grid-row: 2; font-size: 17px; padding-top: 0; }
+}
+@media (min-width: 761px) { .m-limao-cel, .m-carmim-cel { display: none; } }
+.m-selo { grid-column: 6; grid-row: 2; display: grid; place-items: center; }
+.laele-float-fixo { background: var(--breu); color: var(--tinta-clara); font-size: 28px; font-weight: 500; letter-spacing: -0.03em; padding: 6px 12px; }
+.laele-float-fixo i { font-style: normal; margin-left: 8px; color: var(--limao); }
+.m-limao-cel { background: var(--limao); } .m-carmim-cel { background: var(--carmim); }
+
+/* ---------- Popup ---------- */
+.mesa { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 40px 32px; align-items: flex-start; }
+.peca { margin: 0; display: flex; flex-direction: column; gap: 16px; width: 360px; max-width: 100%; }
+.peca figcaption { font-size: 16px; max-width: 40ch; }
+.peca figcaption b { font-weight: 500; }
+
+.pp { width: 360px; max-width: 100%; max-height: 600px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; background: var(--papel); color: var(--tinta); font-family: var(--f); font-size: 14px; line-height: 1.4; }
+:where(.pp [data-campo], .hud-campo) { --f1: var(--papel); --i1: var(--tinta); --b1: var(--breu); --bi1: var(--tinta-clara); }
+[data-grade="D"] { --f1: var(--ceu); }
+[data-grade="C"] { --f1: var(--limao); }
+[data-grade="B"] { --f1: var(--laranja); }
+[data-grade="A"] { --f1: var(--breu); --i1: var(--tinta-clara); --b1: var(--papel); --bi1: var(--tinta); }
+[data-grade="S"] { --f1: var(--carmim); --i1: var(--branco); }
+.pp-campo { background: var(--f1); color: var(--i1); position: relative; overflow: hidden; padding: 0 16px 16px; }
+.pp-top { display: flex; align-items: center; justify-content: space-between; height: 48px; position: relative; z-index: 1; }
+.pp-brand { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500; letter-spacing: -0.03em; }
+.pp-brand svg { width: 22px; height: 22px; }
+.pp-hero { position: relative; z-index: 1; padding-top: 8px; min-height: 148px; display: flex; flex-direction: column; gap: 2px; }
+.pp-host { font-size: 13px; }
+.pp-total { font-size: 64px; font-weight: 500; letter-spacing: -0.05em; line-height: 0.95; white-space: nowrap; }
+.pp-total small { font-size: 16px; letter-spacing: 0; margin-left: 4px; }
+.pp-rank { font-size: 20px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pp-rec { background: var(--b1); color: var(--bi1); font-size: 13px; padding: 2px 6px; letter-spacing: 0; }
+.pp-letra { position: absolute; right: -12px; top: -2px; font-size: 180px; font-weight: 500; line-height: 0.8; letter-spacing: -0.08em; z-index: 0; pointer-events: none; overflow: hidden; height: 150px; padding-right: 0.05em; }
+.pp-letra span { display: block; }
+.pp-letra.troca span { animation: trocaLetra 240ms var(--ease); }
+@keyframes trocaLetra { from { transform: translateY(40%); opacity: 0; } to { transform: none; opacity: 1; } }
+.pp-nums { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0 0; }
+.pp-nums div { display: flex; flex-direction: column; }
+.pp-nums dt { order: 2; font-size: 13px; }
+.pp-nums dd { margin: 0; font-size: 28px; font-weight: 500; letter-spacing: -0.04em; line-height: 1.05; }
+.pp-termos { position: relative; z-index: 1; font-size: 13px; margin-top: 10px; }
+.pp-termos b { font-weight: 500; }
+.pp-scan { position: relative; z-index: 1; margin-top: 14px; width: 100%; min-height: 48px; border: 0; background: var(--b1); color: var(--bi1); font-size: 16px; font-weight: 500; cursor: pointer; overflow: hidden; transition: transform 140ms var(--ease); }
+.pp-scan:hover { transform: translateY(-1px); }
+.pp-scan:active { transform: translateY(1px); }
+.pp-scan:disabled { cursor: default; transform: none; }
+.pp-scan.parado { background: var(--papel-2); color: var(--tinta); }
+.pp-scan .faixa { position: absolute; left: 0; bottom: 0; height: 4px; width: 30%; background: var(--carmim); transform: translateX(-100%); }
+.pp-scan.varrendo .faixa { animation: corre 900ms linear infinite; }
+@keyframes corre { to { transform: translateX(340%); } }
+
+.pp-msg { position: relative; z-index: 1; padding: 8px 0 4px; display: flex; flex-direction: column; gap: 8px; min-height: 148px; }
+.pp-msg-t { font-weight: 500; font-size: 28px; letter-spacing: -0.04em; line-height: 1; }
+.pp-msg p { font-size: 14px; max-width: 32ch; }
+
+.pp-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: var(--papel); }
+.pp-tab { min-height: 44px; border: 0; background: var(--papel-2); color: var(--tinta); font-size: 14px; cursor: pointer; transition: transform 140ms var(--ease); }
+.pp-tab:hover { transform: translateY(-1px); }
+.pp-tab[aria-selected="true"] { background: var(--breu); color: var(--tinta-clara); }
+.pp-panel { padding: 12px 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.pp-h { font-size: 16px; font-weight: 500; letter-spacing: -0.02em; }
+
+/* Recordes: barras deitadas */
+.best { display: flex; flex-direction: column; }
+.best-v { font-size: 40px; font-weight: 500; letter-spacing: -0.05em; line-height: 1; }
+.best-k { font-size: 13px; }
+.totais { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.totais div { display: flex; flex-direction: column; }
+.totais dt { order: 2; font-size: 13px; }
+.totais dd { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -0.03em; }
+.barras { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.barras li { display: flex; align-items: center; gap: 8px; height: 28px; font-size: 13px; }
+.barras .b { height: 100%; background: var(--breu); color: var(--tinta-clara); display: flex; align-items: center; justify-content: space-between; padding: 0 8px; gap: 8px; min-width: 6px; white-space: nowrap; transform-origin: left; }
+.barras .b.rec { background: var(--carmim); color: var(--branco); }
+.barras .fora { white-space: nowrap; }
+.barras .fora b, .barras .b b { font-weight: 500; }
+.pp-panel.abrindo .barras .b { animation: cresce 520ms var(--ease) both; }
+.pp-panel.abrindo .barras li:nth-child(2) .b { animation-delay: 50ms; }
+.pp-panel.abrindo .barras li:nth-child(3) .b { animation-delay: 100ms; }
+.pp-panel.abrindo .barras li:nth-child(4) .b { animation-delay: 150ms; }
+.pp-panel.abrindo .barras li:nth-child(5) .b { animation-delay: 200ms; }
+@keyframes cresce { from { transform: scaleX(0); } to { transform: none; } }
+
+/* Laelédex: abas de raridade + faixas */
+.prog { display: flex; flex-direction: column; gap: 6px; }
+.prog-txt { display: flex; justify-content: space-between; align-items: baseline; }
+.prog-txt b { font-size: 28px; font-weight: 500; letter-spacing: -0.04em; }
+.prog-bar { height: 10px; background: var(--papel-2); }
+.prog-bar i { display: block; height: 100%; width: 10%; background: var(--breu); }
+.busca { display: flex; align-items: center; gap: 8px; background: var(--branco); padding: 0 12px; min-height: 44px; }
+.busca svg { width: 18px; height: 18px; flex: none; }
+.busca input { border: 0; background: none; outline: none; width: 100%; min-height: 44px; font-size: 14px; }
+.busca:focus-within { outline: 3px solid var(--tinta); }
+.raridades { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.raridade { min-height: 44px; border: 0; padding: 0 2px; font-size: 13px; cursor: pointer; background: var(--rc); color: var(--ri); transition: transform 140ms var(--ease); }
+.raridade:hover { transform: translateY(-1px); }
+.raridade[aria-pressed="true"] { background: var(--breu); color: var(--tinta-clara); }
+[data-tier="todas"]   { --rc: var(--papel-2); --rc2: var(--papel-2); --ri: var(--tinta); }
+[data-tier="leve"]    { --rc: var(--ceu); --rc2: var(--ceu-2); --ri: var(--tinta); }
+[data-tier="comum"]   { --rc: var(--limao); --rc2: var(--limao-2); --ri: var(--tinta); }
+[data-tier="pesado"]  { --rc: var(--laranja); --rc2: var(--laranja-2); --ri: var(--tinta); }
+[data-tier="lendario"]{ --rc: var(--carmim); --rc2: var(--carmim-2); --ri: var(--branco); }
+.faixas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.faixas li { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 56px; padding: 8px 12px; background: var(--rc); color: var(--ri); }
+.faixas.so-uma li:nth-child(even) { background: var(--rc2); }
+.faixas .k { font-size: 20px; font-weight: 500; letter-spacing: -0.03em; }
+.faixas .w { display: flex; flex-direction: column; min-width: 0; }
+.faixas .w b { font-size: 16px; font-weight: 500; letter-spacing: -0.02em; }
+.faixas .w span { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faixas .n { font-size: 14px; }
+.faixas li.falta .w b { letter-spacing: 0.18em; }
+.vazio-dex { font-size: 14px; padding: 8px 0; }
+
+/* Ajustes: saída fixa + controles ao vivo */
+.saida { position: sticky; top: 0; z-index: 2; background: var(--branco); color: var(--site-ink); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.saida p { font-size: 16px; line-height: 1.6; }
+.saida-hud { align-self: flex-end; display: flex; align-items: stretch; font-size: 13px; }
+.saida-hud span { background: var(--breu); color: var(--tinta-clara); padding: 4px 8px; }
+.saida-hud b { background: var(--f1); color: var(--i1); padding: 4px 8px; font-weight: 500; }
+.bloco { display: flex; flex-direction: column; gap: 8px; }
+.bloco-t { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.bloco-t div { display: flex; flex-direction: column; }
+.bloco-t b { font-size: 16px; font-weight: 500; letter-spacing: -0.02em; }
+.bloco-t span { font-size: 13px; }
+.sw { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; cursor: pointer; min-height: 44px; font-size: 13px; color: inherit; }
+.sw-track { width: 40px; height: 24px; background: var(--papel-2); position: relative; flex: none; transition: background 140ms; }
+.sw-track::after { content: ""; position: absolute; top: 4px; left: 4px; width: 16px; height: 16px; background: var(--tinta); transition: transform 180ms var(--ease); }
+.sw[aria-checked="true"] .sw-track { background: var(--tinta); }
+.sw[aria-checked="true"] .sw-track::after { transform: translateX(16px); background: var(--papel); }
+.pp-campo .sw[aria-checked="true"] .sw-track { background: var(--i1); }
+.pp-campo .sw[aria-checked="true"] .sw-track::after { background: var(--f1); }
+.pp-campo .sw-track { background: var(--papel); }
+.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.seg button { min-height: 44px; border: 0; background: var(--papel-2); cursor: pointer; font-size: 14px; }
+.seg [aria-checked="true"] { background: var(--breu); color: var(--tinta-clara); }
+.campo-l { font-size: 13px; }
+.add { display: flex; gap: 4px; }
+.add input { flex: 1; min-width: 0; min-height: 44px; border: 0; background: var(--branco); padding: 0 12px; font-size: 14px; }
+.add button { width: 44px; min-height: 44px; border: 0; background: var(--breu); color: var(--tinta-clara); cursor: pointer; display: grid; place-items: center; }
+.add button svg, .x svg { width: 18px; height: 18px; }
+.coef { display: flex; justify-content: space-between; align-items: baseline; }
+.coef output { font-size: 20px; font-weight: 500; }
+.range { width: 100%; accent-color: var(--breu); min-height: 32px; }
+.escala-r { display: flex; justify-content: space-between; font-size: 13px; }
+.proprias { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.proprias li { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; padding: 0 4px 0 12px; background: var(--rc); color: var(--ri); }
+.proprias b { font-weight: 500; }
+.x { width: 40px; height: 40px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; color: inherit; }
+.zerar { display: flex; gap: 4px; }
+.zerar button { min-height: 44px; border: 0; padding: 0 14px; cursor: pointer; font-size: 14px; background: var(--papel-2); }
+.zerar .perigo { background: var(--carmim); color: var(--branco); }
+.pp-note { font-size: 13px; }
+
+/* ---------- Marca-texto (na página) ---------- */
+mark.laele-hit { background: none; color: inherit; position: relative; z-index: 0; --mc: var(--rc); }
+mark.laele-hit::before { content: ""; position: absolute; inset: 0 -0.12em; background: var(--mc); transform: scaleX(0); transform-origin: left center; transition: transform var(--wipe, 240ms) var(--ease); z-index: -1; }
+mark.laele-hit.laele-on::before { transform: none; }
+mark.laele-hit.laele-on { color: var(--ri); background-color: var(--mc); transition: background-color 0s linear var(--wipe, 240ms); }
+.sem-anim mark.laele-hit::before { transition: none; }
+.laele-float { position: absolute; z-index: 5; pointer-events: none; background: var(--breu); color: var(--tinta-clara); font-family: var(--f); font-size: 16px; font-weight: 500; padding: 3px 7px; white-space: nowrap; animation: flutua 900ms var(--ease) forwards; }
+.laele-float i { font-style: normal; margin-left: 6px; color: var(--limao); }
+@keyframes flutua { 0% { transform: translateY(6px); opacity: 0; } 18% { transform: none; opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; } }
+
+/* ---------- Escala: barras em pé na borda ---------- */
+.escala { position: relative; min-height: 90svh; display: flex; flex-direction: column; }
+.escala-cab { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: clamp(56px, 8vw, 112px) 32px; max-width: 1440px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 16px; }
+.escala-fig { grid-column: 1 / span 7; font-size: clamp(56px, 8vw, 120px); font-weight: 500; letter-spacing: -0.06em; line-height: 0.88; }
+.escala-claim { grid-column: 1 / span 7; font-size: 28px; letter-spacing: -0.03em; line-height: 1.15; max-width: 22ch; }
+.escala-txt { grid-column: 9 / -1; grid-row: 1 / span 2; align-self: end; font-size: 18px; max-width: 40ch; }
+.pilares { margin-top: auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; align-items: end; height: 58vh; min-height: 360px; list-style: none; padding: 0; margin-bottom: 0; }
+.pilares li { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
+.pilar { height: var(--h); background: var(--pc); color: var(--pi); padding: 16px; display: flex; flex-direction: column; justify-content: space-between; transform-origin: bottom; transition: transform 200ms var(--ease); outline-offset: -6px; }
+.pilar:hover, .pilar:focus-visible { transform: translateY(-8px); }
+.pilar b { font-size: clamp(44px, 4.4vw, 64px); font-weight: 500; letter-spacing: -0.06em; line-height: 0.85; }
+.pilar span { font-size: 16px; }
+.pilares .v { font-size: 28px; font-weight: 500; letter-spacing: -0.03em; padding: 0 4px 8px; }
+.escala.visto .pilar { animation: subePilar 700ms var(--ease) both; }
+.escala.visto li:nth-child(2) .pilar { animation-delay: 70ms; }
+.escala.visto li:nth-child(3) .pilar { animation-delay: 140ms; }
+.escala.visto li:nth-child(4) .pilar { animation-delay: 210ms; }
+.escala.visto li:nth-child(5) .pilar { animation-delay: 280ms; }
+@keyframes subePilar { from { transform: scaleY(0); } to { transform: none; } }
+@media (max-width: 760px) {
+  .escala-fig { grid-column: 1 / -1; font-size: 26vw; }
+  .escala-claim { grid-column: 1 / -1; font-size: 22px; }
+  .escala-txt { grid-column: 1 / -1; grid-row: auto; font-size: 17px; }
+  .pilares { height: auto; min-height: 0; grid-template-columns: minmax(0, 1fr); gap: 6px; padding-bottom: 48px; }
+  .pilares li { flex-direction: row; justify-content: flex-start; align-items: center; height: 44px; }
+  .pilar { height: 100%; width: calc(40px + var(--h) * 0.32); flex: none; flex-direction: row; align-items: center; padding: 0 10px; gap: 10px; transform-origin: left; }
+  .pilar span { display: none; }
+  .pilar b { font-size: 28px; }
+  .pilares .v { order: 2; font-size: 16px; line-height: 1.2; padding: 0 0 0 10px; min-width: 0; }
+  .pilares .v::after { content: " · " attr(data-f); }
+  .escala.visto .pilar { animation-name: subePilarX; }
+  @keyframes subePilarX { from { transform: scaleX(0); } to { transform: none; } }
+}
+
+/* ---------- Página de exemplo + HUD ---------- */
+.demo { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 20px; }
+.demo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.demo-bar p { font-size: 16px; max-width: 52ch; }
+.site { position: relative; background: var(--branco); color: var(--site-ink); padding: clamp(20px, 4vw, 48px); padding-right: clamp(20px, 4vw, 48px); min-height: 520px; font-size: 18px; line-height: 1.7; }
+.site-mast { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-bottom: 18px; margin-bottom: 24px; border-bottom: 3px solid var(--site-ink); }
+.site-mast b { font-size: 26px; font-weight: 500; letter-spacing: -0.03em; }
+.site-mast span { font-size: 14px; }
+.site .site-h { font-weight: 500; font-size: clamp(26px, 3vw, 38px); letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 18px; max-width: 22ch; }
+.site p { max-width: 60ch; margin-bottom: 16px; }
+
+.hud { position: absolute; top: 20px; right: 20px; width: 264px; max-width: calc(100% - 40px); z-index: 4; font-family: var(--f); }
+.hud-head { display: flex; align-items: center; justify-content: space-between; background: var(--breu); color: var(--tinta-clara); height: 36px; padding-left: 12px; font-size: 14px; font-weight: 500; }
+.hud-btns { display: flex; }
+.hud-btns button { width: 36px; height: 36px; border: 0; background: none; color: inherit; cursor: pointer; display: grid; place-items: center; transition: transform 140ms var(--ease); }
+.hud-btns button:hover { transform: translateY(-1px); }
+.hud-btns svg { width: 16px; height: 16px; }
+.hud-campo { background: var(--f1); color: var(--i1); padding: 12px 14px 14px; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; }
+.hud-main { position: relative; z-index: 1; display: flex; flex-direction: column; }
+.hud-score { font-size: 44px; font-weight: 500; letter-spacing: -0.05em; line-height: 1; }
+.hud-sub { font-size: 13px; }
+.hud-letra { position: absolute; right: -6px; top: -4px; font-size: 104px; font-weight: 500; letter-spacing: -0.08em; line-height: 0.85; overflow: hidden; height: 92px; z-index: 0; }
+.hud-letra span { display: block; }
+.hud-letra.troca span { animation: trocaLetra 240ms var(--ease); }
+.hud-letra.bate span { animation: bateLetra 320ms var(--ease); }
+@keyframes bateLetra { 0% { transform: scale(1.6); } 100% { transform: none; } }
+.hud-rank { position: relative; z-index: 1; font-size: 16px; min-height: 22px; letter-spacing: -0.02em; }
+.hud-combo { position: relative; z-index: 1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; font-size: 13px; }
+.hud-bar { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px; height: 10px; }
+.hud-bar i { background: var(--i1); opacity: 0.18; }
+.hud-bar i.on { opacity: 1; }
+.hud-mult { font-size: 16px; font-weight: 500; }
+.hud-banner { position: relative; z-index: 1; background: var(--b1); color: var(--bi1); font-size: 16px; font-weight: 500; padding: 8px 10px; animation: aparece 300ms var(--ease) both; }
+@media (max-width: 640px) {
+  .hud { position: relative; top: auto; right: auto; width: 100%; max-width: none; margin-bottom: 24px; }
+}
+
+/* ---------- Fecho: ícone, cores, letra, movimento ---------- */
+.fecho-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 48px 24px; }
+.bloco-f { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.bloco-f h3 { font-size: 28px; letter-spacing: -0.04em; line-height: 1; }
+.bloco-f > p { font-size: 18px; max-width: 46ch; }
+.b-icone { grid-column: 1 / span 6; }
+.b-cores { grid-column: 7 / -1; }
+.b-letra { grid-column: 1 / span 6; }
+.b-mov { grid-column: 7 / -1; }
+@media (max-width: 900px) { .b-icone, .b-cores, .b-letra, .b-mov { grid-column: 1 / -1; } }
+.icones { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 20px; }
+.icones figure { margin: 0; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; font-size: 13px; }
+.barra-chrome { display: flex; align-items: center; gap: 12px; background: var(--breu); color: var(--tinta-clara); padding: 10px 14px; width: 260px; max-width: 100%; font-size: 13px; }
+.barra-chrome .url { flex: 1; background: #2b2b29; padding: 6px 10px; color: #c9c9c4; } /* taste-skill-ignore: tons da barra do Chrome de exemplo */
+.ext { position: relative; width: 24px; height: 24px; }
+.ext svg { width: 24px; height: 24px; display: block; }
+.badge { position: absolute; right: -10px; bottom: -6px; background: var(--carmim); color: var(--branco); font-size: 10px; font-weight: 500; line-height: 1; padding: 2px 3px; } /* taste-skill-ignore: o badge do Chrome é desenhado em 10px pelo próprio navegador */
+.amostras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.amostra { min-height: 112px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; background: var(--sc); color: var(--si); }
+.amostra b { font-size: 18px; font-weight: 500; }
+.amostra span { font-size: 13px; }
+.bloco-f > .espec { font-size: 64px; font-weight: 500; letter-spacing: -0.06em; line-height: 0.9; }
+.espec-2 { font-size: 18px; max-width: 46ch; }
+.movs { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.movs div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 12px 14px; background: var(--limao-2); }
+.movs dt { font-weight: 500; font-size: 18px; }
+.movs dd { margin: 0; font-size: 16px; grid-column: 1 / -1; }
+.movs .t { font-size: 16px; font-variant-numeric: tabular-nums; }
+.rodape { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 16px; padding-top: 24px; }
+.rodape a { color: inherit; text-underline-offset: 4px; }
+
+/* Entrada de cada seção */
+.js .sobe { opacity: 0; transform: translateY(24px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+.js .visto .sobe { opacity: 1; transform: none; }
+.js .visto .sobe:nth-child(2) { transition-delay: 70ms; }
+.js .visto .sobe:nth-child(3) { transition-delay: 140ms; }
+.js .visto .sobe:nth-child(4) { transition-delay: 210ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
+  .js .sobe { opacity: 1; transform: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="icone" viewBox="0 0 128 128">
+    <rect width="128" height="128" fill="#ff8126"/>
+    <ellipse cx="40" cy="70" rx="25" ry="31" fill="#ffffff"/>
+    <ellipse cx="90" cy="70" rx="25" ry="31" fill="#ffffff"/>
+    <circle cx="55" cy="76" r="13" fill="#161615"/>
+    <circle cx="105" cy="76" r="13" fill="#161615"/>
+    <path d="M66 30L116 20" fill="none" stroke="#161615" stroke-width="10"/>
+  </symbol>
+  <symbol id="icone16" viewBox="0 0 16 16">
+    <rect width="16" height="16" fill="#ff8126"/>
+    <ellipse cx="4.6" cy="8.6" rx="3.4" ry="4.2" fill="#ffffff"/>
+    <ellipse cx="11.4" cy="8.6" rx="3.4" ry="4.2" fill="#ffffff"/>
+    <circle cx="6.5" cy="9.4" r="1.9" fill="#161615"/>
+    <circle cx="13.3" cy="9.4" r="1.9" fill="#161615"/>
+  </symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol>
+  <symbol id="i-re" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5M19 4v4h-4" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol>
+  <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M15.5 15.5L21 21" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol>
+</svg>
+
+<!-- ===================== ABERTURA ===================== -->
+<header class="cap" data-cor="laranja">
+  <nav class="topo" aria-label="Seções">
+    <span class="topo-marca"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span>
+    <span class="topo-aba"><a href="#t-popup">Popup</a><a href="#t-escala">Escala</a><a href="#t-pagina">Na página</a></span>
+    <span class="topo-acao"><a class="botao" href="#t-pagina">Ver a varredura</a></span>
+  </nav>
+  <div class="mosaico" aria-hidden="true">
+    <div class="m-site" data-ui><span class="m-site-t">Diário do Bairro</span><p>O seu Valdir abriu a barraca às cinco. A <mark class="laele-hit laele-on" data-tier="pesado">mandioca</mark> veio boa, e a freguesa quis o <mark class="laele-hit laele-on" data-tier="comum">pepino</mark> mais <mark class="laele-hit laele-on" data-tier="leve">comprido</mark>. Quem chegou tarde teve que <mark class="laele-hit laele-on" data-tier="lendario">sentar em cima</mark> do caixote.</p></div>
+    <div class="m-ceu t-ceu"></div>
+    <div class="m-total" data-ui><i>S</i><b class="num">63.130</b><span>Lá ele supremo</span></div>
+    <div class="t-limao so-largo" style="grid-column:5;grid-row:1"></div>
+    <div class="m-icone so-largo"><svg><use href="#icone"/></svg></div>
+    <div class="m-hud so-largo" data-ui><span class="h">Lá ele</span><span class="s num">995</span><span class="c">Combo 3 · x2</span></div>
+    <div class="t-breu so-largo" style="grid-column:2;grid-row:2"></div>
+    <div class="m-banda so-largo" data-ui><div><b class="num">×2,6</b><span>mandioca</span><span>4×</span></div><div><b class="num">×3</b><span>pau</span><span>3×</span></div><div><b class="num">×1,6</b><span>pepino</span><span>3×</span></div></div>
+    <div class="t-carmim so-largo" style="grid-column:5;grid-row:2"></div>
+    <div class="m-selo t-papel so-largo" data-ui><span class="laele-float-fixo">+390<i>x1,5</i></span></div>
+    <div class="m-limao-cel"></div>
+    <div class="m-carmim-cel"></div>
+  </div>
+  <div class="abre">
+    <h1><span class="linha"><span>Cada nota,</span></span><span class="linha"><span>uma cor</span></span></h1>
+    <div class="abre-lede">
+      <p>Opção B do Robo-LaEle. A nota da página pinta o popup inteiro, do azul quase inocente ao vermelho supremo.</p>
+      <a class="botao" href="#t-pagina">Ver a varredura</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ===================== POPUP ===================== -->
+<section class="cap" data-cor="breu" aria-labelledby="t-popup">
+  <div class="cap-in">
+    <div class="cap-cab sobe">
+      <h2 id="t-popup">O popup</h2>
+      <p>360 px de largura e uma letra só, a Hanken Grotesk. Em cima, o campo da nota em cor chapada, com a letra gigante cortada pela borda. Embaixo, papel. Clique em "Varrer página" para ver a nota subir de D até S, trocando de cor a cada faixa.</p>
+    </div>
+
+    <div class="mesa">
+      <figure class="peca sobe">
+        <div class="pp" data-pp data-ui>
+          <div class="pp-campo" data-campo data-grade="S">
+            <div class="pp-top">
+              <span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span>
+              <button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button>
+            </div>
+            <div class="pp-hero">
+              <div class="pp-host">g1.globo.com</div>
+              <div class="pp-total"><span class="num" data-total>63.130</span><small>pts</small></div>
+              <div class="pp-rank"><span class="sr" data-nota-sr>Nota S.</span><span data-rank>Lá ele supremo</span><span class="pp-rec" data-rec>Recorde!</span></div>
+              <div class="pp-letra" aria-hidden="true" data-letra><span>S</span></div>
+            </div>
+            <dl class="pp-nums">
+              <div><dt>palavras</dt><dd class="num" data-palavras>85</dd></div>
+              <div><dt>maior combo</dt><dd class="num">28x</dd></div>
+              <div><dt>multiplicador</dt><dd class="num">x14,5</dd></div>
+            </dl>
+            <p class="pp-termos">Mais achadas: <b>mandioca</b> 4, <b>pau</b> 3, <b>pepino</b> 3, <b>sentar em cima</b> 1</p>
+            <button type="button" class="pp-scan" data-scan><span class="lbl">Varrer página</span><span class="faixa" aria-hidden="true"></span></button>
+          </div>
+
+          <div class="pp-tabs" role="tablist" aria-label="Seções do popup">
+            <button type="button" class="pp-tab" role="tab" aria-selected="true" data-tab="rec">Recordes</button>
+            <button type="button" class="pp-tab" role="tab" aria-selected="false" data-tab="dex">Laelédex</button>
+            <button type="button" class="pp-tab" role="tab" aria-selected="false" data-tab="aju">Ajustes</button>
+          </div>
+
+          <div class="pp-panel" data-panel="rec">
+            <div class="best"><span class="best-v num">63.130 pts</span><span class="best-k">recorde global · g1.globo.com · 18 de outubro</span></div>
+            <dl class="totais">
+              <div><dt>varreduras</dt><dd class="num">12</dd></div>
+              <div><dt>palavras</dt><dd class="num">340</dd></div>
+              <div><dt>pontos</dt><dd class="num">210 mil</dd></div>
+            </dl>
+            <b class="pp-h">Top 10 sites</b>
+            <ol class="barras">
+              <li><span class="b rec" style="width:100%"><span>g1.globo.com</span><b class="num">63.130</b></span></li>
+              <li><span class="b" style="width:65%"><span>hortifruti.com.br</span><b class="num">41.200</b></span></li>
+              <li><span class="b" style="width:20%"></span><span class="fora">tudogostoso.com.br <b class="num">12.900</b></span></li>
+              <li><span class="b" style="width:10%"></span><span class="fora">pt.wikipedia.org</span></li>
+              <li><span class="b" style="width:5%"></span><span class="fora">ceagesp.gov.br</span></li>
+            </ol>
+          </div>
+
+          <div class="pp-panel" data-panel="dex" hidden>
+            <div class="prog">
+              <div class="prog-txt"><span><b class="num">42</b> de 431 descobertas</span><span class="num">10%</span></div>
+              <div class="prog-bar" role="progressbar" aria-label="Palavras descobertas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10"><i></i></div>
+            </div>
+            <label class="busca"><svg aria-hidden="true"><use href="#i-lupa"/></svg><input type="search" id="busca-1" placeholder="Buscar entre as descobertas" aria-label="Buscar palavra descoberta" data-busca></label>
+            <div class="raridades" role="group" aria-label="Filtrar por raridade">
+              <button type="button" class="raridade" data-tier="todas" aria-pressed="true">Todas</button>
+              <button type="button" class="raridade" data-tier="leve" aria-pressed="false">Leve</button>
+              <button type="button" class="raridade" data-tier="comum" aria-pressed="false">Comum</button>
+              <button type="button" class="raridade" data-tier="pesado" aria-pressed="false">Pesado</button>
+              <button type="button" class="raridade" data-tier="lendario" aria-pressed="false">Lendário</button>
+            </div>
+            <ul class="faixas" data-faixas>
+              <li data-tier="lendario"><span class="k num">×5</span><span class="w"><b>segura no pau da barraca</b><span>expressão inteira</span></span><span class="n num">1×</span></li>
+              <li data-tier="lendario"><span class="k num">×4,5</span><span class="w"><b>sentar em cima</b><span>sentar em cima, sentou em cima</span></span><span class="n num">1×</span></li>
+              <li data-tier="lendario" class="falta"><span class="k">?</span><span class="w"><b aria-hidden="true">· · · · · · · · ·</b><span>ainda não achada · 9 letras</span></span><span class="n"></span></li>
+              <li data-tier="pesado"><span class="k num">×3,4</span><span class="w"><b>até o talo</b><span>expressão inteira</span></span><span class="n num">1×</span></li>
+              <li data-tier="pesado"><span class="k num">×3</span><span class="w"><b>pau</b><span>pau, paus, pauzão</span></span><span class="n num">3×</span></li>
+              <li data-tier="pesado"><span class="k num">×2,6</span><span class="w"><b>mandioca</b><span>mandioca, mandiocas, mandiocão</span></span><span class="n num">4×</span></li>
+              <li data-tier="pesado" class="falta"><span class="k">?</span><span class="w"><b aria-hidden="true">· · · · · ·</b><span>ainda não achada · 6 letras</span></span><span class="n"></span></li>
+              <li data-tier="comum"><span class="k num">×2</span><span class="w"><b>salsicha</b><span>salsicha, salsichão</span></span><span class="n num">1×</span></li>
+              <li data-tier="comum"><span class="k num">×1,8</span><span class="w"><b>banana</b><span>banana, bananas, bananão</span></span><span class="n num">2×</span></li>
+              <li data-tier="comum"><span class="k num">×1,6</span><span class="w"><b>pepino</b><span>pepino, pepinos, pepinão</span></span><span class="n num">3×</span></li>
+              <li data-tier="leve"><span class="k num">×1,2</span><span class="w"><b>grossa</b><span>grosso, grossa, grossão</span></span><span class="n num">3×</span></li>
+              <li data-tier="leve"><span class="k num">×1</span><span class="w"><b>comprido</b><span>comprido, comprida</span></span><span class="n num">2×</span></li>
+              <li data-tier="leve" class="falta"><span class="k">?</span><span class="w"><b aria-hidden="true">· · · · · · ·</b><span>ainda não achada · 7 letras</span></span><span class="n"></span></li>
+            </ul>
+            <p class="vazio-dex" data-vazio hidden>Nenhuma descoberta com esse nome.</p>
+          </div>
+
+          <div class="pp-panel" data-panel="aju" hidden>
+            <div class="saida" data-campo data-grade="B" data-saida>
+              <p class="saida-txt">Na banca do seu Valdir tem <mark class="laele-hit" data-tier="pesado">mandioca</mark> grossa e <mark class="laele-hit" data-tier="comum" data-propria>cenoura</mark> fresquinha.</p>
+              <span class="saida-hud" data-saida-hud><span>Lá ele</span><b class="num" data-saida-pts>560</b></span>
+            </div>
+            <div class="bloco">
+              <div class="bloco-t"><div><b>Varredura automática</b><span>Varre cada página assim que ela abre.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Varredura automática" data-sw><span class="sw-track" aria-hidden="true"></span></button></div>
+            </div>
+            <div class="bloco">
+              <div class="bloco-t"><div><b>Animações</b><span>Passa o marca-texto palavra por palavra.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Animações" data-sw data-anim><span class="sw-track" aria-hidden="true"></span></button></div>
+            </div>
+            <div class="bloco">
+              <div class="bloco-t"><div><b>Placar na página</b><span>Mostra o placar no canto do site.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Placar na página" data-sw data-placar><span class="sw-track" aria-hidden="true"></span></button></div>
+            </div>
+            <div class="bloco">
+              <b class="pp-h">Velocidade da animação</b>
+              <div class="seg" role="radiogroup" aria-label="Velocidade da animação">
+                <button type="button" role="radio" aria-checked="false" data-speed="lento">Lento</button>
+                <button type="button" role="radio" aria-checked="true" data-speed="normal">Normal</button>
+                <button type="button" role="radio" aria-checked="false" data-speed="rapido">Rápido</button>
+              </div>
+            </div>
+            <div class="bloco">
+              <b class="pp-h">Palavras próprias</b>
+              <label class="campo-l" for="nova-1">Nova palavra ou expressão</label>
+              <div class="add"><input type="text" id="nova-1" placeholder="cenoura" data-nova><button type="button" aria-label="Adicionar palavra" data-add><svg aria-hidden="true"><use href="#i-plus"/></svg></button></div>
+              <div class="coef"><label class="campo-l" for="coef-1">Coeficiente</label><output for="coef-1" class="num" data-coef-out>×2</output></div>
+              <input type="range" class="range" id="coef-1" min="0.5" max="5" step="0.5" value="2" data-coef>
+              <div class="escala-r"><span>sutil</span><span data-coef-tier>comum</span><span>pesadão</span></div>
+              <ul class="proprias" data-proprias>
+                <li data-tier="pesado"><span><b>abacaxi grande</b> ×3,5</span><button type="button" class="x" aria-label="Remover abacaxi grande"><svg aria-hidden="true"><use href="#i-x"/></svg></button></li>
+              </ul>
+            </div>
+            <div class="bloco">
+              <div class="bloco-t"><div><b>Zerar recordes</b><span>Apaga o ranking, os totais e a Laelédex.</span></div></div>
+              <div class="zerar" data-zerar-idle><button type="button" data-zerar>Zerar tudo</button></div>
+              <div class="zerar" data-zerar-conf hidden><button type="button" data-zerar-nao>Cancelar</button><button type="button" class="perigo" data-zerar-sim>Sim, apagar</button></div>
+            </div>
+            <p class="pp-note">Tudo roda no seu navegador. Nada sai da sua máquina.</p>
+          </div>
+        </div>
+        <figcaption><b>Recordes.</b> Os sites viram barras deitadas; a do recorde é a única vermelha. O vermelho só aparece no que é máximo: nota S, palavra lendária e recorde.</figcaption>
+      </figure>
+
+      <figure class="peca sobe">
+        <div class="pp" data-ui data-pp data-start="dex"></div>
+        <figcaption><b>Laelédex.</b> As raridades são abas de cor. Em "Todas", cada faixa tem a cor da sua raridade; numa raridade só, as faixas alternam dois tons. A que falta mostra só o tamanho.</figcaption>
+      </figure>
+
+      <figure class="peca sobe">
+        <div class="pp" data-ui data-pp data-start="aju"></div>
+        <figcaption><b>Ajustes ao vivo.</b> A frase de cima é a saída: cada controle mexe nela na hora. Mude a velocidade, desligue o placar, digite uma palavra e arraste o coeficiente.</figcaption>
+      </figure>
+    </div>
+
+    <div class="mesa">
+      <figure class="peca sobe">
+        <div class="pp" data-ui>
+          <div class="pp-campo" data-campo data-grade="B">
+            <div class="pp-top"><span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button></div>
+            <div class="pp-hero"><div class="pp-host">receitas.com · varrendo…</div><div class="pp-total"><span class="num">4.250</span><small>pts</small></div><div class="pp-rank">17 palavras até agora</div><div class="pp-letra" aria-hidden="true"><span>B</span></div></div>
+            <button type="button" class="pp-scan varrendo" disabled><span class="lbl">Varrendo…</span><span class="faixa" aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <figcaption><b>Varrendo.</b> O campo já troca de cor enquanto conta. Uma faixa vermelha corre na base do botão.</figcaption>
+      </figure>
+      <figure class="peca sobe">
+        <div class="pp" data-ui>
+          <div class="pp-campo" data-campo data-grade="-">
+            <div class="pp-top"><span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button></div>
+            <div class="pp-msg"><div class="pp-host">bancodobrasil.com.br</div><b class="pp-msg-t">Nada de lá ele por aqui… ainda</b><p>Página limpinha. Tente uma receita ou a seção de esportes.</p></div>
+            <button type="button" class="pp-scan"><span class="lbl">Varrer de novo</span></button>
+          </div>
+        </div>
+        <figcaption><b>Nada encontrado.</b> Sem nota, o campo fica no papel.</figcaption>
+      </figure>
+      <figure class="peca sobe">
+        <div class="pp" data-ui>
+          <div class="pp-campo" data-campo data-grade="-">
+            <div class="pp-top"><span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button></div>
+            <div class="pp-msg"><div class="pp-host">chrome://extensions</div><b class="pp-msg-t">Aqui o Chrome não deixa</b><p>Páginas do navegador, a Chrome Web Store e PDFs não podem ser varridos.</p></div>
+            <button type="button" class="pp-scan parado" disabled><span class="lbl">Varrer página</span></button>
+          </div>
+        </div>
+        <figcaption><b>Página proibida.</b> O botão vira papel e para de responder.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ESCALA ===================== -->
+<section class="cap escala" data-cor="papel" aria-labelledby="t-escala">
+  <div class="escala-cab">
+    <h2 class="escala-fig num sobe" id="t-escala">8.000</h2>
+    <p class="escala-claim sobe">pontos e a página vira lá ele supremo</p>
+    <p class="escala-txt sobe">Cada nota tem uma cor e só uma. Ela pinta o campo do popup, o placar na página e mais nada. A ordem vai do frio ao quente: céu, limão, laranja, breu e, no topo, carmim. A altura de cada coluna é a raiz quadrada do teto da faixa.</p>
+  </div>
+  <ol class="pilares">
+    <li><span class="v num" data-f="Quase inocente">até 299</span><span class="pilar" tabindex="0" style="--h:28%;--pc:var(--ceu);--pi:var(--tinta)"><b>D</b><span>Quase inocente</span></span></li>
+    <li><span class="v num" data-f="Lá ele de leve">até 999</span><span class="pilar" tabindex="0" style="--h:42%;--pc:var(--limao);--pi:var(--tinta)"><b>C</b><span>Lá ele de leve</span></span></li>
+    <li><span class="v num" data-f="Tá ficando safado">até 2.999</span><span class="pilar" tabindex="0" style="--h:61%;--pc:var(--laranja);--pi:var(--tinta)"><b>B</b><span>Tá ficando safado</span></span></li>
+    <li><span class="v num" data-f="Lá ele pesado">até 7.999</span><span class="pilar" tabindex="0" style="--h:82%;--pc:var(--breu);--pi:var(--tinta-clara)"><b>A</b><span>Lá ele pesado</span></span></li>
+    <li><span class="v num" data-f="Lá ele supremo">8.000 ou mais</span><span class="pilar" tabindex="0" style="--h:100%;--pc:var(--carmim);--pi:var(--branco)"><b>S</b><span>Lá ele supremo</span></span></li>
+  </ol>
+</section>
+
+<!-- ===================== PÁGINA + HUD ===================== -->
+<section class="cap" data-cor="ceu" aria-labelledby="t-pagina">
+  <div class="cap-in">
+    <div class="cap-cab sobe">
+      <h2 id="t-pagina">Na página</h2>
+      <p>O marca-texto é um bloco de cor chapada que corre da esquerda para a direita. Os pontos saem num selinho preto. O placar no canto troca de cor sempre que a soma passa de uma faixa, sem transição: corte seco.</p>
+    </div>
+    <div class="demo sobe">
+      <div class="demo-bar">
+        <button type="button" class="botao" id="varrer-demo">Varrer esta página</button>
+        <p>Velocidade normal, como na extensão. Com movimento reduzido, tudo aparece de uma vez.</p>
+      </div>
+      <div class="site" id="site" data-ui>
+        <div class="site-mast"><b>Diário do Bairro</b><span>Cidade · sábado, 18 de outubro</span></div>
+        <div class="hud" id="hud" role="status" aria-live="polite">
+          <div class="hud-head">
+            <span>Lá ele</span>
+            <div class="hud-btns">
+              <button type="button" aria-label="Minimizar"><svg aria-hidden="true"><use href="#i-min"/></svg></button>
+              <button type="button" aria-label="Varrer de novo" id="hud-re"><svg aria-hidden="true"><use href="#i-re"/></svg></button>
+              <button type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+            </div>
+          </div>
+          <div class="hud-campo" id="hud-campo" data-grade="-">
+            <div class="hud-letra" id="hud-letra" aria-hidden="true"><span>-</span></div>
+            <div class="hud-main">
+              <div class="hud-score num" id="hud-score">0</div>
+              <div class="hud-sub"><span id="hud-count">0</span> palavras</div>
+            </div>
+            <div class="hud-rank" id="hud-rank"></div>
+            <div class="hud-combo">
+              <span id="hud-combo">Combo 0</span>
+              <div class="hud-bar" id="hud-bar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <span class="hud-mult num" id="hud-mult">x1</span>
+            </div>
+            <div class="hud-banner" id="hud-banner" hidden>Novo recorde!</div>
+          </div>
+        </div>
+        <p class="site-h">Feira da praça volta com fila desde cedo</p>
+        <p>O seu Valdir abriu a barraca às cinco e a fila já dobrava a esquina. "Hoje a <mark class="laele-hit" data-tier="pesado" data-coef="2.6">mandioca</mark> veio boa", gritava, enquanto a freguesa pedia para escolher o <mark class="laele-hit" data-tier="comum" data-coef="1.6">pepino</mark> mais <mark class="laele-hit" data-tier="leve" data-coef="1">comprido</mark> da banca.</p>
+        <p>Na barraca ao lado, dona Cida vendia <mark class="laele-hit" data-tier="comum" data-coef="1.6">linguiça</mark> caseira e jurava que o segredo é deixar a carne bem <mark class="laele-hit" data-tier="leve" data-coef="0.9">molhada</mark> no tempero. Quem chegou tarde teve que <mark class="laele-hit" data-tier="lendario" data-coef="4.5">sentar em cima</mark> do caixote e esperar a próxima leva.</p>
+        <p>Na hora de desmontar, seu Valdir pediu ao sobrinho que segurasse o <mark class="laele-hit" data-tier="pesado" data-coef="3">pau</mark> da barraca, e a <mark class="laele-hit" data-tier="comum" data-coef="1.8">banana</mark> que sobrou foi de graça para quem ajudou.</p>
+        <p>A prefeitura promete toldo novo até dezembro. Até lá, o conselho dos feirantes pede que ninguém estacione na rua de trás aos sábados.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FECHO ===================== -->
+<section class="cap" data-cor="limao" aria-labelledby="t-fecho">
+  <div class="cap-in">
+    <div class="cap-cab sobe">
+      <h2 id="t-fecho">Ícone e letra</h2>
+      <p>Um quadrado laranja, dois olhos brancos olhando de lado e uma sobrancelha reta. Sem contorno, para aguentar 16 px. O badge é carmim com texto branco.</p>
+    </div>
+    <div class="fecho-grid">
+      <div class="bloco-f b-icone sobe">
+        <h3>Ícone e badge</h3>
+        <div class="icones">
+          <figure><svg width="128" height="128" role="img" aria-label="Ícone 128 px"><use href="#icone"/></svg>128</figure>
+          <figure><svg width="48" height="48" role="img" aria-label="Ícone 48 px"><use href="#icone"/></svg>48</figure>
+          <figure><svg width="32" height="32" role="img" aria-label="Ícone 32 px"><use href="#icone"/></svg>32</figure>
+          <figure><svg width="16" height="16" role="img" aria-label="Ícone 16 px, sem sobrancelha"><use href="#icone16"/></svg>16</figure>
+        </div>
+        <div class="barra-chrome" data-ui><span class="url">g1.globo.com</span><span class="ext"><svg aria-hidden="true"><use href="#icone16"/></svg><span class="badge num">63k</span></span></div>
+      </div>
+      <div class="bloco-f b-cores sobe">
+        <h3>Seis cores, cada uma com um trabalho</h3>
+        <div class="amostras" data-ui>
+          <div class="amostra" style="--sc:var(--ceu);--si:var(--tinta)"><b>Céu</b><span>#4DB3FF · nota D, leve</span></div>
+          <div class="amostra" style="--sc:var(--limao-2);--si:var(--tinta)"><b>Limão</b><span>#C5F53D · nota C, comum</span></div>
+          <div class="amostra" style="--sc:var(--laranja);--si:var(--tinta)"><b>Laranja</b><span>#FF8126 · nota B, pesado</span></div>
+          <div class="amostra" style="--sc:var(--breu);--si:var(--tinta-clara)"><b>Breu</b><span>#161615 · nota A, botões</span></div>
+          <div class="amostra" style="--sc:var(--carmim);--si:var(--branco)"><b>Carmim</b><span>#DE194B · nota S, lendário, recorde</span></div>
+          <div class="amostra" style="--sc:var(--papel);--si:var(--tinta)"><b>Papel</b><span>#F3F4EE · fundo, sem nota</span></div>
+        </div>
+      </div>
+      <div class="bloco-f b-letra sobe">
+        <h3>Uma letra, dois pesos</h3>
+        <p class="espec num">63.130 pts</p>
+        <p class="espec-2">Hanken Grotesk 500 para números e títulos, com espaçamento apertado; 400 para o resto. Sem negrito e sem segunda fonte: quem grita é a cor.</p>
+      </div>
+      <div class="bloco-f b-mov sobe">
+        <h3>Movimento</h3>
+        <dl class="movs">
+          <div><dt>Troca de nota</dt><span class="t">0 ms</span><dd>A cor do campo muda num corte seco; a letra nova sobe 40% em 240 ms.</dd></div>
+          <div><dt>Marca-texto</dt><span class="t">240 ms</span><dd>Bloco cresce da esquerda (scaleX), 520 ms entre palavras no normal.</dd></div>
+          <div><dt>Selinho de pontos</dt><span class="t">900 ms</span><dd>Sobe 34 px e some.</dd></div>
+          <div><dt>Nota final</dt><span class="t">320 ms</span><dd>A letra bate de 1,6x para o tamanho normal e aparece o "Novo recorde!".</dd></div>
+          <div><dt>Movimento reduzido</dt><span class="t">0 ms</span><dd>Tudo aparece pronto, sem deslocamento.</dd></div>
+        </dl>
+      </div>
+      <p class="rodape"><span>Opção B · capítulos de cor</span><a href="opcao-a-feira.html">Comparar com a opção A, na feira</a></p>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function () {
+  document.documentElement.classList.add('js');
+  var reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt = new Intl.NumberFormat('pt-BR');
+  var RANKS = [[300, 'D', 'Quase inocente'], [1000, 'C', 'Lá ele de leve'], [3000, 'B', 'Tá ficando safado'], [8000, 'A', 'Lá ele pesado'], [Infinity, 'S', 'Lá ele supremo']];
+  function rank(total) { if (total <= 0) return [0, '-', '']; return RANKS.filter(function (x) { return total < x[0]; })[0]; }
+  function tierDe(coef) { return coef < 1.5 ? 'leve' : coef < 2.5 ? 'comum' : coef < 3.5 ? 'pesado' : 'lendario'; }
+  function virg(n) { return String(n).replace('.', ','); }
+
+  // Troca a letra gigante com a subida curta
+  function poeLetra(box, letra, classe) {
+    var s = box.querySelector('span');
+    if (s.textContent === letra && classe !== 'bate') return;
+    s.textContent = letra;
+    box.classList.remove('troca', 'bate'); void box.offsetWidth; box.classList.add(classe || 'troca');
+  }
+
+  // Entrada das seções
+  var obs = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('visto'); obs.unobserve(e.target); } });
+  }, { threshold: 0.15 }) : null;
+  document.querySelectorAll('.cap').forEach(function (c) { if (obs) obs.observe(c); else c.classList.add('visto'); });
+
+  // Popups 2 e 3 são cópias do primeiro, abertos em outra aba
+  var modelo = document.querySelector('[data-pp]:not([data-start])');
+  document.querySelectorAll('[data-pp][data-start]').forEach(function (alvo, n) {
+    var copia = modelo.cloneNode(true);
+    copia.setAttribute('data-start', alvo.getAttribute('data-start'));
+    copia.querySelectorAll('[id]').forEach(function (el) { el.id = el.id.replace(/-1$/, '-' + (n + 2)); });
+    copia.querySelectorAll('[for]').forEach(function (el) { el.setAttribute('for', el.getAttribute('for').replace(/-1$/, '-' + (n + 2))); });
+    alvo.replaceWith(copia);
+  });
+
+  document.querySelectorAll('[data-sw]').forEach(function (s) {
+    s.addEventListener('click', function () { s.setAttribute('aria-checked', String(s.getAttribute('aria-checked') !== 'true')); });
+  });
+
+  document.querySelectorAll('[data-pp]').forEach(function (pp) {
+    // Abas
+    var tabs = pp.querySelectorAll('[data-tab]');
+    function abre(nome) {
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.getAttribute('data-tab') === nome)); });
+      pp.querySelectorAll('[data-panel]').forEach(function (p) {
+        p.hidden = p.getAttribute('data-panel') !== nome;
+        p.classList.remove('abrindo');
+        if (!p.hidden) { void p.offsetWidth; p.classList.add('abrindo'); }
+      });
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { abre(t.getAttribute('data-tab')); }); });
+    abre(pp.getAttribute('data-start') || 'rec');
+
+    // Laelédex
+    var faixas = pp.querySelector('[data-faixas]');
+    var vazio = pp.querySelector('[data-vazio]');
+    var busca = pp.querySelector('[data-busca]');
+    var filtro = 'todas';
+    function filtra() {
+      var q = (busca.value || '').trim().toLowerCase(), vis = 0;
+      faixas.querySelectorAll('li').forEach(function (li) {
+        var okT = filtro === 'todas' || li.getAttribute('data-tier') === filtro;
+        var okQ = !q || (!li.classList.contains('falta') && li.textContent.toLowerCase().indexOf(q) !== -1);
+        li.hidden = !(okT && okQ);
+        if (!li.hidden) vis++;
+      });
+      faixas.classList.toggle('so-uma', filtro !== 'todas');
+      vazio.hidden = vis > 0;
+    }
+    pp.querySelectorAll('.raridade').forEach(function (b) {
+      b.addEventListener('click', function () {
+        pp.querySelectorAll('.raridade').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+        filtro = b.getAttribute('data-tier');
+        filtra();
+      });
+    });
+    busca.addEventListener('input', filtra);
+
+    // Ajustes: a frase de cima obedece aos controles
+    var saida = pp.querySelector('[data-saida]');
+    var marcas = saida.querySelectorAll('mark');
+    var propria = saida.querySelector('[data-propria]');
+    var saidaHud = pp.querySelector('[data-saida-hud]');
+    var saidaPts = pp.querySelector('[data-saida-pts]');
+    var anim = pp.querySelector('[data-anim]');
+    var placar = pp.querySelector('[data-placar]');
+    var nova = pp.querySelector('[data-nova]');
+    var coef = pp.querySelector('[data-coef]');
+    var coefOut = pp.querySelector('[data-coef-out]');
+    var coefTier = pp.querySelector('[data-coef-tier]');
+    var passos = { lento: [420, 900], normal: [240, 520], rapido: [120, 200] };
+    var vel = 'normal', ts = [];
+    function replay() {
+      ts.forEach(clearTimeout); ts = [];
+      var semAnim = anim.getAttribute('aria-checked') !== 'true' || reduz;
+      saida.classList.toggle('sem-anim', semAnim);
+      saida.style.setProperty('--wipe', passos[vel][0] + 'ms');
+      marcas.forEach(function (m) { m.classList.remove('laele-on'); });
+      void saida.offsetWidth;
+      marcas.forEach(function (m, i) {
+        if (semAnim) m.classList.add('laele-on');
+        else ts.push(setTimeout(function () { m.classList.add('laele-on'); }, 120 + i * passos[vel][1]));
+      });
+    }
+    function conta() {
+      var c = parseFloat(coef.value);
+      var t = tierDe(c);
+      propria.textContent = (nova.value || '').trim() || 'cenoura';
+      propria.setAttribute('data-tier', t);
+      coefOut.textContent = '×' + virg(c);
+      coefTier.textContent = { leve: 'leve', comum: 'comum', pesado: 'pesado', lendario: 'lendário' }[t];
+      var total = 260 + Math.round(100 * c * 1.5);
+      saidaPts.textContent = fmt.format(total);
+      saida.setAttribute('data-grade', rank(total)[1]);
+    }
+    anim.addEventListener('click', replay);
+    placar.addEventListener('click', function () { saidaHud.hidden = placar.getAttribute('aria-checked') !== 'true'; });
+    pp.querySelectorAll('[data-speed]').forEach(function (r) {
+      r.addEventListener('click', function () {
+        pp.querySelectorAll('[data-speed]').forEach(function (o) { o.setAttribute('aria-checked', String(o === r)); });
+        vel = r.getAttribute('data-speed');
+        replay();
+      });
+    });
+    coef.addEventListener('input', conta);
+    coef.addEventListener('change', replay);
+    nova.addEventListener('input', conta);
+    var lista = pp.querySelector('[data-proprias]');
+    function ligaRemover(li) { li.querySelector('.x').addEventListener('click', function () { li.remove(); }); }
+    lista.querySelectorAll('li').forEach(ligaRemover);
+    pp.querySelector('[data-add]').addEventListener('click', function () {
+      var w = (nova.value || '').trim();
+      if (!w) { nova.focus(); return; }
+      var c = parseFloat(coef.value);
+      var li = document.createElement('li');
+      li.setAttribute('data-tier', tierDe(c));
+      li.innerHTML = '<span><b></b> ×' + virg(c) + '</span><button type="button" class="x"><svg aria-hidden="true"><use href="#i-x"/></svg></button>';
+      li.querySelector('b').textContent = w;
+      li.querySelector('.x').setAttribute('aria-label', 'Remover ' + w);
+      lista.prepend(li);
+      ligaRemover(li);
+      nova.value = '';
+      conta();
+    });
+    var idle = pp.querySelector('[data-zerar-idle]'), conf = pp.querySelector('[data-zerar-conf]');
+    pp.querySelector('[data-zerar]').addEventListener('click', function () { idle.hidden = true; conf.hidden = false; });
+    pp.querySelector('[data-zerar-nao]').addEventListener('click', function () { idle.hidden = false; conf.hidden = true; });
+    pp.querySelector('[data-zerar-sim]').addEventListener('click', function () { idle.hidden = false; conf.hidden = true; });
+    conta();
+    if (pp.getAttribute('data-start') === 'aju') replay(); else marcas.forEach(function (m) { m.classList.add('laele-on'); });
+
+    // Varrer: a soma sobe em escala de log, então cada faixa de cor fica na tela por um tempo parecido
+    var scan = pp.querySelector('[data-scan]');
+    var campo = pp.querySelector('.pp-campo');
+    var totalEl = pp.querySelector('[data-total]');
+    var rankEl = pp.querySelector('[data-rank]');
+    var srEl = pp.querySelector('[data-nota-sr]');
+    var letra = pp.querySelector('[data-letra]');
+    var rec = pp.querySelector('[data-rec]');
+    var palavras = pp.querySelector('[data-palavras]');
+    var ALVO = 63130, raf = 0;
+    function mostra(v, fim) {
+      var r = rank(v);
+      totalEl.textContent = fmt.format(v);
+      palavras.textContent = String(Math.max(1, Math.round(85 * Math.log(v) / Math.log(ALVO))));
+      if (campo.getAttribute('data-grade') !== r[1]) {
+        campo.setAttribute('data-grade', r[1]);
+        rankEl.textContent = r[2];
+        srEl.textContent = 'Nota ' + r[1] + '.';
+        poeLetra(letra, r[1]);
+      }
+      if (fim) { palavras.textContent = '85'; rec.hidden = false; }
+    }
+    scan.addEventListener('click', function () {
+      cancelAnimationFrame(raf);
+      scan.disabled = true; scan.classList.add('varrendo');
+      scan.querySelector('.lbl').textContent = 'Varrendo…';
+      rec.hidden = true;
+      function termina() {
+        mostra(ALVO, true);
+        scan.disabled = false; scan.classList.remove('varrendo');
+        scan.querySelector('.lbl').textContent = 'Varrer página';
+      }
+      if (reduz) { termina(); return; }
+      var t0 = performance.now(), dur = 3200, lo = Math.log(40), hi = Math.log(ALVO);
+      campo.setAttribute('data-grade', '');
+      (function passo(t) {
+        var k = Math.min(1, (t - t0) / dur);
+        mostra(Math.round(Math.exp(lo + (hi - lo) * k)), false);
+        if (k < 1) raf = requestAnimationFrame(passo); else termina();
+      })(t0);
+    });
+  });
+
+  // ---------- Demonstração na página ----------
+  var site = document.getElementById('site');
+  var marks = Array.prototype.slice.call(site.querySelectorAll('mark.laele-hit'));
+  var hud = document.getElementById('hud');
+  var el = {
+    campo: document.getElementById('hud-campo'), letra: document.getElementById('hud-letra'),
+    score: document.getElementById('hud-score'), count: document.getElementById('hud-count'),
+    combo: document.getElementById('hud-combo'), bar: document.getElementById('hud-bar'),
+    mult: document.getElementById('hud-mult'), rank: document.getElementById('hud-rank'),
+    banner: document.getElementById('hud-banner')
+  };
+  var segs = el.bar.querySelectorAll('i');
+  var timers = [], shown = 0, raf = 0;
+
+  function pinta(v) {
+    var r = rank(v);
+    if (el.campo.getAttribute('data-grade') !== r[1]) {
+      el.campo.setAttribute('data-grade', r[1]);
+      poeLetra(el.letra, r[1]);
+    }
+  }
+  function conta(alvo) {
+    cancelAnimationFrame(raf);
+    if (reduz) { shown = alvo; el.score.textContent = fmt.format(alvo); pinta(alvo); return; }
+    var de = shown, t0 = performance.now();
+    (function passo(t) {
+      var k = Math.min(1, (t - t0) / 320);
+      shown = Math.round(de + (alvo - de) * (1 - Math.pow(1 - k, 3)));
+      el.score.textContent = fmt.format(shown);
+      pinta(shown);
+      if (k < 1) raf = requestAnimationFrame(passo);
+    })(t0);
+  }
+  function solta(mark, pts, mult) {
+    if (reduz) return;
+    var r = mark.getBoundingClientRect(), s = site.getBoundingClientRect();
+    var f = document.createElement('span');
+    f.className = 'laele-float';
+    f.setAttribute('aria-hidden', 'true');
+    f.textContent = '+' + fmt.format(pts);
+    if (mult > 1) { var i = document.createElement('i'); i.textContent = 'x' + virg(mult); f.appendChild(i); }
+    f.style.left = (r.left - s.left) + 'px';
+    f.style.top = (r.top - s.top - 30) + 'px';
+    site.appendChild(f);
+    setTimeout(function () { f.remove(); }, 1000);
+  }
+  function limpa() {
+    timers.forEach(clearTimeout); timers = [];
+    cancelAnimationFrame(raf);
+    marks.forEach(function (m) { m.classList.remove('laele-on'); });
+    site.querySelectorAll('.laele-float').forEach(function (f) { f.remove(); });
+    shown = 0; el.score.textContent = '0'; el.count.textContent = '0';
+    el.combo.textContent = 'Combo 0'; el.mult.textContent = 'x1';
+    segs.forEach(function (s) { s.classList.remove('on'); });
+    el.campo.setAttribute('data-grade', '-'); el.letra.querySelector('span').textContent = '-';
+    el.rank.textContent = ''; el.banner.hidden = true;
+  }
+  function varre() {
+    limpa();
+    var total = 0, combo = 0, ultimoP = null, passo = reduz ? 0 : 520;
+    marks.forEach(function (m, idx) {
+      var p = m.closest('p');
+      combo = p === ultimoP ? combo + 1 : 1;
+      ultimoP = p;
+      var mult = Math.min(10, 1 + 0.5 * (combo - 1));
+      var pts = Math.round(100 * parseFloat(m.getAttribute('data-coef')) * mult);
+      var c = combo;
+      timers.push(setTimeout(function () {
+        m.classList.add('laele-on');
+        total += pts;
+        conta(total);
+        el.count.textContent = String(idx + 1);
+        el.combo.textContent = 'Combo ' + c;
+        segs.forEach(function (s, i) { s.classList.toggle('on', i < c); });
+        el.mult.textContent = 'x' + virg(mult);
+        solta(m, pts, mult);
+      }, 300 + idx * passo));
+    });
+    timers.push(setTimeout(function () {
+      var r = rank(total);
+      el.rank.textContent = r[2];
+      poeLetra(el.letra, r[1], 'bate');
+      el.banner.hidden = false;
+    }, 300 + marks.length * passo + (reduz ? 0 : 500)));
+  }
+  document.getElementById('varrer-demo').addEventListener('click', varre);
+  document.getElementById('hud-re').addEventListener('click', varre);
+  var visto = false;
+  var obsSite = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    if (es[0].isIntersecting && !visto) { visto = true; varre(); }
+  }, { threshold: 0.4 }) : null;
+  if (obsSite) obsSite.observe(site); else varre();
+})();
+</script>

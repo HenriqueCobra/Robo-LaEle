@@ -1,0 +1,823 @@
+<title>Robo-LaEle na feira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700;800;900&family=Permanent+Marker&display=swap">
+<style>
+/* Layout: uma mesa neutra onde as peças da extensão ficam em tamanho real, lado a lado, como cartazes pregados. */
+:root {
+  color-scheme: light;
+  --cartolina: #FFE24A;
+  --cartolina-funda: #F2CF2E;
+  --pincel: #14215C;
+  --preco: #E5262A;
+  --folha: #FFFFFF;
+  --mesa: #DFE2EA;
+  --site-ink: #23262d;
+  --mt-leve: #A6F06A;
+  --mt-comum: #FFEB3B;
+  --mt-pesado: #FF8AD0;
+  --mt-lendario: #FF9B2F;
+  --fita: rgba(232, 221, 176, 0.88);
+  --f-mao: "Permanent Marker", "Segoe Print", "Comic Sans MS", cursive;
+  --f-texto: "Epilogue", system-ui, sans-serif;
+  --f-site: Georgia, "Times New Roman", serif;
+  --mt-svg-leve: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23A6F06A'/%3E%3C/svg%3E");
+  --mt-svg-comum: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FFEB3B'/%3E%3C/svg%3E");
+  --mt-svg-pesado: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FF8AD0'/%3E%3C/svg%3E");
+  --mt-svg-lendario: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2 5C22 2 64 6 98 3L99 17C70 19 32 15 1 18Z' fill='%23FF9B2F'/%3E%3C/svg%3E");
+  --pontilhado: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='4'%3E%3Ccircle cx='2' cy='2' r='1.4' fill='%2314215C'/%3E%3C/svg%3E");
+  --recorte-cima: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8'%3E%3Cpath d='M0 8A8 8 0 0 1 16 8Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+  --recorte-baixo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8'%3E%3Cpath d='M0 0A8 8 0 0 0 16 0Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--mesa);
+  color: var(--pincel);
+  font-family: var(--f-texto);
+  font-size: 17px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 56px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 120px;
+}
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--pincel); outline-offset: 2px; }
+
+/* ---------- Abertura ---------- */
+.intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px 64px; align-items: end; }
+.intro h1 { font-weight: 900; font-size: clamp(44px, 7vw, 96px); letter-spacing: -0.04em; line-height: 0.92; }
+.intro .tese { grid-column: 1 / -1; max-width: 30ch; font-size: clamp(22px, 2.6vw, 34px); line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; }
+.intro .tese b { font-weight: 800; }
+.intro .icone-grande { width: 168px; height: 168px; }
+.lede { max-width: 62ch; font-size: 18px; }
+.cta { grid-column: 1; justify-self: start; display: inline-flex; align-items: center; height: 48px; padding: 0 22px; background: var(--pincel); color: var(--cartolina); font-weight: 800; font-size: 16px; text-decoration: none; }
+.cta:active { transform: translateY(2px); }
+
+.secao { display: flex; flex-direction: column; gap: 32px; }
+.secao-cab { display: flex; flex-direction: column; gap: 10px; max-width: 64ch; }
+.secao-cab h2 { font-weight: 900; font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.035em; line-height: 1; }
+.mesa-linha { display: flex; flex-wrap: wrap; gap: 48px 40px; align-items: flex-start; }
+.peca { display: flex; flex-direction: column; gap: 12px; min-width: 0; max-width: 100%; }
+.peca > figcaption { font-size: 15px; font-weight: 500; max-width: 360px; }
+.peca > figcaption b { font-weight: 800; }
+figure { margin: 0; }
+
+/* ---------- Marca-texto (mesmo desenho na página, no popup e na Laelédex) ---------- */
+.mt { background-repeat: no-repeat; background-position: 0 62%; background-size: 100% 86%; -webkit-box-decoration-break: clone; box-decoration-break: clone; color: var(--pincel); }
+.mt[data-tier="leve"] { background-image: var(--mt-svg-leve); }
+.mt[data-tier="comum"] { background-image: var(--mt-svg-comum); }
+.mt[data-tier="pesado"] { background-image: var(--mt-svg-pesado); }
+.mt[data-tier="lendario"] { background-image: var(--mt-svg-lendario); }
+
+/* ---------- Popup ---------- */
+.pp {
+  width: 360px;
+  max-width: 100%;
+  background: var(--cartolina);
+  color: var(--pincel);
+  font-family: var(--f-texto);
+  font-size: 15px;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 18px;
+}
+.pp-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 4px; gap: 12px; }
+.pp-brand { display: flex; align-items: center; gap: 10px; }
+.pp-brand svg { width: 32px; height: 32px; flex: none; }
+.pp-name { display: block; font-weight: 900; font-size: 22px; letter-spacing: -0.035em; line-height: 1; }
+.pp-sub { display: block; font-size: 13px; font-weight: 500; }
+
+.sw { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 6px 0; cursor: pointer; font-size: 13px; font-weight: 700; min-height: 32px; }
+.sw-track { width: 36px; height: 20px; background: var(--cartolina-funda); position: relative; flex: none; transition: background-color 120ms; }
+.sw-track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: var(--pincel); transition: transform 120ms cubic-bezier(.3,.7,.2,1); }
+.sw[aria-checked="true"] .sw-track { background: var(--pincel); }
+.sw[aria-checked="true"] .sw-track::after { background: var(--cartolina); transform: translateX(16px); }
+
+.pp-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; padding: 10px 18px 0; align-items: start; }
+.pp-host { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; min-height: 28px; }
+.pp-rec { display: inline-block; font-family: var(--f-mao); background: var(--preco); color: var(--folha); font-size: 15px; font-weight: 400; padding: 1px 7px 0; transform: rotate(-5deg); line-height: 1.4; margin-left: 8px; }
+.pp-total { font-family: var(--f-mao); color: var(--preco); font-size: 56px; white-space: nowrap; line-height: 0.95; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.pp-total small { font-size: 24px; margin-left: 4px; }
+.pp-rank { font-weight: 700; font-size: 15px; }
+
+.carimbo {
+  width: 84px; height: 84px; border-radius: 50%;
+  border: 3px solid var(--preco); color: var(--preco);
+  display: grid; place-items: center; align-content: center;
+  border: 6px double var(--preco);
+  transform: rotate(-12deg); margin-top: 22px; margin-right: 2px;
+}
+.carimbo b { font-family: var(--f-mao); font-weight: 400; font-size: 44px; line-height: 0.9; }
+
+.slip {
+  margin: 14px 18px 0;
+  background: var(--folha);
+  padding: 12px 14px 24px;
+  clip-path: polygon(0 0,100% 0,100% calc(100% - 7px),97.5% 100%,95% calc(100% - 7px),92.5% 100%,90% calc(100% - 7px),87.5% 100%,85% calc(100% - 7px),82.5% 100%,80% calc(100% - 7px),77.5% 100%,75% calc(100% - 7px),72.5% 100%,70% calc(100% - 7px),67.5% 100%,65% calc(100% - 7px),62.5% 100%,60% calc(100% - 7px),57.5% 100%,55% calc(100% - 7px),52.5% 100%,50% calc(100% - 7px),47.5% 100%,45% calc(100% - 7px),42.5% 100%,40% calc(100% - 7px),37.5% 100%,35% calc(100% - 7px),32.5% 100%,30% calc(100% - 7px),27.5% 100%,25% calc(100% - 7px),22.5% 100%,20% calc(100% - 7px),17.5% 100%,15% calc(100% - 7px),12.5% 100%,10% calc(100% - 7px),7.5% 100%,5% calc(100% - 7px),2.5% 100%,0% calc(100% - 7px));
+  font-variant-numeric: tabular-nums;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.slip-head { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.slip-row { display: flex; align-items: baseline; gap: 6px; font-size: 15px; }
+.slip-row .q { font-size: 13px; font-weight: 700; }
+.slip-row .lead { flex: 1; min-width: 12px; height: 4px; background: var(--pontilhado) repeat-x left center; align-self: center; margin-top: 6px; }
+.slip-row .v { font-weight: 700; }
+.slip-total { display: flex; align-items: baseline; justify-content: space-between; background: var(--pincel); color: var(--cartolina); margin: 6px -14px 0; padding: 4px 14px 2px; font-weight: 800; }
+.slip-total .v { font-family: var(--f-mao); font-weight: 400; font-size: 22px; }
+.slip.imprimindo { animation: imprime 1.1s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes imprime { from { transform: translateY(-14px); clip-path: polygon(0 0,100% 0,100% 0,0 0); } }
+
+.pp-scan { margin: 14px 18px 0; height: 48px; border: 0; border-radius: 0; background: var(--pincel); color: var(--cartolina); font-weight: 800; font-size: 16px; cursor: pointer; position: relative; transition: transform 80ms; }
+.pp-scan:active { transform: translateY(2px); }
+.pp-scan:hover { background: #0D1745; }
+.pp-scan:disabled { background: var(--cartolina-funda); color: var(--pincel); cursor: not-allowed; }
+.pp-scan.varrendo:disabled { background: var(--pincel); color: var(--cartolina); cursor: progress; }
+.pp-scan .lbl { position: relative; }
+.pp-scan.varrendo .lbl::after { content: ""; position: absolute; left: -4px; right: -4px; bottom: -5px; height: 6px; background: var(--mt-svg-comum) no-repeat 0 0 / 100% 100%; transform-origin: left; animation: varre 900ms cubic-bezier(.3,.7,.2,1) infinite; }
+@keyframes varre { from { transform: scaleX(0); } 70% { transform: scaleX(1); opacity: 1; } to { transform: scaleX(1); opacity: 0; } }
+
+.pp-tabs { display: flex; gap: 4px; margin: 16px 18px 0; }
+.pp-tab { flex: 1; height: 40px; border: 0; border-radius: 0; background: transparent; font-weight: 700; font-size: 15px; cursor: pointer; }
+.pp-tab:hover { background: var(--cartolina-funda); }
+.pp-tab[aria-selected="true"] { background: var(--pincel); color: var(--cartolina); }
+.pp-panel { padding: 16px 18px 0; display: flex; flex-direction: column; gap: 14px; }
+.pp-h { font-weight: 900; font-size: 18px; letter-spacing: -0.02em; line-height: 1.1; }
+.pp-note { font-size: 13px; font-weight: 500; }
+
+/* Recordes */
+.best { display: flex; flex-direction: column; gap: 2px; }
+.best-k { font-weight: 500; font-size: 15px; }
+.best-v { font-family: var(--f-mao); color: var(--preco); font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+.totais { font-size: 15px; font-weight: 500; }
+.totais b { font-weight: 800; }
+.sites { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; counter-reset: pos; }
+.sites li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: baseline; gap: 6px; padding: 5px 8px; counter-increment: pos; }
+.sites li:nth-child(odd) { background: var(--cartolina-funda); }
+.sites li::before { content: counter(pos); font-weight: 800; }
+.sites .h { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.sites .p { font-family: var(--f-mao); font-size: 19px; font-variant-numeric: tabular-nums; }
+
+/* Laelédex */
+.prog { display: flex; flex-direction: column; gap: 8px; }
+.prog-txt { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; }
+.prog-bar { height: 10px; background: var(--cartolina-funda); }
+.prog-bar i { display: block; height: 100%; width: 10%; background: var(--pincel); }
+.cardapio { position: relative; background: var(--folha); padding: 18px 14px 20px; margin-block: 8px; display: flex; flex-direction: column; gap: 16px; }
+.cardapio::before, .cardapio::after { content: ""; position: absolute; left: 0; right: 0; height: 8px; background-repeat: repeat-x; }
+.cardapio::before { top: -8px; background-image: var(--recorte-cima); }
+.cardapio::after { bottom: -8px; background-image: var(--recorte-baixo); }
+.busca { display: flex; align-items: center; gap: 8px; border: 2px solid var(--pincel); height: 40px; padding: 0 10px; }
+.busca svg { width: 18px; height: 18px; flex: none; }
+.busca input { border: 0; outline: 0; background: transparent; font: inherit; font-size: 15px; color: var(--pincel); width: 100%; min-width: 0; }
+.busca input::placeholder { color: var(--pincel); opacity: .72; }
+.busca:focus-within { outline: 3px solid var(--pincel); outline-offset: 2px; }
+.filtros { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px; }
+.filtro { border: 0; border-radius: 0; background-color: transparent; font-size: 13px; font-weight: 700; padding: 3px 5px; cursor: pointer; min-height: 28px; }
+.filtro[aria-pressed="true"] { background: var(--pincel); color: var(--folha); }
+.grupo { display: flex; flex-direction: column; gap: 6px; text-align: center; }
+.grupo h4 { margin: 0; font-size: 15px; font-weight: 800; }
+.grupo h4 span { font-weight: 500; font-size: 13px; margin-left: 4px; }
+.palavras { list-style: none; margin: 0; padding: 0; line-height: 2.05; font-size: 15px; }
+.palavras li { display: inline; margin: 0 5px; white-space: nowrap; }
+.palavras sup { font-size: 13px; font-weight: 700; vertical-align: 0.35em; margin-left: 2px; }
+.tarja { display: inline-block; height: 0.8em; background: var(--pincel); vertical-align: -0.12em; }
+
+/* Ajustes */
+.linha { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.linha-t { display: flex; flex-direction: column; min-width: 0; }
+.linha-t b { font-weight: 700; }
+.linha-t span { font-size: 13px; }
+.seg { display: flex; gap: 4px; }
+.seg button { flex: 1; height: 36px; border: 0; border-radius: 0; background: var(--cartolina-funda); font-weight: 700; cursor: pointer; }
+.seg button[aria-checked="true"] { background: var(--pincel); color: var(--cartolina); }
+.campo-l { font-size: 13px; font-weight: 700; }
+.add { display: flex; gap: 6px; }
+.add input { flex: 1; min-width: 0; height: 40px; border: 2px solid var(--pincel); border-radius: 0; background: var(--folha); color: var(--pincel); font: inherit; padding: 0 10px; }
+.add input:focus-visible { outline-offset: 0; }
+.add button { width: 40px; height: 40px; border: 0; border-radius: 0; background: var(--pincel); color: var(--cartolina); cursor: pointer; display: grid; place-items: center; }
+.add button svg { width: 18px; height: 18px; }
+.coef { display: flex; justify-content: space-between; align-items: baseline; }
+.coef output { font-family: var(--f-mao); font-size: 22px; line-height: 1; }
+.range { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: transparent; margin: 0; }
+.range::-webkit-slider-runnable-track { height: 8px; background: var(--cartolina-funda); }
+.range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -6px; background: var(--pincel); border: 0; border-radius: 0; }
+.range::-moz-range-track { height: 8px; background: var(--cartolina-funda); }
+.range::-moz-range-thumb { width: 20px; height: 20px; background: var(--pincel); border: 0; border-radius: 0; }
+.escala { display: flex; justify-content: space-between; font-size: 13px; margin-top: -6px; }
+.proprias { list-style: none; margin: 0; padding: 8px 10px; background: var(--folha); display: flex; flex-direction: column; gap: 2px; }
+.proprias li { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.proprias .x { width: 32px; height: 32px; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.proprias .x svg { width: 14px; height: 14px; }
+.proprias .c { font-weight: 700; font-size: 13px; margin-left: 6px; }
+.link-btn { border: 0; background: none; font-weight: 800; font-size: 15px; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; padding: 8px 0; }
+
+/* Estados */
+.pp-msg { padding: 14px 18px 0; display: flex; flex-direction: column; gap: 6px; }
+.pp-msg h3 { font-family: var(--f-mao); font-weight: 400; font-size: 26px; line-height: 1.1; }
+
+/* ---------- Página de um site qualquer + HUD ---------- */
+.demo { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.demo-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.demo-bar button { height: 44px; padding: 0 18px; border: 0; border-radius: 0; background: var(--pincel); color: var(--cartolina); font-weight: 800; font-size: 16px; cursor: pointer; }
+.demo-bar button:active { transform: translateY(2px); }
+.demo-bar p { font-size: 15px; }
+.site { position: relative; background: var(--folha); color: var(--site-ink); padding: 40px clamp(20px, 5vw, 64px) 300px; font-family: var(--f-site); overflow: hidden; }
+.site-mast { font-size: 15px; letter-spacing: 0.02em; border-bottom: 1px solid #c9ccd3; padding-bottom: 12px; margin-bottom: 28px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; } /* taste-skill-ignore: cabeçalho do site alheio da demonstração */
+.site-mast b { font-size: 22px; letter-spacing: -0.01em; }
+.site h3 { font-size: clamp(26px, 3.4vw, 40px); line-height: 1.1; font-weight: 700; max-width: 22ch; margin-bottom: 20px; }
+.site p { font-size: 19px; line-height: 1.65; max-width: 62ch; margin-bottom: 18px; }
+
+mark.laele-hit { background-color: transparent; color: inherit; background-repeat: no-repeat; background-position: 0 62%; background-size: 0% 86%; -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-size 240ms cubic-bezier(.3,.7,.2,1); }
+mark.laele-hit.laele-on { background-size: 100% 86%; color: var(--pincel); }
+mark.laele-hit[data-tier="leve"] { background-image: var(--mt-svg-leve); }
+mark.laele-hit[data-tier="comum"] { background-image: var(--mt-svg-comum); }
+mark.laele-hit[data-tier="pesado"] { background-image: var(--mt-svg-pesado); }
+mark.laele-hit[data-tier="lendario"] { background-image: var(--mt-svg-lendario); }
+.laele-float { position: absolute; pointer-events: none; font-family: var(--f-mao); color: var(--preco); font-size: 22px; line-height: 1; -webkit-text-stroke: 3px var(--folha); paint-order: stroke fill; animation: sobe 900ms cubic-bezier(.2,.7,.3,1) forwards; white-space: nowrap; }
+.laele-float i { display: block; font-style: normal; font-family: var(--f-texto); font-weight: 800; font-size: 13px; color: var(--pincel); -webkit-text-stroke: 3px var(--folha); }
+@keyframes sobe { from { transform: translateY(0); opacity: 1; } 70% { opacity: 1; } to { transform: translateY(-28px); opacity: 0; } }
+
+.hud {
+  position: absolute; right: clamp(16px, 4vw, 40px); bottom: 32px;
+  width: 260px; max-width: calc(100% - 32px);
+  background: var(--cartolina); color: var(--pincel);
+  font-family: var(--f-texto); font-size: 15px; line-height: 1.35;
+  padding: 14px 16px 16px;
+  transform: rotate(-1.5deg);
+  box-shadow: 5px 5px 0 var(--pincel); /* taste-skill-ignore: o HUD flutua sobre a página */
+  display: flex; flex-direction: column; gap: 8px;
+}
+.hud.treme { animation: treme 120ms 180ms linear; }
+@keyframes treme { 0%,100% { transform: rotate(-1.5deg) translate(0,0); } 33% { transform: rotate(-1.5deg) translate(2px,1px); } 66% { transform: rotate(-1.5deg) translate(-2px,-1px); } }
+.fita { position: absolute; top: -13px; left: 50%; width: 88px; height: 26px; margin-left: -44px; background: var(--fita); transform: rotate(4deg); }
+.hud-head { display: flex; justify-content: space-between; align-items: center; }
+.hud-head b { font-weight: 900; font-size: 17px; letter-spacing: -0.03em; }
+.hud-btns { display: flex; gap: 2px; margin-right: -8px; }
+.hud-btns button { width: 30px; height: 30px; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.hud-btns button:hover { background: var(--cartolina-funda); }
+.hud-btns svg { width: 14px; height: 14px; }
+.hud-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.hud-score { font-family: var(--f-mao); color: var(--preco); font-size: 44px; line-height: 0.95; font-variant-numeric: tabular-nums; }
+.hud-sub { font-size: 13px; font-weight: 600; }
+.hud .carimbo { width: 70px; height: 70px; margin: 0; opacity: 0; }
+.hud .carimbo b { font-size: 36px; }
+.hud .carimbo.bate { animation: bate 180ms ease-in forwards; } /* taste-skill-ignore: carimbo acelera até bater */
+@keyframes bate { from { opacity: 0; transform: scale(2.2) rotate(-4deg); } to { opacity: 1; transform: scale(1) rotate(-12deg); } }
+.hud-rank { font-weight: 700; min-height: 1.35em; }
+.hud-combo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.hud-combo .n { font-weight: 800; font-variant-numeric: tabular-nums; min-width: 66px; }
+.hud-bar { height: 8px; background: var(--cartolina-funda); }
+.hud-bar i { display: block; height: 100%; width: 0; background: var(--pincel); transition: width 160ms; }
+.hud-mult { font-family: var(--f-mao); font-size: 22px; line-height: 1; min-width: 36px; text-align: right; }
+.hud-mult.quente { color: var(--preco); }
+.hud-banner { font-family: var(--f-mao); color: var(--preco); font-size: 24px; line-height: 1.1; }
+
+/* ---------- Ícone, paleta, letras, movimento ---------- */
+.icones { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-end; }
+.icones figure { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; font-size: 13px; font-weight: 600; }
+.barra-chrome { display: flex; align-items: center; gap: 14px; background: var(--folha); padding: 10px 16px; }
+.barra-chrome .slot { position: relative; width: 28px; height: 28px; }
+.barra-chrome .slot svg { width: 24px; height: 24px; margin: 2px; }
+.badge { position: absolute; right: -10px; bottom: -6px; background: var(--preco); color: var(--folha); font: 700 11px/1 system-ui, sans-serif; padding: 2px 4px; }
+.barra-chrome span.u { font-size: 13px; color: #4a4f5c; }
+
+.paleta { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.amostra { display: flex; flex-direction: column; }
+.amostra .cor { height: 96px; }
+.amostra .ficha { background: var(--folha); padding: 10px 12px; font-size: 13px; display: flex; flex-direction: column; gap: 2px; }
+.amostra .ficha b { font-size: 15px; font-weight: 800; }
+.mts { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 22px; font-weight: 700; background: var(--folha); padding: 16px 18px; }
+.letras { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 12px; }
+.letra { background: var(--cartolina); padding: 22px 22px 26px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.letra .spec-mao { font-family: var(--f-mao); color: var(--preco); font-size: 64px; line-height: 1; }
+.letra .spec-txt { font-weight: 900; font-size: 48px; letter-spacing: -0.04em; line-height: 1; }
+.letra p { font-size: 15px; max-width: 46ch; }
+.tabela-wrap { overflow-x: auto; background: var(--folha); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 15px; }
+th, td { text-align: left; padding: 10px 14px; vertical-align: top; }
+thead th { background: var(--pincel); color: var(--cartolina); font-weight: 800; }
+tbody tr:nth-child(even) { background: #F1F2F6; }
+.regras { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 12px 40px; padding: 0; margin: 0; list-style: none; }
+.regras li { font-size: 16px; }
+.regras li b { display: block; font-weight: 800; }
+
+@media (max-width: 720px) {
+  .intro { grid-template-columns: minmax(0, 1fr); }
+  .intro .icone-grande { width: 112px; height: 112px; order: -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  mark.laele-hit { transition: none; }
+  .laele-float { display: none; }
+  .hud .carimbo.bate, .hud.treme, .slip.imprimindo { animation: none; opacity: 1; }
+  .hud .carimbo.bate { transform: rotate(-12deg); }
+  .pp-scan.varrendo .lbl::after { animation: none; }
+  .sw-track::after { transition: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="icone" viewBox="0 0 128 128">
+    <rect width="128" height="128" fill="#FFE24A"/>
+    <ellipse cx="40" cy="70" rx="23" ry="28" fill="#FFFFFF" stroke="#14215C" stroke-width="8"/>
+    <ellipse cx="88" cy="70" rx="23" ry="28" fill="#FFFFFF" stroke="#14215C" stroke-width="8"/>
+    <circle cx="52" cy="74" r="11" fill="#14215C"/>
+    <circle cx="100" cy="74" r="11" fill="#14215C"/>
+    <path d="M68 30 Q88 16 110 27" fill="none" stroke="#14215C" stroke-width="8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icone16" viewBox="0 0 16 16">
+    <rect width="16" height="16" fill="#FFE24A"/>
+    <ellipse cx="4.7" cy="8.5" rx="3.3" ry="4" fill="#FFFFFF" stroke="#14215C" stroke-width="1.4"/>
+    <ellipse cx="11.3" cy="8.5" rx="3.3" ry="4" fill="#FFFFFF" stroke="#14215C" stroke-width="1.4"/>
+    <circle cx="6.3" cy="9" r="1.7" fill="#14215C"/>
+    <circle cx="12.9" cy="9" r="1.7" fill="#14215C"/>
+  </symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/></symbol>
+  <symbol id="i-re" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5M19 4v4h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/></symbol>
+  <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M15.5 15.5L21 21" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/></symbol>
+</svg>
+
+<main class="wrap">
+
+  <header class="intro">
+    <h1>Robo-LaEle na feira</h1>
+    <svg class="icone-grande" role="img" aria-label="Ícone: cartolina amarela com dois olhinhos olhando de lado"><use href="#icone"/></svg>
+    <p class="tese">Nesta extensão, <b>o cartaz de feira</b> vira o placar e <b>o marca-texto</b> vira o destaque de cada palavra.</p>
+    <p class="lede">Boa parte do dicionário é produto de feira: mandioca, pepino, banana, linguiça. Então a pontuação é preço escrito à mão em vermelho, o placar é cartolina fluorescente e a conta da página sai como a comanda da barraca, com cada palavra somando até o total. Tudo abaixo está em tamanho real e funciona: troque as abas do popup e varra a página de exemplo.</p>
+    <a class="cta" href="#t-pagina">Ver a varredura</a>
+  </header>
+
+  <!-- ===================== POPUP ===================== -->
+  <section class="secao" aria-labelledby="t-popup">
+    <div class="secao-cab">
+      <h2 id="t-popup">O popup</h2>
+      <p>360 px de largura. Um campo de cartolina inteiro, sem cartões em cima. A conta da página é uma comanda: as linhas somam o total, e a última linha repete o total numa tarja de tinta.</p>
+    </div>
+
+    <div class="mesa-linha">
+      <!-- Popup 1: Recordes -->
+      <figure class="peca">
+        <div class="pp" data-pp data-ui>
+          <div class="pp-top">
+            <div class="pp-brand">
+              <svg aria-hidden="true"><use href="#icone"/></svg>
+              <div><span class="pp-name">Lá ele</span><span class="pp-sub">caçador de duplo sentido</span></div>
+            </div>
+            <button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button>
+          </div>
+
+          <div class="pp-hero">
+            <div>
+              <div class="pp-host">g1.globo.com</div>
+              <div class="pp-total">63.130<small>pts</small></div>
+              <div class="pp-rank">Lá ele supremo <span class="pp-rec">Recorde!</span></div>
+            </div>
+            <div class="carimbo" role="img" aria-label="Nota S"><b>S</b></div>
+          </div>
+
+          <div class="slip" data-slip>
+            <div class="slip-head">85 palavras · maior combo 28x (14,5x)</div>
+            <div class="slip-row"><span class="mt" data-tier="pesado">mandioca</span><span class="q">×4</span><span class="lead"></span><span class="v">9.600</span></div>
+            <div class="slip-row"><span class="mt" data-tier="pesado">pau</span><span class="q">×3</span><span class="lead"></span><span class="v">6.300</span></div>
+            <div class="slip-row"><span class="mt" data-tier="comum">pepino</span><span class="q">×3</span><span class="lead"></span><span class="v">3.150</span></div>
+            <div class="slip-row"><span class="mt" data-tier="lendario">sentar em cima</span><span class="q">×1</span><span class="lead"></span><span class="v">2.250</span></div>
+            <div class="slip-row"><span>outras 74 palavras</span><span class="lead"></span><span class="v">41.830</span></div>
+            <div class="slip-total"><span>Total</span><span class="v">63.130</span></div>
+          </div>
+
+          <button type="button" class="pp-scan" data-scan><span class="lbl">Varrer página</span></button>
+
+          <div class="pp-tabs" role="tablist" aria-label="Seções">
+            <button type="button" class="pp-tab" role="tab" aria-selected="true" data-tab="rec">Recordes</button>
+            <button type="button" class="pp-tab" role="tab" aria-selected="false" data-tab="dex">Laelédex</button>
+            <button type="button" class="pp-tab" role="tab" aria-selected="false" data-tab="aju">Ajustes</button>
+          </div>
+
+          <div class="pp-panel" data-panel="rec">
+            <div class="best">
+              <span class="best-v">63.130 pts</span>
+              <span class="best-k">é o recorde global, feito em g1.globo.com no dia 18 de outubro.</span>
+            </div>
+            <p class="totais"><b>12</b> varreduras · <b>340</b> palavras · <b>210 mil</b> pontos no total</p>
+            <h3 class="pp-h">Top 10 sites</h3>
+            <ol class="sites">
+              <li><span class="h">g1.globo.com</span><span class="p">63.130</span></li>
+              <li><span class="h">hortifruti.com.br</span><span class="p">41.200</span></li>
+              <li><span class="h">tudogostoso.com.br</span><span class="p">12.900</span></li>
+              <li><span class="h">pt.wikipedia.org</span><span class="p">6.450</span></li>
+              <li><span class="h">ceagesp.gov.br</span><span class="p">3.020</span></li>
+            </ol>
+          </div>
+
+          <div class="pp-panel" data-panel="dex" hidden>
+            <div class="prog">
+              <div class="prog-txt"><span>42 de 431 descobertas</span><span>10%</span></div>
+              <div class="prog-bar" role="progressbar" aria-label="Palavras descobertas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10"><i></i></div>
+            </div>
+            <div class="cardapio">
+              <label class="busca"><svg aria-hidden="true"><use href="#i-lupa"/></svg><input type="search" id="busca-1" placeholder="Buscar entre as descobertas" aria-label="Buscar palavra descoberta"></label>
+              <div class="filtros" role="group" aria-label="Filtrar por raridade">
+                <button type="button" class="filtro" aria-pressed="true">Todas</button>
+                <button type="button" class="filtro mt" data-tier="leve" aria-pressed="false">Leve</button>
+                <button type="button" class="filtro mt" data-tier="comum" aria-pressed="false">Comum</button>
+                <button type="button" class="filtro mt" data-tier="pesado" aria-pressed="false">Pesado</button>
+                <button type="button" class="filtro mt" data-tier="lendario" aria-pressed="false">Lendário</button>
+              </div>
+              <div class="grupo">
+                <h4>Lendário<span>2 de 38</span></h4>
+                <ul class="palavras">
+                  <li><span class="mt" data-tier="lendario">sentar em cima</span><sup>1</sup></li>
+                  <li><span class="tarja" style="width:9ch" role="img" aria-label="Palavra não descoberta, raridade lendário"></span></li>
+                  <li><span class="tarja" style="width:15ch" role="img" aria-label="Palavra não descoberta, raridade lendário"></span></li>
+                  <li><span class="mt" data-tier="lendario">segura no pau da barraca</span><sup>1</sup></li>
+                  <li><span class="tarja" style="width:6ch" role="img" aria-label="Palavra não descoberta, raridade lendário"></span></li>
+                  <li><span class="tarja" style="width:11ch" role="img" aria-label="Palavra não descoberta, raridade lendário"></span></li>
+                </ul>
+              </div>
+              <div class="grupo">
+                <h4>Pesado<span>9 de 104</span></h4>
+                <ul class="palavras">
+                  <li><span class="mt" data-tier="pesado">mandioca</span><sup>4</sup></li>
+                  <li><span class="mt" data-tier="pesado">por trás</span><sup>2</sup></li>
+                  <li><span class="tarja" style="width:8ch" role="img" aria-label="Palavra não descoberta, raridade pesado"></span></li>
+                  <li><span class="mt" data-tier="pesado">pau</span><sup>3</sup></li>
+                  <li><span class="tarja" style="width:5ch" role="img" aria-label="Palavra não descoberta, raridade pesado"></span></li>
+                  <li><span class="mt" data-tier="pesado">de quatro</span><sup>1</sup></li>
+                  <li><span class="tarja" style="width:10ch" role="img" aria-label="Palavra não descoberta, raridade pesado"></span></li>
+                  <li><span class="tarja" style="width:7ch" role="img" aria-label="Palavra não descoberta, raridade pesado"></span></li>
+                  <li><span class="mt" data-tier="pesado">até o talo</span><sup>1</sup></li>
+                </ul>
+              </div>
+              <div class="grupo">
+                <h4>Comum<span>21 de 170</span></h4>
+                <ul class="palavras">
+                  <li><span class="mt" data-tier="comum">pepino</span><sup>3</sup></li>
+                  <li><span class="mt" data-tier="comum">banana</span><sup>2</sup></li>
+                  <li><span class="tarja" style="width:8ch" role="img" aria-label="Palavra não descoberta, raridade comum"></span></li>
+                  <li><span class="mt" data-tier="comum">linguiça</span><sup>2</sup></li>
+                  <li><span class="mt" data-tier="comum">berinjela</span><sup>1</sup></li>
+                  <li><span class="tarja" style="width:6ch" role="img" aria-label="Palavra não descoberta, raridade comum"></span></li>
+                  <li><span class="mt" data-tier="comum">salsicha</span><sup>1</sup></li>
+                  <li><span class="tarja" style="width:9ch" role="img" aria-label="Palavra não descoberta, raridade comum"></span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="pp-panel" data-panel="aju" hidden>
+            <h3 class="pp-h">Varredura</h3>
+            <div class="linha"><div class="linha-t"><b>Varredura automática</b><span>Varre cada página assim que ela abre.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Varredura automática" data-sw><span class="sw-track" aria-hidden="true"></span></button></div>
+            <div class="linha"><div class="linha-t"><b>Animações</b><span>Passa o marca-texto palavra por palavra.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Animações" data-sw><span class="sw-track" aria-hidden="true"></span></button></div>
+            <div class="linha"><div class="linha-t"><b>Placar na página</b><span>Mostra a plaquinha de pontos no canto.</span></div><button type="button" class="sw" role="switch" aria-checked="false" aria-label="Placar na página" data-sw><span class="sw-track" aria-hidden="true"></span></button></div>
+            <div class="linha-t"><b>Velocidade da animação</b></div>
+            <div class="seg" role="radiogroup" aria-label="Velocidade da animação">
+              <button type="button" role="radio" aria-checked="false">Lento</button>
+              <button type="button" role="radio" aria-checked="true">Normal</button>
+              <button type="button" role="radio" aria-checked="false">Rápido</button>
+            </div>
+            <h3 class="pp-h">Palavras próprias</h3>
+            <label class="campo-l" for="nova-1">Nova palavra ou expressão</label>
+            <div class="add"><input type="text" id="nova-1" placeholder="ex.: cenoura"><button type="button" aria-label="Adicionar palavra"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></div>
+            <div class="coef"><label class="campo-l" for="coef-1">Coeficiente</label><output for="coef-1">×2</output></div>
+            <input type="range" class="range" id="coef-1" min="0.5" max="5" step="0.5" value="2">
+            <div class="escala"><span>sutil</span><span>pesadão</span></div>
+            <ul class="proprias">
+              <li><span><span class="mt" data-tier="comum">cenoura</span><span class="c">×2</span></span><button type="button" class="x" aria-label="Remover cenoura"><svg aria-hidden="true"><use href="#i-x"/></svg></button></li>
+              <li><span><span class="mt" data-tier="pesado">abacaxi grande</span><span class="c">×3,5</span></span><button type="button" class="x" aria-label="Remover abacaxi grande"><svg aria-hidden="true"><use href="#i-x"/></svg></button></li>
+            </ul>
+            <h3 class="pp-h">Dados</h3>
+            <div class="linha"><div class="linha-t"><b>Zerar recordes</b><span>Apaga o ranking, os totais e a Laelédex.</span></div><button type="button" class="link-btn">Zerar</button></div>
+            <p class="pp-note">Tudo roda no seu navegador. Nada sai da sua máquina.</p>
+          </div>
+        </div>
+        <figcaption><b>Clique nas abas.</b> Recordes, Laelédex e Ajustes no mesmo popup. A nota é um carimbo; o recorde, um carimbinho do lado do site.</figcaption>
+      </figure>
+
+      <!-- Popup 2: Laelédex aberta -->
+      <figure class="peca">
+        <div class="pp" data-ui data-pp data-start="dex"></div>
+        <figcaption><b>Laelédex como cardápio.</b> Folha branca recortada, palavras agrupadas por raridade em fluxo de texto. As que faltam são tarjas de censura do tamanho da palavra.</figcaption>
+      </figure>
+
+      <!-- Popup 3: Ajustes aberto -->
+      <figure class="peca">
+        <div class="pp" data-ui data-pp data-start="aju"></div>
+        <figcaption><b>Ajustes.</b> Switches e botões quadrados, um raio só (zero). As palavras próprias aparecem com o marca-texto da raridade que o coeficiente dá.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== ESTADOS ===================== -->
+  <section class="secao" aria-labelledby="t-estados">
+    <div class="secao-cab">
+      <h2 id="t-estados">Estados da aba atual</h2>
+      <p>Sem ícones de estado. A frase escrita a pincel faz o trabalho, e o botão continua no mesmo lugar.</p>
+    </div>
+    <div class="mesa-linha">
+      <figure class="peca">
+        <div class="pp" data-ui>
+          <div class="pp-top"><div class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg><div><span class="pp-name">Lá ele</span><span class="pp-sub">caçador de duplo sentido</span></div></div><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button></div>
+          <div class="pp-hero"><div><div class="pp-host">receitas.com <span class="pp-note">varrendo…</span></div><div class="pp-total">4.250<small>pts</small></div><div class="pp-rank">17 palavras até agora</div></div></div>
+          <button type="button" class="pp-scan varrendo" disabled><span class="lbl">Varrendo…</span></button>
+        </div>
+        <figcaption><b>Varrendo.</b> O total sobe ao vivo e um traço de marca-texto corre sob o botão.</figcaption>
+      </figure>
+      <figure class="peca">
+        <div class="pp" data-ui>
+          <div class="pp-top"><div class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg><div><span class="pp-name">Lá ele</span><span class="pp-sub">caçador de duplo sentido</span></div></div><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button></div>
+          <div class="pp-msg"><div class="pp-host">bancodobrasil.com.br</div><h3>Nada de lá ele por aqui… ainda</h3><p>Página limpinha. Tente uma receita ou a seção de esportes.</p></div>
+          <button type="button" class="pp-scan"><span class="lbl">Varrer de novo</span></button>
+        </div>
+        <figcaption><b>Nada encontrado.</b></figcaption>
+      </figure>
+      <figure class="peca">
+        <div class="pp" data-ui>
+          <div class="pp-top"><div class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg><div><span class="pp-name">Lá ele</span><span class="pp-sub">caçador de duplo sentido</span></div></div><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-track" aria-hidden="true"></span></button></div>
+          <div class="pp-msg"><div class="pp-host">chrome://extensions</div><h3>Aqui o Chrome não deixa</h3><p>Páginas do navegador, a Chrome Web Store e PDFs não podem ser varridos.</p></div>
+          <button type="button" class="pp-scan" disabled><span class="lbl">Varrer página</span></button>
+        </div>
+        <figcaption><b>Página proibida.</b> O mesmo vale para PDF e loja.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== PÁGINA + HUD ===================== -->
+  <section class="secao" aria-labelledby="t-pagina">
+    <div class="secao-cab">
+      <h2 id="t-pagina">Na página de qualquer site</h2>
+      <p>O marca-texto cresce da esquerda para a direita, com a cor da raridade, e o "+150" sai escrito à mão. A plaquinha no canto é a única coisa com sombra, porque é a única que flutua. No fim, o carimbo da nota bate.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">
+        <button type="button" id="varrer-demo">Varrer esta página</button>
+        <p>Velocidade normal, como na extensão. Com movimento reduzido, tudo aparece de uma vez.</p>
+      </div>
+      <div class="site" id="site" data-ui>
+        <div class="site-mast"><b>Diário do Bairro</b><span>Cidade · sábado, 18 de outubro</span></div>
+        <h3>Feira da praça volta com fila desde cedo</h3>
+        <p>O seu Valdir abriu a barraca às cinco e a fila já dobrava a esquina. "Hoje a <mark class="laele-hit" data-tier="pesado" data-coef="2.4">mandioca</mark> veio grossa", gritava, enquanto a freguesa pedia para escolher o <mark class="laele-hit" data-tier="comum" data-coef="1.5">pepino</mark> mais <mark class="laele-hit" data-tier="leve" data-coef="1">comprido</mark> da banca.</p>
+        <p>Na barraca ao lado, dona Cida vendia <mark class="laele-hit" data-tier="comum" data-coef="1.4">linguiça</mark> caseira e jurava que o segredo é deixar a carne bem <mark class="laele-hit" data-tier="leve" data-coef="0.9">molhada</mark> no tempero. Quem chegou tarde teve que <mark class="laele-hit" data-tier="lendario" data-coef="4.5">sentar em cima</mark> do caixote e esperar a próxima leva.</p>
+        <p>A prefeitura promete toldo novo até dezembro. Até lá, o conselho dos feirantes pede que ninguém estacione na rua de trás aos sábados.</p>
+
+        <div class="hud" id="hud" role="status" aria-live="polite">
+          <span class="fita" aria-hidden="true"></span>
+          <div class="hud-head">
+            <b>Lá ele</b>
+            <div class="hud-btns">
+              <button type="button" aria-label="Minimizar"><svg aria-hidden="true"><use href="#i-min"/></svg></button>
+              <button type="button" aria-label="Varrer de novo" id="hud-re"><svg aria-hidden="true"><use href="#i-re"/></svg></button>
+              <button type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+            </div>
+          </div>
+          <div class="hud-main">
+            <div>
+              <div class="hud-score" id="hud-score">0</div>
+              <div class="hud-sub"><span id="hud-count">0</span> palavras</div>
+            </div>
+            <div class="carimbo" id="hud-stamp" role="img" aria-label="Nota"><b id="hud-grade">-</b></div>
+          </div>
+          <div class="hud-rank" id="hud-rank"></div>
+          <div class="hud-combo">
+            <span class="n" id="hud-combo">Combo —</span>
+            <div class="hud-bar"><i id="hud-bar"></i></div>
+            <span class="hud-mult" id="hud-mult">x1</span>
+          </div>
+          <div class="hud-banner" id="hud-banner" hidden>Novo recorde!</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ÍCONE ===================== -->
+  <section class="secao" aria-labelledby="t-icone">
+    <div class="secao-cab">
+      <h2 id="t-icone">Ícone e badge</h2>
+      <p>Cartolina amarela com os olhinhos de "lá ele" olhando de lado. Em 16 px sai a sobrancelha e ficam só os olhos. O badge é etiqueta de preço: vermelho com número branco.</p>
+    </div>
+    <div class="icones">
+      <figure><svg width="128" height="128" aria-hidden="true"><use href="#icone"/></svg>128 px</figure>
+      <figure><svg width="48" height="48" aria-hidden="true"><use href="#icone"/></svg>48 px</figure>
+      <figure><svg width="32" height="32" aria-hidden="true"><use href="#icone"/></svg>32 px</figure>
+      <figure><svg width="16" height="16" aria-hidden="true"><use href="#icone16"/></svg>16 px</figure>
+      <figure>
+        <div class="barra-chrome"><span class="u">g1.globo.com/economia/feira</span><span class="slot"><svg aria-hidden="true"><use href="#icone16"/></svg><span class="badge">63k</span></span></div>
+        Na barra do Chrome
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== PALETA E LETRAS ===================== -->
+  <section class="secao" aria-labelledby="t-paleta">
+    <div class="secao-cab">
+      <h2 id="t-paleta">Cores e letras</h2>
+      <p>Uma cartolina, uma tinta, um vermelho de preço. O vermelho só aparece grande: na pontuação, no carimbo e no "+150". Texto pequeno é sempre azul-marinho.</p>
+    </div>
+    <div class="paleta">
+      <div class="amostra"><div class="cor" style="background:var(--cartolina)"></div><div class="ficha"><b>Cartolina</b>#FFE24A · fundo do popup e do HUD</div></div>
+      <div class="amostra"><div class="cor" style="background:var(--cartolina-funda)"></div><div class="ficha"><b>Cartolina funda</b>#F2CF2E · passo de tom no lugar de linha</div></div>
+      <div class="amostra"><div class="cor" style="background:var(--pincel)"></div><div class="ficha"><b>Pincel</b>#14215C · todo texto, botões, tarjas</div></div>
+      <div class="amostra"><div class="cor" style="background:var(--preco)"></div><div class="ficha"><b>Preço</b>#E5262A · só em tamanho grande</div></div>
+      <div class="amostra"><div class="cor" style="background:var(--folha);outline:2px solid var(--cartolina-funda);outline-offset:-2px"></div><div class="ficha"><b>Folha</b>#FFFFFF · comanda, cardápio, lista</div></div>
+    </div>
+    <div class="mts" aria-label="Marca-texto por raridade">
+      <span class="mt" data-tier="leve">leve</span>
+      <span class="mt" data-tier="comum">comum</span>
+      <span class="mt" data-tier="pesado">pesado</span>
+      <span class="mt" data-tier="lendario">lendário</span>
+    </div>
+    <div class="letras">
+      <div class="letra">
+        <span class="spec-mao">63.130 pts</span>
+        <p><b>Permanent Marker</b> é a mão do feirante. Só para preço, carimbo e "+150", sempre a partir de 20 px.</p>
+      </div>
+      <div class="letra">
+        <span class="spec-txt">Lá ele</span>
+        <p><b>Epilogue</b>, uma grotesca larga e preta, para o nome e os títulos em 900 e para todo o texto em 400 a 800. Entra no lugar da Bricolage, que a Taste trocou.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MOVIMENTO ===================== -->
+  <section class="secao" aria-labelledby="t-mov">
+    <div class="secao-cab">
+      <h2 id="t-mov">Movimento</h2>
+      <p>A página parada já está pronta. Só se mexe o que é jogo.</p>
+    </div>
+    <div class="tabela-wrap">
+      <table>
+        <thead><tr><th>Onde</th><th>O quê</th><th>Duração</th><th>Com movimento reduzido</th></tr></thead>
+        <tbody>
+          <tr><td>Página</td><td>Marca-texto cresce da esquerda para a direita</td><td>240 ms</td><td>Aparece cheio</td></tr>
+          <tr><td>Página</td><td>"+150" sobe 28 px e some</td><td>900 ms</td><td>Não aparece</td></tr>
+          <tr><td>HUD</td><td>Carimbo bate (escala 2,2 → 1) e a plaquinha treme uma vez</td><td>180 + 120 ms</td><td>Aparece no lugar</td></tr>
+          <tr><td>Popup</td><td>Comanda sai da impressora quando a varredura termina</td><td>1,1 s, uma vez</td><td>Aparece pronta</td></tr>
+          <tr><td>Popup</td><td>Traço correndo sob "Varrendo…"</td><td>loop de 900 ms</td><td>Parado</td></tr>
+          <tr><td>Popup</td><td>Botão pressionado desce 2 px</td><td>80 ms</td><td>Igual</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="regras">
+      <li><b>Um raio só: zero.</b>Cartolina cortada na tesoura. O carimbo é a única peça redonda.</li>
+      <li><b>Nada de linha, gradiente ou brilho.</b>Superfícies se separam por um passo de tom.</li>
+      <li><b>Rótulos em caixa normal.</b>"Recorde global", nunca "RECORDE GLOBAL".</li>
+      <li><b>Nada mexe o texto do site.</b>O destaque é só fundo: sem padding, display ou margem.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function () {
+  var reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Os popups 2 e 3 são cópias do primeiro, abertos em outra aba.
+  var modelo = document.querySelector('[data-pp]:not([data-start])');
+  document.querySelectorAll('[data-pp][data-start]').forEach(function (alvo, n) {
+    var copia = modelo.cloneNode(true);
+    copia.setAttribute('data-start', alvo.getAttribute('data-start'));
+    copia.querySelectorAll('[id]').forEach(function (el) { el.id = el.id.replace(/-1$/, '-' + (n + 2)); });
+    copia.querySelectorAll('[for]').forEach(function (el) { el.setAttribute('for', el.getAttribute('for').replace(/-1$/, '-' + (n + 2))); });
+    alvo.replaceWith(copia);
+  });
+
+  document.querySelectorAll('[data-pp]').forEach(function (pp) {
+    var tabs = pp.querySelectorAll('[data-tab]');
+    function abre(nome) {
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.getAttribute('data-tab') === nome)); });
+      pp.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== nome; });
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { abre(t.getAttribute('data-tab')); }); });
+    if (pp.getAttribute('data-start')) abre(pp.getAttribute('data-start'));
+
+    pp.querySelectorAll('.filtro').forEach(function (f) {
+      f.addEventListener('click', function () {
+        pp.querySelectorAll('.filtro').forEach(function (o) { o.setAttribute('aria-pressed', String(o === f)); });
+      });
+    });
+    pp.querySelectorAll('.seg [role=radio]').forEach(function (r) {
+      r.addEventListener('click', function () {
+        pp.querySelectorAll('.seg [role=radio]').forEach(function (o) { o.setAttribute('aria-checked', String(o === r)); });
+      });
+    });
+    var range = pp.querySelector('.range');
+    if (range) range.addEventListener('input', function () {
+      pp.querySelector('.coef output').textContent = '×' + String(range.value).replace('.', ',');
+    });
+    var scan = pp.querySelector('[data-scan]');
+    var slip = pp.querySelector('[data-slip]');
+    if (scan && slip) scan.addEventListener('click', function () {
+      scan.classList.add('varrendo');
+      scan.querySelector('.lbl').textContent = 'Varrendo…';
+      setTimeout(function () {
+        scan.classList.remove('varrendo');
+        scan.querySelector('.lbl').textContent = 'Varrer página';
+        slip.classList.remove('imprimindo'); void slip.offsetWidth; slip.classList.add('imprimindo');
+      }, reduz ? 0 : 1400);
+    });
+  });
+
+  document.querySelectorAll('[data-sw]').forEach(function (s) {
+    s.addEventListener('click', function () { s.setAttribute('aria-checked', String(s.getAttribute('aria-checked') !== 'true')); });
+  });
+
+  // ---------- Demonstração na página ----------
+  var site = document.getElementById('site');
+  var marks = Array.prototype.slice.call(site.querySelectorAll('mark.laele-hit'));
+  var hud = document.getElementById('hud');
+  var el = {
+    score: document.getElementById('hud-score'), count: document.getElementById('hud-count'),
+    combo: document.getElementById('hud-combo'), bar: document.getElementById('hud-bar'),
+    mult: document.getElementById('hud-mult'), stamp: document.getElementById('hud-stamp'),
+    grade: document.getElementById('hud-grade'), rank: document.getElementById('hud-rank'),
+    banner: document.getElementById('hud-banner')
+  };
+  var RANKS = [[300, 'D', 'Quase inocente'], [1000, 'C', 'Lá ele de leve'], [3000, 'B', 'Tá ficando safado'], [8000, 'A', 'Lá ele pesado'], [Infinity, 'S', 'Lá ele supremo']];
+  var fmt = new Intl.NumberFormat('pt-BR');
+  var timers = [], shown = 0, raf = 0;
+
+  function conta(alvo) {
+    cancelAnimationFrame(raf);
+    if (reduz) { shown = alvo; el.score.textContent = fmt.format(alvo); return; }
+    var de = shown, t0 = performance.now();
+    (function passo(t) {
+      var k = Math.min(1, (t - t0) / 320);
+      shown = Math.round(de + (alvo - de) * (1 - Math.pow(1 - k, 3)));
+      el.score.textContent = fmt.format(shown);
+      if (k < 1) raf = requestAnimationFrame(passo);
+    })(t0);
+  }
+
+  function solta(mark, pts, mult) {
+    if (reduz) return;
+    var r = mark.getBoundingClientRect(), s = site.getBoundingClientRect();
+    var f = document.createElement('span');
+    f.className = 'laele-float';
+    f.setAttribute('aria-hidden', 'true');
+    f.textContent = '+' + fmt.format(pts);
+    if (mult > 1) { var i = document.createElement('i'); i.textContent = 'x' + String(mult).replace('.', ','); f.appendChild(i); }
+    f.style.left = (r.left - s.left + r.width / 2 - 20) + 'px';
+    f.style.top = (r.top - s.top - 30) + 'px';
+    site.appendChild(f);
+    setTimeout(function () { f.remove(); }, 1000);
+  }
+
+  function limpa() {
+    timers.forEach(clearTimeout); timers = [];
+    marks.forEach(function (m) { m.classList.remove('laele-on'); });
+    site.querySelectorAll('.laele-float').forEach(function (f) { f.remove(); });
+    shown = 0; el.score.textContent = '0'; el.count.textContent = '0';
+    el.combo.textContent = 'Combo —'; el.bar.style.width = '0'; el.mult.textContent = 'x1'; el.mult.classList.remove('quente');
+    el.stamp.classList.remove('bate'); el.grade.textContent = '-'; el.rank.textContent = ''; el.banner.hidden = true;
+    hud.classList.remove('treme');
+  }
+
+  function varre() {
+    limpa();
+    var total = 0, combo = 0, ultimoP = null, passo = reduz ? 0 : 520;
+    marks.forEach(function (m, idx) {
+      var p = m.closest('p');
+      combo = p === ultimoP ? combo + 1 : 1;
+      ultimoP = p;
+      var mult = Math.min(10, 1 + 0.5 * (combo - 1));
+      var pts = Math.round(100 * parseFloat(m.getAttribute('data-coef')) * mult);
+      var c = combo;
+      timers.push(setTimeout(function () {
+        m.classList.add('laele-on');
+        total += pts;
+        conta(total);
+        el.count.textContent = String(idx + 1);
+        el.combo.textContent = 'Combo ' + c;
+        el.bar.style.width = Math.min(100, c * 10) + '%';
+        el.mult.textContent = 'x' + String(mult).replace('.', ',');
+        el.mult.classList.toggle('quente', mult > 1);
+        solta(m, pts, mult);
+      }, 300 + idx * passo));
+    });
+    timers.push(setTimeout(function () {
+      var r = RANKS.filter(function (x) { return total < x[0]; })[0];
+      el.grade.textContent = r[1];
+      el.stamp.setAttribute('aria-label', 'Nota ' + r[1]);
+      el.rank.textContent = r[2];
+      el.stamp.classList.add('bate');
+      hud.classList.add('treme');
+      el.banner.hidden = false;
+    }, 300 + marks.length * passo + (reduz ? 0 : 500)));
+  }
+
+  document.getElementById('varrer-demo').addEventListener('click', varre);
+  document.getElementById('hud-re').addEventListener('click', varre);
+  varre();
+})();
+</script>

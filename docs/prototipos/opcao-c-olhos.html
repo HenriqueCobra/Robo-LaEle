@@ -1,0 +1,991 @@
+<title>Robo-LaEle de olho</title>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&display=swap">
+<style>
+/* Layout: um motivo só, os olhos de lado do mascote, em quatro escalas: palco gigante, cara da nota, marcador de lista e botão. */
+:root {
+  color-scheme: light;
+  --papel: #f7f7f7;
+  --cinza: #ebebeb;
+  --tinta: #0d2a1c;
+  --suave: #56635b;
+  --amarelo: #f6e016;
+  --branco: #ffffff;
+  --site-ink: #26272b;
+  --r: 10px;
+  --f: "Chillax", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --margem: max(16px, env(safe-area-inset-left, 0px));
+  --margem-d: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 900px) { :root { --margem: max(40px, env(safe-area-inset-left, 0px)); --margem-d: max(40px, env(safe-area-inset-right, 0px)); } }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font-family: var(--f); font-size: 18px; line-height: 1.5; overflow-x: hidden; }
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.03em; line-height: 1; text-wrap: balance; }
+p { margin: 0; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.dentro { padding-left: var(--margem); padding-right: var(--margem-d); max-width: 1440px; margin: 0 auto; }
+
+/* O olho: branco com contorno de tinta, pupila que anda */
+.cara { display: block; color: var(--tinta); overflow: visible; }
+.cara .pupila { transition: transform 180ms var(--ease); }
+.cara.pula { animation: pula 320ms var(--ease); }
+@keyframes pula { 0% { transform: scale(1.25); } 100% { transform: none; } }
+
+/* Botão: retângulo com um olho que espia o rótulo */
+.botao { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px 0 14px; border: 0; border-radius: var(--r); background: var(--amarelo); color: var(--tinta); font-weight: 600; font-size: 16px; text-decoration: none; cursor: pointer; transition: transform 160ms var(--ease); }
+.botao:hover { transform: translateY(-2px); }
+.botao:active { transform: translateY(1px); }
+.botao .olhinho { width: 30px; height: 22px; flex: none; }
+.botao:hover .olhinho .pupila, .botao:focus-visible .olhinho .pupila { transform: translateX(5px); }
+.botao.escuro { background: var(--tinta); color: var(--papel); }
+.botao.escuro .olhinho { color: var(--tinta); }
+
+/* ---------- Abertura: palco amarelo com o olho gigante ---------- */
+.heroi { position: relative; min-height: max(760px, 100svh); overflow: hidden; }
+.nav { position: relative; z-index: 3; display: flex; justify-content: space-between; align-items: center; padding-top: 28px; }
+.marca { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 20px; letter-spacing: -0.02em; text-decoration: none; color: inherit; }
+.marca svg { width: 30px; height: 30px; border-radius: 7px; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { color: inherit; text-decoration: none; font-size: 16px; }
+.nav-links a:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+.heroi-txt { position: relative; z-index: 3; padding-top: 122px; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; max-width: 44%; }
+.heroi h1 { font-size: clamp(52px, 5.2vw, 80px); }
+.heroi-txt p { font-size: 18px; max-width: 40ch; }
+.palco { position: absolute; left: 33.33%; right: 0; top: 42%; bottom: 0; background: var(--amarelo); z-index: 1; animation: obturador 1100ms var(--ease) 150ms both; }
+.palco::before { content: ""; position: absolute; left: -150px; top: -96px; width: 300px; height: 192px; border-radius: 50%; background: var(--papel); }
+@keyframes obturador { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+.palco-pp { position: absolute; left: 176px; top: 56px; animation: assenta 1100ms var(--ease) 150ms both; transform-origin: top left; }
+@keyframes assenta { from { transform: scale(1.12); } to { transform: none; } }
+.olhao { position: absolute; left: calc(176px + 400px); top: 10%; width: max(600px, 46vw); height: auto; }
+@media (max-width: 1100px) { .olhao { left: calc(176px + 380px); } }
+@media (max-width: 899px) {
+  .heroi { min-height: 0; }
+  .nav-links { display: none; }
+  .heroi-txt { max-width: none; padding-top: 48px; padding-bottom: 40px; }
+  .heroi h1 { font-size: 11vw; }
+  .heroi-txt p { font-size: 16px; }
+  .palco { position: relative; left: auto; top: auto; height: 560px; animation-delay: 0ms; }
+  .palco::before { left: -36px; top: -24px; width: 72px; height: 48px; }
+  .palco-pp { left: 16px; top: 56px; }
+  .olhao { left: 250px; top: -80px; width: 420px; }
+}
+
+/* ---------- Varredura de referência: blocos em degrau ---------- */
+.degraus { padding-block: 120px 120px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 8px; align-items: start; }
+.bloco { position: relative; overflow: hidden; border-radius: var(--r); padding: 28px; display: flex; flex-direction: column; justify-content: space-between; }
+.bloco::before { content: ""; position: absolute; right: -60px; top: -40px; width: 120px; height: 80px; border-radius: 50%; background: var(--papel); }
+.bloco b { font-weight: 600; font-size: clamp(56px, 5.4vw, 92px); letter-spacing: -0.04em; line-height: 0.95; }
+.bloco span { font-size: 18px; max-width: 26ch; }
+.b1 { grid-column: 1 / span 6; grid-row: 1 / span 2; height: 70vh; min-height: 480px; background: var(--amarelo); }
+.b2 { grid-column: 7 / span 3; grid-row: 2; margin-top: 0; height: 44vh; min-height: 300px; background: var(--tinta); color: var(--papel); }
+.b3 { grid-column: 10 / span 3; grid-row: 2; margin-top: 12vh; height: 34vh; min-height: 240px; background: var(--cinza); }
+.degraus-h { grid-column: 7 / span 6; grid-row: 1; padding: 0 0 32px 4px; align-self: end; display: flex; flex-direction: column; gap: 12px; }
+.degraus-h h2 { font-size: clamp(32px, 3.4vw, 48px); }
+.degraus-h p { font-size: 18px; max-width: 40ch; }
+.b1 { align-self: stretch; }
+.degraus .b1 { height: auto; min-height: max(480px, 70vh); }
+@media (max-width: 899px) {
+  .degraus { padding-block: 72px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .degraus-h { grid-column: 1 / -1; grid-row: 1; padding: 0 0 20px; }
+  .degraus-h h2 { font-size: 26px; }
+  .b1 { grid-column: 1 / -1; grid-row: 2; min-height: 56vw; }
+  .degraus .b1 { min-height: 64vw; }
+  .b1 b { font-size: 15vw; }
+  .b2 { grid-column: 1; grid-row: 3; height: 200px; min-height: 0; margin-top: 0; }
+  .b3 { grid-column: 2; grid-row: 3; height: 200px; min-height: 0; margin-top: 32px; }
+  .b2 b, .b3 b { font-size: 11vw; }
+  .b2 span, .b3 span { font-size: 16px; }
+  .bloco { padding: 16px; justify-content: flex-start; gap: 8px; }
+}
+
+/* ---------- Faixa: os olhos espiando por cima da borda ---------- */
+.faixa { background: var(--amarelo); position: relative; overflow: hidden; }
+.faixa-in { min-height: 46vh; display: flex; align-items: center; }
+.faixa h2 { position: relative; z-index: 1; font-size: clamp(64px, 9vw, 140px); letter-spacing: -0.04em; }
+.faixa .cara { position: absolute; right: 4%; bottom: -40%; width: min(52vw, 760px); }
+@media (max-width: 899px) { .faixa-in { min-height: 340px; align-items: flex-start; padding-top: 48px; } .faixa .cara { right: -8%; bottom: -38%; width: 80vw; } }
+
+/* ---------- Notas: espécimes em blocos ---------- */
+.notas { padding-block: 120px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px; }
+.notas-h { grid-column: 1 / span 3; display: flex; flex-direction: column; gap: 16px; }
+.notas-h h2 { font-size: clamp(40px, 3.6vw, 52px); }
+.notas-h p { font-size: 18px; max-width: 30ch; }
+.especimes { grid-column: 4 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 10px; }
+.esp { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.esp-tile { aspect-ratio: 4 / 5; border-radius: var(--r); display: grid; place-items: center; position: relative; overflow: hidden; }
+.esp-tile .cara { width: 70%; }
+.esp.duplo { grid-column: span 2; }
+.esp.duplo .esp-tile { aspect-ratio: 8 / 5; }
+.esp.duplo .cara { width: 46%; }
+.esp-tile.am { background: var(--amarelo); }
+.esp-tile.ti { background: var(--tinta); }
+.esp-tile.ci { background: var(--cinza); }
+.esp figcaption { display: flex; flex-direction: column; }
+.esp figcaption b { font-size: 20px; font-weight: 500; }
+.esp figcaption span { font-size: 16px; color: var(--suave); }
+.esp-letra { position: absolute; left: 14px; top: 10px; font-size: 24px; font-weight: 600; }
+.esp-tile.ti .esp-letra { color: var(--papel); }
+@media (max-width: 899px) {
+  .notas { padding-block: 72px; }
+  .notas-h, .especimes { grid-column: 1 / -1; }
+  .especimes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 8px; }
+  .esp.duplo { grid-column: 1 / -1; order: -1; }
+  .esp figcaption b { font-size: 17px; }
+  .esp figcaption span { font-size: 15px; }
+}
+
+/* ---------- Seção escura dos popups ---------- */
+.escura { background: var(--tinta); color: var(--papel); }
+.escura .sec-cab p { color: var(--papel); }
+.sec { padding-block: 120px; display: flex; flex-direction: column; gap: 56px; }
+.sec-cab { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 16px; align-items: end; }
+.sec-cab h2 { grid-column: 1 / span 6; font-size: clamp(40px, 3.6vw, 52px); }
+.sec-cab p { grid-column: 7 / -1; font-size: 18px; max-width: 46ch; }
+@media (max-width: 899px) { .sec { padding-block: 72px; gap: 40px; } .sec-cab h2, .sec-cab p { grid-column: 1 / -1; } }
+.mesa { display: flex; flex-wrap: wrap; gap: 40px 32px; align-items: flex-start; }
+.peca { margin: 0; display: flex; flex-direction: column; gap: 14px; width: 360px; max-width: 100%; }
+.peca figcaption { font-size: 16px; max-width: 40ch; }
+.peca figcaption b { font-weight: 600; }
+
+/* ---------- Popup ---------- */
+.pp { width: 360px; max-width: 100%; max-height: 600px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; background: var(--papel); color: var(--tinta); border-radius: var(--r); font-family: var(--f); font-size: 14px; line-height: 1.4; }
+.pp-top { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 0; height: 52px; }
+.pp-brand { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+.pp-brand svg { width: 24px; height: 24px; border-radius: 6px; }
+.pp-hero { display: grid; grid-template-columns: minmax(0, 1fr) 104px; gap: 8px; align-items: start; padding: 8px 16px 0; }
+.pp-host { font-size: 13px; color: var(--suave); }
+.pp-total { font-size: 54px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; white-space: nowrap; margin-top: 2px; }
+.pp-total small { font-size: 16px; font-weight: 500; letter-spacing: 0; margin-left: 4px; }
+.pp-rank { font-size: 18px; font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; letter-spacing: -0.01em; }
+.pp-rec { background: var(--amarelo); font-size: 13px; font-weight: 600; padding: 3px 8px; border-radius: var(--r); }
+.pp-cara { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 6px; }
+.pp-cara .cara { width: 104px; }
+.pp-cara span { font-size: 13px; font-weight: 500; }
+.pp-nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 16px 16px 0; }
+.pp-nums div { display: flex; flex-direction: column; }
+.pp-nums dt { order: 2; font-size: 13px; color: var(--suave); }
+.pp-nums dd { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.03em; }
+.pp-termos { font-size: 13px; margin: 10px 16px 0; color: var(--suave); }
+.pp-termos b { color: var(--tinta); font-weight: 500; }
+.pp-scan { width: calc(100% - 32px); margin: 14px 16px 16px; justify-content: center; }
+.pp-scan:disabled { cursor: default; transform: none; }
+.pp-scan.parado { background: var(--cinza); color: var(--suave); }
+.pp-scan.varrendo .olhinho .pupila { animation: procura 700ms ease-in-out infinite alternate; }
+@keyframes procura { from { transform: translateX(-6px); } to { transform: translateX(6px); } }
+.pp-msg { padding: 8px 16px 0; display: flex; flex-direction: column; gap: 8px; }
+.pp-msg-t { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+.pp-msg p { font-size: 14px; max-width: 30ch; color: var(--suave); }
+.pp-msg-g { display: grid; grid-template-columns: minmax(0, 1fr) 104px; gap: 8px; align-items: center; padding-right: 16px; }
+.pp-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 0 16px; }
+.pp-tab { min-height: 44px; border: 0; border-radius: var(--r); background: var(--cinza); font-size: 14px; font-weight: 500; cursor: pointer; transition: transform 140ms var(--ease); }
+.pp-tab:hover { transform: translateY(-1px); }
+.pp-tab[aria-selected="true"] { background: var(--tinta); color: var(--papel); }
+.pp-panel { padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.pp-h { font-size: 16px; font-weight: 600; }
+
+/* Linhas de duas pontas (Recordes e Laelédex) */
+.linhas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.linhas li { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; column-gap: 8px; align-items: center; min-height: 36px; }
+.linhas .pt { width: 16px; height: 16px; border-radius: 50%; background: var(--tinta); }
+.linhas .pt.am { background: var(--amarelo); outline: 3px solid var(--tinta); outline-offset: -3px; }
+.linhas .nm { font-size: 15px; font-weight: 500; min-width: 0; }
+.linhas .vl { font-size: 13px; color: var(--suave); text-align: right; }
+.linhas li.falta .nm { color: var(--suave); font-weight: 400; }
+.linhas .ol { width: 16px; height: 12px; }
+.grupo-t { font-size: 15px; color: var(--suave); margin-top: 20px; min-height: 28px; display: flex; align-items: center; }
+.grupo-t:first-child { margin-top: 0; }
+
+.best { display: flex; flex-direction: column; }
+.best-v { font-size: 32px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+.best-k { font-size: 13px; color: var(--suave); }
+.totais { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.totais div { display: flex; flex-direction: column; }
+.totais dt { order: 2; font-size: 13px; color: var(--suave); }
+.totais dd { margin: 0; font-size: 20px; font-weight: 600; }
+
+.prog { display: flex; flex-direction: column; gap: 6px; }
+.prog-txt { display: flex; justify-content: space-between; align-items: baseline; }
+.prog-txt b { font-size: 24px; font-weight: 600; }
+.prog-bar { height: 10px; background: var(--cinza); border-radius: var(--r); overflow: hidden; }
+.prog-bar i { display: block; height: 100%; width: 10%; background: var(--tinta); }
+.busca { display: flex; align-items: center; gap: 8px; background: var(--branco); padding: 0 12px; min-height: 44px; border-radius: var(--r); border: 2px solid var(--tinta); }
+.busca svg { width: 18px; height: 18px; flex: none; }
+.busca input { border: 0; background: none; outline: none; width: 100%; min-height: 40px; font-size: 14px; }
+.busca:focus-within { outline: 3px solid var(--amarelo); }
+.filtros { display: flex; flex-wrap: wrap; gap: 4px; }
+.filtro { min-height: 40px; padding: 0 9px; border: 0; border-radius: var(--r); background: var(--cinza); font-size: 13px; font-weight: 500; cursor: pointer; }
+.filtro[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+.vazio-dex { font-size: 14px; color: var(--suave); }
+
+/* Ajustes: o switch é um olho e a pupila é o botão */
+.ajuste { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 52px; }
+.ajuste div { display: flex; flex-direction: column; }
+.ajuste b { font-size: 15px; font-weight: 500; }
+.ajuste span { font-size: 13px; color: var(--suave); }
+.sw { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; cursor: pointer; min-height: 44px; font-size: 13px; font-weight: 500; }
+.sw-olho { width: 46px; height: 28px; border-radius: 50%; border: 3px solid var(--tinta); background: var(--branco); position: relative; flex: none; transition: background 160ms; }
+.sw-olho::after { content: ""; position: absolute; top: 5px; left: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--tinta); transition: transform 200ms var(--ease); }
+.sw[aria-checked="true"] .sw-olho { background: var(--amarelo); }
+.sw[aria-checked="true"] .sw-olho::after { transform: translateX(16px); }
+.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.seg button { min-height: 44px; border: 0; border-radius: var(--r); background: var(--cinza); cursor: pointer; font-size: 14px; font-weight: 500; }
+.seg [aria-checked="true"] { background: var(--tinta); color: var(--papel); }
+.campo-l { font-size: 13px; color: var(--suave); }
+.add { display: flex; gap: 4px; }
+.add input { flex: 1; min-width: 0; min-height: 44px; border: 2px solid var(--tinta); border-radius: var(--r); background: var(--branco); padding: 0 12px; font-size: 14px; }
+.add button { width: 44px; min-height: 44px; border: 0; border-radius: var(--r); background: var(--amarelo); cursor: pointer; display: grid; place-items: center; }
+.add button svg, .x svg { width: 18px; height: 18px; }
+.coef { display: flex; justify-content: space-between; align-items: baseline; }
+.coef output { font-size: 20px; font-weight: 600; }
+.range { width: 100%; accent-color: var(--tinta); min-height: 32px; }
+.escala-r { display: flex; justify-content: space-between; font-size: 13px; color: var(--suave); }
+.escala-r b { color: var(--tinta); font-weight: 500; }
+.proprias { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.proprias li { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; font-size: 15px; }
+.proprias .c { font-size: 13px; color: var(--suave); margin-left: 6px; }
+.x { width: 40px; height: 40px; border: 0; border-radius: var(--r); background: none; cursor: pointer; display: grid; place-items: center; }
+.x:hover { background: var(--cinza); }
+.zerar { display: flex; gap: 4px; }
+.zerar button { min-height: 44px; border: 0; border-radius: var(--r); padding: 0 14px; cursor: pointer; font-size: 14px; font-weight: 500; background: var(--cinza); }
+.zerar .perigo { background: var(--tinta); color: var(--papel); }
+.pp-note { font-size: 13px; color: var(--suave); }
+
+/* ---------- Marca-texto: um amarelo só, em quatro intensidades ---------- */
+mark.laele-hit { background: none; color: inherit; position: relative; z-index: 0; }
+mark.laele-hit::before { content: ""; position: absolute; left: -0.1em; right: -0.1em; top: var(--mt, 0); bottom: 0; background: var(--mb, var(--amarelo)); transform: scaleX(0); transform-origin: left center; transition: transform var(--wipe, 240ms) var(--ease); z-index: -1; }
+mark.laele-hit.laele-on::before { transform: none; }
+mark[data-tier="leve"] { --mt: 72%; }
+mark[data-tier="comum"] { --mt: 40%; }
+mark[data-tier="pesado"] { --mt: 0; }
+mark[data-tier="lendario"] { --mt: 0; --mb: var(--tinta); }
+mark.laele-hit.laele-on[data-tier="pesado"] { background-color: var(--amarelo); transition: background-color 0s linear var(--wipe, 240ms); }
+mark.laele-hit.laele-on[data-tier="lendario"] { color: var(--amarelo); background-color: var(--tinta); transition: background-color 0s linear var(--wipe, 240ms); }
+.sem-anim mark.laele-hit::before, .sem-anim mark.laele-hit { transition: none; }
+.laele-float { position: absolute; z-index: 5; pointer-events: none; background: var(--tinta); color: var(--amarelo); font-family: var(--f); font-size: 16px; font-weight: 600; padding: 2px 8px; border-radius: var(--r); white-space: nowrap; animation: flutua 900ms var(--ease) forwards; }
+.laele-float i { font-style: normal; margin-left: 6px; color: var(--papel); font-weight: 500; }
+@keyframes flutua { 0% { transform: translateY(6px); opacity: 0; } 18% { transform: none; opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; } }
+
+/* ---------- Laelédex aberta: coluna estreita ---------- */
+.dex-sec { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; padding-block: 120px; }
+.dex-lado { grid-column: 1 / span 3; display: flex; flex-direction: column; gap: 16px; }
+.dex-lado h2 { font-size: clamp(40px, 3.6vw, 52px); }
+.dex-lado p { font-size: 18px; max-width: 30ch; }
+.dex-col { grid-column: 5 / span 5; max-width: 520px; width: 100%; }
+.dex-col h3 { font-size: 28px; font-weight: 500; margin-bottom: 32px; letter-spacing: -0.02em; }
+.dex-col .linhas li { min-height: 38px; }
+.dex-col .nm { font-size: 16px; }
+.dex-col .grupo-t { font-size: 16px; margin-top: 40px; }
+.legenda { grid-column: 10 / -1; display: flex; flex-direction: column; gap: 14px; font-size: 16px; padding-top: 76px; }
+.legenda div { display: flex; align-items: baseline; gap: 10px; }
+@media (max-width: 899px) {
+  .dex-sec { padding-block: 72px; row-gap: 32px; }
+  .dex-lado, .dex-col, .legenda { grid-column: 1 / -1; }
+  .legenda { padding-top: 0; }
+  .dex-col .linhas li { min-height: 44px; }
+  .dex-col .grupo-t { margin-top: 32px; }
+}
+
+/* ---------- Página de exemplo + placar ---------- */
+.cinza { background: var(--cinza); }
+.demo { display: flex; flex-direction: column; gap: 20px; }
+.demo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.demo-bar p { font-size: 16px; max-width: 52ch; }
+.site { position: relative; background: var(--branco); color: var(--site-ink); border-radius: var(--r); padding: clamp(20px, 4vw, 48px); padding-right: max(clamp(20px, 4vw, 48px), 330px); min-height: 560px; font-size: 18px; line-height: 1.7; }
+.site-mast { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-bottom: 16px; margin-bottom: 24px; border-bottom: 3px solid var(--site-ink); }
+.site-mast b { font-size: 24px; font-weight: 600; }
+.site-mast span { font-size: 14px; }
+.site-h { font-size: clamp(26px, 3vw, 36px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 18px; max-width: 22ch; }
+.site p { max-width: 60ch; margin-bottom: 16px; }
+
+.hud { position: absolute; top: 24px; right: 24px; width: 272px; z-index: 4; font-family: var(--f); background: var(--papel); color: var(--tinta); border: 3px solid var(--tinta); border-radius: var(--r); overflow: hidden; }
+.hud-head { display: flex; align-items: center; justify-content: space-between; height: 38px; padding-left: 12px; font-size: 15px; font-weight: 600; background: var(--tinta); color: var(--papel); }
+.hud-btns { display: flex; }
+.hud-btns button { width: 36px; height: 36px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; border-radius: var(--r); transition: transform 140ms var(--ease); }
+.hud-btns button:hover { transform: translateY(-1px); }
+.hud-btns svg { width: 16px; height: 16px; }
+.hud-corpo { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+.hud-topo { display: grid; grid-template-columns: minmax(0, 1fr) 92px; gap: 8px; align-items: start; }
+.hud-score { font-size: 40px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+.hud-sub { font-size: 13px; color: var(--suave); }
+.hud-cara { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.hud-cara .cara { width: 92px; }
+.hud-cara span { font-size: 13px; font-weight: 600; min-height: 18px; }
+.hud-rank { font-size: 16px; font-weight: 500; min-height: 24px; }
+.hud-combo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; font-size: 13px; }
+.hud-bar { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
+.hud-bar i { height: 10px; border-radius: 50%; background: var(--cinza); }
+.hud-bar i.on { background: var(--amarelo); outline: 2px solid var(--tinta); outline-offset: -2px; }
+.hud-mult { font-size: 16px; font-weight: 600; }
+.hud-banner { background: var(--amarelo); font-size: 16px; font-weight: 600; padding: 8px 10px; border-radius: var(--r); animation: aparece 300ms var(--ease) both; }
+@keyframes aparece { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (max-width: 899px) {
+  .site { padding-right: clamp(20px, 4vw, 48px); }
+  .hud { position: relative; top: auto; right: auto; width: 100%; margin-bottom: 24px; }
+}
+
+/* ---------- Fecho amarelo ---------- */
+.fecho { background: var(--amarelo); }
+.fecho-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 56px 24px; }
+.bf { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.bf h3 { font-size: 28px; }
+.bf > p { font-size: 18px; max-width: 44ch; }
+.bf-ic { grid-column: 1 / span 6; }
+.bf-co { grid-column: 7 / -1; }
+.bf-le { grid-column: 1 / span 6; }
+.bf-mo { grid-column: 7 / -1; }
+@media (max-width: 899px) { .bf-ic, .bf-co, .bf-le, .bf-mo { grid-column: 1 / -1; } }
+.icones { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 20px; }
+.icones figure { margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.icones svg { display: block; }
+.ic128 { border-radius: 24px; } .ic48 { border-radius: 10px; } .ic32 { border-radius: 7px; } .ic16 { border-radius: 3px; }
+.barra-chrome { display: flex; align-items: center; gap: 12px; background: var(--tinta); color: var(--papel); padding: 10px 14px; width: 280px; max-width: 100%; font-size: 13px; border-radius: var(--r); }
+.barra-chrome .url { flex: 1; }
+.ext { position: relative; width: 24px; height: 24px; }
+.ext svg { width: 24px; height: 24px; display: block; border-radius: 4px; }
+.badge { position: absolute; right: -12px; bottom: -7px; background: var(--amarelo); color: var(--tinta); font-size: 10px; font-weight: 600; line-height: 1; padding: 2px 3px; border-radius: 3px; } /* taste-skill-ignore: o badge do Chrome é desenhado em 10px pelo próprio navegador */
+.cores { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.cor { min-height: 104px; padding: 14px; border-radius: var(--r); display: flex; flex-direction: column; justify-content: space-between; background: var(--sc); color: var(--si); }
+.cor b { font-size: 18px; font-weight: 600; }
+.cor span { font-size: 14px; }
+.espec { font-size: 64px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+.bf > .espec { font-size: 64px; }
+.movs { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.movs div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; padding: 12px 14px; background: var(--papel); border-radius: var(--r); }
+.movs dt { font-weight: 600; font-size: 16px; }
+.movs dd { margin: 0; font-size: 16px; grid-column: 1 / -1; }
+.movs .t { font-size: 16px; }
+.rodape { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 16px; }
+.rodape a { color: inherit; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+
+/* Entrada das seções */
+.js .sobe { opacity: 0; transform: translateY(24px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+.js .visto .sobe { opacity: 1; transform: none; }
+.js .visto .sobe:nth-child(2) { transition-delay: 80ms; }
+.js .visto .sobe:nth-child(3) { transition-delay: 160ms; }
+.js .visto .sobe:nth-child(4) { transition-delay: 240ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
+  .js .sobe { opacity: 1; transform: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="icone" viewBox="0 0 128 128">
+    <rect width="128" height="128" fill="#f6e016"/>
+    <g transform="translate(0 18)">
+      <ellipse cx="38" cy="56" rx="24" ry="28" fill="#ffffff" stroke="#0d2a1c" stroke-width="8"/>
+      <ellipse cx="90" cy="56" rx="24" ry="28" fill="#ffffff" stroke="#0d2a1c" stroke-width="8"/>
+      <circle cx="50" cy="60" r="11" fill="#0d2a1c"/>
+      <circle cx="102" cy="60" r="11" fill="#0d2a1c"/>
+      <path d="M68 18Q90 4 114 14" fill="none" stroke="#0d2a1c" stroke-width="8" stroke-linecap="round"/>
+    </g>
+  </symbol>
+  <symbol id="icone16" viewBox="0 0 16 16">
+    <rect width="16" height="16" fill="#f6e016"/>
+    <ellipse cx="4.8" cy="9" rx="3.2" ry="3.8" fill="#ffffff" stroke="#0d2a1c" stroke-width="1.3"/>
+    <ellipse cx="11.2" cy="9" rx="3.2" ry="3.8" fill="#ffffff" stroke="#0d2a1c" stroke-width="1.3"/>
+    <circle cx="6.3" cy="9.5" r="1.6" fill="#0d2a1c"/>
+    <circle cx="12.7" cy="9.5" r="1.6" fill="#0d2a1c"/>
+  </symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-re" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5M19 4v4h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M15.5 15.5L21 21" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- ===================== ABERTURA ===================== -->
+<header class="heroi" id="heroi">
+  <div class="dentro">
+    <nav class="nav" aria-label="Seções">
+      <a class="marca" href="#heroi"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</a>
+      <div class="nav-links"><a href="#t-notas">Notas</a><a href="#t-popup">Popup</a><a href="#t-dex">Laelédex</a><a href="#t-pagina">Na página</a></div>
+    </nav>
+    <div class="heroi-txt">
+      <h1>De olho no duplo sentido</h1>
+      <p>Opção C do Robo-LaEle. Os olhos da logo viram o sistema inteiro: a nota é uma cara, o botão espia e cada palavra achada leva uma olhada.</p>
+      <a class="botao" href="#t-pagina"><svg class="cara olhinho" data-cara="D" data-mini aria-hidden="true"></svg>Ver a varredura</a>
+    </div>
+  </div>
+  <div class="palco" aria-hidden="true">
+    <svg class="cara olhao" data-cara="B" data-vivo id="olhao"></svg>
+    <div class="palco-pp" data-ui>
+      <div class="pp" data-pp-estatico>
+        <div class="pp-top"><span class="pp-brand"><svg><use href="#icone"/></svg>Lá ele</span><span class="sw" role="presentation">Auto <span class="sw-olho"></span></span></div>
+        <div class="pp-hero">
+          <div><div class="pp-host">g1.globo.com</div><div class="pp-total num">63.130<small>pts</small></div><div class="pp-rank">Lá ele supremo <span class="pp-rec">Recorde!</span></div></div>
+          <div class="pp-cara"><svg class="cara" data-cara="S"></svg><span>nota S</span></div>
+        </div>
+        <dl class="pp-nums"><div><dt>palavras</dt><dd class="num">85</dd></div><div><dt>maior combo</dt><dd class="num">28x</dd></div><div><dt>multiplicador</dt><dd class="num">x14,5</dd></div></dl>
+        <p class="pp-termos">Mais achadas: <b>mandioca</b> 4, <b>pau</b> 3, <b>pepino</b> 3</p>
+        <span class="botao pp-scan"><svg class="cara olhinho" data-cara="D" data-mini></svg>Varrer página</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ===================== VARREDURA DE REFERÊNCIA ===================== -->
+<section class="dentro degraus" aria-labelledby="t-ref">
+  <div class="degraus-h sobe">
+    <h2 id="t-ref">Uma página, 85 palavras</h2>
+    <p>A varredura de referência numa notícia do g1, na velocidade normal e sem nenhum erro.</p>
+  </div>
+  <div class="bloco b1 sobe"><b class="num">63.130</b><span>pontos e nota S, lá ele supremo</span></div>
+  <div class="bloco b2 sobe"><b class="num">85</b><span>palavras marcadas na página</span></div>
+  <div class="bloco b3 sobe"><b class="num">28x</b><span>maior combo, multiplicador x14,5</span></div>
+</section>
+
+<!-- ===================== FAIXA ===================== -->
+<section class="faixa" aria-labelledby="t-faixa">
+  <div class="dentro faixa-in">
+    <h2 id="t-faixa">Lá ele.</h2>
+  </div>
+  <svg class="cara" data-cara="S" aria-hidden="true"></svg>
+</section>
+
+<!-- ===================== NOTAS ===================== -->
+<section class="dentro notas" aria-labelledby="t-notas">
+  <div class="notas-h sobe">
+    <h2 id="t-notas">A nota é uma cara</h2>
+    <p>O mascote muda de expressão conforme a página fica mais safada. Sem selo, sem carimbo: a cara já diz.</p>
+  </div>
+  <div class="especimes">
+    <figure class="esp sobe"><div class="esp-tile ci"><span class="esp-letra">D</span><svg class="cara" data-cara="D" role="img" aria-label="Olhos abertos olhando para a frente"></svg></div><figcaption><b>Quase inocente</b><span>até 299 pontos. Olha para você.</span></figcaption></figure>
+    <figure class="esp duplo sobe"><div class="esp-tile am"><span class="esp-letra">S</span><svg class="cara" data-cara="S" role="img" aria-label="Olhos arregalados de lado, as duas sobrancelhas lá em cima"></svg></div><figcaption><b>Lá ele supremo</b><span>8.000 pontos ou mais. Arregala e levanta as duas sobrancelhas.</span></figcaption></figure>
+    <figure class="esp sobe"><div class="esp-tile ti"><span class="esp-letra">C</span><svg class="cara" data-cara="C" role="img" aria-label="Olhos de canto"></svg></div><figcaption><b>Lá ele de leve</b><span>até 999. Olha de canto.</span></figcaption></figure>
+    <figure class="esp sobe"><div class="esp-tile am"><span class="esp-letra">B</span><svg class="cara" data-cara="B" role="img" aria-label="Olhos de canto com uma sobrancelha levantada"></svg></div><figcaption><b>Tá ficando safado</b><span>até 2.999. Levanta uma sobrancelha, a cara da logo.</span></figcaption></figure>
+    <figure class="esp sobe"><div class="esp-tile ci"><span class="esp-letra">A</span><svg class="cara" data-cara="A" role="img" aria-label="Olhos semicerrados, desconfiados"></svg></div><figcaption><b>Lá ele pesado</b><span>até 7.999. Aperta os olhos, desconfiado.</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- ===================== POPUP ===================== -->
+<section class="escura" aria-labelledby="t-popup">
+  <div class="dentro sec">
+    <div class="sec-cab sobe">
+      <h2 id="t-popup">O popup</h2>
+      <p>360 px, papel claro, cantos de 10 px e uma fonte só, a Chillax. A cara da nota fica ao lado do placar. Clique em "Varrer página": a soma sobe e a cara vai de inocente a supremo.</p>
+    </div>
+    <div class="mesa">
+      <figure class="peca sobe">
+        <div class="pp" data-pp data-ui>
+          <div class="pp-top">
+            <span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span>
+            <button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-olho" aria-hidden="true"></span></button>
+          </div>
+          <div class="pp-hero">
+            <div>
+              <div class="pp-host">g1.globo.com</div>
+              <div class="pp-total"><span class="num" data-total>63.130</span><small>pts</small></div>
+              <div class="pp-rank"><span data-rank>Lá ele supremo</span><span class="pp-rec" data-rec>Recorde!</span></div>
+            </div>
+            <div class="pp-cara"><svg class="cara" data-cara="S" data-cara-pp role="img" aria-label="Nota S"></svg><span data-letra>nota S</span></div>
+          </div>
+          <dl class="pp-nums">
+            <div><dt>palavras</dt><dd class="num" data-palavras>85</dd></div>
+            <div><dt>maior combo</dt><dd class="num">28x</dd></div>
+            <div><dt>multiplicador</dt><dd class="num">x14,5</dd></div>
+          </dl>
+          <p class="pp-termos">Mais achadas: <b>mandioca</b> 4, <b>pau</b> 3, <b>pepino</b> 3, <b>sentar em cima</b> 1</p>
+          <button type="button" class="botao pp-scan" data-scan><svg class="cara olhinho" data-cara="D" data-mini aria-hidden="true"></svg><span class="lbl">Varrer página</span></button>
+
+          <div class="pp-tabs" role="tablist" aria-label="Seções do popup">
+            <button type="button" class="pp-tab" role="tab" aria-selected="true" data-tab="rec">Recordes</button>
+            <button type="button" class="pp-tab" role="tab" aria-selected="false" data-tab="dex">Laelédex</button>
+            <button type="button" class="pp-tab" role="tab" aria-selected="false" data-tab="aju">Ajustes</button>
+          </div>
+
+          <div class="pp-panel" data-panel="rec">
+            <div class="best"><span class="best-v num">63.130 pts</span><span class="best-k">recorde global · g1.globo.com · 18 de outubro</span></div>
+            <dl class="totais">
+              <div><dt>varreduras</dt><dd class="num">12</dd></div>
+              <div><dt>palavras</dt><dd class="num">340</dd></div>
+              <div><dt>pontos</dt><dd class="num">210 mil</dd></div>
+            </dl>
+            <ol class="linhas">
+              <li><span class="pt am"></span><span class="nm">g1.globo.com</span><span class="vl num">63.130 · S</span></li>
+              <li><span class="pt"></span><span class="nm">hortifruti.com.br</span><span class="vl num">41.200 · S</span></li>
+              <li><span class="pt"></span><span class="nm">tudogostoso.com.br</span><span class="vl num">12.900 · S</span></li>
+              <li><span class="pt"></span><span class="nm">pt.wikipedia.org</span><span class="vl num">6.450 · A</span></li>
+              <li><span class="pt"></span><span class="nm">ceagesp.gov.br</span><span class="vl num">3.020 · A</span></li>
+            </ol>
+          </div>
+
+          <div class="pp-panel" data-panel="dex" hidden>
+            <div class="prog">
+              <div class="prog-txt"><span><b class="num">42</b> de 431 descobertas</span><span class="num">10%</span></div>
+              <div class="prog-bar" role="progressbar" aria-label="Palavras descobertas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10"><i></i></div>
+            </div>
+            <label class="busca"><svg aria-hidden="true"><use href="#i-lupa"/></svg><input type="search" placeholder="Buscar entre as descobertas" aria-label="Buscar palavra descoberta" data-busca></label>
+            <div class="filtros" role="group" aria-label="Filtrar por raridade">
+              <button type="button" class="filtro" data-f="todas" aria-pressed="true">Todas</button>
+              <button type="button" class="filtro" data-f="leve" aria-pressed="false">Leve</button>
+              <button type="button" class="filtro" data-f="comum" aria-pressed="false">Comum</button>
+              <button type="button" class="filtro" data-f="pesado" aria-pressed="false">Pesado</button>
+              <button type="button" class="filtro" data-f="lendario" aria-pressed="false">Lendário</button>
+            </div>
+            <ul class="linhas" data-dex></ul>
+            <p class="vazio-dex" data-vazio hidden>Nenhuma descoberta com esse nome.</p>
+          </div>
+
+          <div class="pp-panel" data-panel="aju" hidden>
+            <div class="ajuste"><div><b>Varredura automática</b><span>Varre cada página assim que ela abre.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Varredura automática" data-sw><span class="sw-olho" aria-hidden="true"></span></button></div>
+            <div class="ajuste"><div><b>Animações</b><span>Passa o marca-texto palavra por palavra.</span></div><button type="button" class="sw" role="switch" aria-checked="true" aria-label="Animações" data-sw><span class="sw-olho" aria-hidden="true"></span></button></div>
+            <div class="ajuste"><div><b>Placar na página</b><span>Mostra o placar com os olhos no canto.</span></div><button type="button" class="sw" role="switch" aria-checked="false" aria-label="Placar na página" data-sw><span class="sw-olho" aria-hidden="true"></span></button></div>
+            <b class="pp-h">Velocidade da animação</b>
+            <div class="seg" role="radiogroup" aria-label="Velocidade da animação">
+              <button type="button" role="radio" aria-checked="false">Lento</button>
+              <button type="button" role="radio" aria-checked="true">Normal</button>
+              <button type="button" role="radio" aria-checked="false">Rápido</button>
+            </div>
+            <b class="pp-h">Palavras próprias</b>
+            <label class="campo-l" for="nova-1">Nova palavra ou expressão</label>
+            <div class="add"><input type="text" id="nova-1" placeholder="cenoura" data-nova><button type="button" aria-label="Adicionar palavra" data-add><svg aria-hidden="true"><use href="#i-plus"/></svg></button></div>
+            <div class="coef"><label class="campo-l" for="coef-1">Coeficiente</label><output for="coef-1" class="num" data-coef-out>×2</output></div>
+            <input type="range" class="range" id="coef-1" min="0.5" max="5" step="0.5" value="2" data-coef>
+            <div class="escala-r"><span>sutil</span><b data-coef-tier>comum</b><span>pesadão</span></div>
+            <ul class="proprias" data-proprias>
+              <li><span><mark class="laele-hit laele-on" data-tier="comum">cenoura</mark><span class="c">×2</span></span><button type="button" class="x" aria-label="Remover cenoura"><svg aria-hidden="true"><use href="#i-x"/></svg></button></li>
+              <li><span><mark class="laele-hit laele-on" data-tier="pesado">abacaxi grande</mark><span class="c">×3,5</span></span><button type="button" class="x" aria-label="Remover abacaxi grande"><svg aria-hidden="true"><use href="#i-x"/></svg></button></li>
+            </ul>
+            <div class="ajuste"><div><b>Zerar recordes</b><span>Apaga o ranking, os totais e a Laelédex.</span></div></div>
+            <div class="zerar" data-zerar-idle><button type="button" data-zerar>Zerar tudo</button></div>
+            <div class="zerar" data-zerar-conf hidden><button type="button" data-zerar-nao>Cancelar</button><button type="button" class="perigo" data-zerar-sim>Sim, apagar</button></div>
+            <p class="pp-note">Tudo roda no seu navegador. Nada sai da sua máquina.</p>
+          </div>
+        </div>
+        <figcaption><b>Recordes.</b> Sites em linhas de duas pontas: bolinha, nome, pontos e nota. A bolinha amarela é a do recorde.</figcaption>
+      </figure>
+
+      <figure class="peca sobe">
+        <div class="pp" data-ui data-pp data-start="dex"></div>
+        <figcaption><b>Laelédex.</b> Olho aberto quer dizer palavra achada; olho fechado, palavra que ainda falta. A raridade aparece na própria palavra, com o marca-texto.</figcaption>
+      </figure>
+
+      <figure class="peca sobe">
+        <div class="pp" data-ui data-pp data-start="aju"></div>
+        <figcaption><b>Ajustes.</b> O switch é um olho: desligado ele olha para a esquerda, ligado olha para a direita e fica amarelo.</figcaption>
+      </figure>
+    </div>
+
+    <div class="mesa">
+      <figure class="peca sobe">
+        <div class="pp" data-ui>
+          <div class="pp-top"><span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-olho" aria-hidden="true"></span></button></div>
+          <div class="pp-hero"><div><div class="pp-host">receitas.com · varrendo…</div><div class="pp-total"><span class="num">4.250</span><small>pts</small></div><div class="pp-rank">17 palavras até agora</div></div><div class="pp-cara"><svg class="cara" data-cara="A" role="img" aria-label="Nota A até agora"></svg><span>nota A</span></div></div>
+          <span class="botao pp-scan varrendo"><svg class="cara olhinho" data-cara="D" data-mini aria-hidden="true"></svg>Varrendo…</span>
+        </div>
+        <figcaption><b>Varrendo.</b> Os olhinhos do botão procuram de um lado para o outro. É o carregando.</figcaption>
+      </figure>
+      <figure class="peca sobe">
+        <div class="pp" data-ui>
+          <div class="pp-top"><span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-olho" aria-hidden="true"></span></button></div>
+          <div class="pp-msg-g"><div class="pp-msg"><div class="pp-host">bancodobrasil.com.br</div><b class="pp-msg-t">Nada de lá ele por aqui… ainda</b><p>Página limpinha. Tente uma receita ou a seção de esportes.</p></div><svg class="cara" data-cara="-" role="img" aria-label="Olhos fechados"></svg></div>
+          <button type="button" class="botao pp-scan"><svg class="cara olhinho" data-cara="D" data-mini aria-hidden="true"></svg>Varrer de novo</button>
+        </div>
+        <figcaption><b>Nada encontrado.</b> O mascote fecha os olhos e cochila.</figcaption>
+      </figure>
+      <figure class="peca sobe">
+        <div class="pp" data-ui>
+          <div class="pp-top"><span class="pp-brand"><svg aria-hidden="true"><use href="#icone"/></svg>Lá ele</span><button type="button" class="sw" role="switch" aria-checked="true" data-sw>Auto <span class="sw-olho" aria-hidden="true"></span></button></div>
+          <div class="pp-msg-g"><div class="pp-msg"><div class="pp-host">chrome://extensions</div><b class="pp-msg-t">Aqui o Chrome não deixa</b><p>Páginas do navegador, a Chrome Web Store e PDFs não podem ser varridos.</p></div><svg class="cara" data-cara="-" role="img" aria-label="Olhos fechados"></svg></div>
+          <span class="botao pp-scan parado"><svg class="cara olhinho" data-cara="-" data-mini aria-hidden="true"></svg>Varrer página</span>
+        </div>
+        <figcaption><b>Página proibida.</b> Botão cinza e olhos fechados também no botão.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LAELÉDEX ABERTA ===================== -->
+<section class="dentro dex-sec" aria-labelledby="t-dex">
+  <div class="dex-lado sobe">
+    <h2 id="t-dex">Laelédex</h2>
+    <p>Uma coluna estreita, sem caixas nem linhas entre os itens. Cada palavra tem duas pontas: o olho na esquerda, o peso e as vezes na direita.</p>
+  </div>
+  <div class="dex-col sobe">
+    <h3>42 de 431 descobertas</h3>
+    <ul class="linhas" data-dex-grande></ul>
+  </div>
+  <div class="legenda sobe">
+    <div><mark class="laele-hit laele-on" data-tier="leve">leve</mark> sublinhado grosso</div>
+    <div><mark class="laele-hit laele-on" data-tier="comum">comum</mark> meia altura</div>
+    <div><mark class="laele-hit laele-on" data-tier="pesado">pesado</mark> marca inteira</div>
+    <div><mark class="laele-hit laele-on" data-tier="lendario">lendário</mark> tinta e letra amarela</div>
+  </div>
+</section>
+
+<!-- ===================== PÁGINA + PLACAR ===================== -->
+<section class="cinza" aria-labelledby="t-pagina">
+  <div class="dentro sec">
+    <div class="sec-cab sobe">
+      <h2 id="t-pagina">Na página</h2>
+      <p>O placar tem os olhos da logo. A cada palavra marcada, eles viram para ela. Lá ele. A expressão muda quando a soma passa de uma nota para a outra.</p>
+    </div>
+    <div class="demo sobe">
+      <div class="demo-bar">
+        <button type="button" class="botao escuro" id="varrer-demo"><svg class="cara olhinho" data-cara="D" data-mini aria-hidden="true"></svg>Varrer esta página</button>
+        <p>Velocidade normal, como na extensão. Com movimento reduzido, tudo aparece de uma vez.</p>
+      </div>
+      <div class="site" id="site" data-ui>
+        <div class="site-mast"><b>Diário do Bairro</b><span>Cidade · sábado, 18 de outubro</span></div>
+        <div class="hud" id="hud" role="status" aria-live="polite">
+          <div class="hud-head">
+            <span>Lá ele</span>
+            <div class="hud-btns">
+              <button type="button" aria-label="Minimizar"><svg aria-hidden="true"><use href="#i-min"/></svg></button>
+              <button type="button" aria-label="Varrer de novo" id="hud-re"><svg aria-hidden="true"><use href="#i-re"/></svg></button>
+              <button type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+            </div>
+          </div>
+          <div class="hud-corpo">
+            <div class="hud-topo">
+              <div><div class="hud-score num" id="hud-score">0</div><div class="hud-sub"><span id="hud-count">0</span> palavras</div></div>
+              <div class="hud-cara"><svg class="cara" data-cara="-" data-vivo id="hud-cara" aria-hidden="true"></svg><span id="hud-letra"></span></div>
+            </div>
+            <div class="hud-rank" id="hud-rank"></div>
+            <div class="hud-combo">
+              <span id="hud-combo">Combo 0</span>
+              <div class="hud-bar" id="hud-bar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <span class="hud-mult num" id="hud-mult">x1</span>
+            </div>
+            <div class="hud-banner" id="hud-banner" hidden>Novo recorde!</div>
+          </div>
+        </div>
+        <p class="site-h">Feira da praça volta com fila desde cedo</p>
+        <p>O seu Valdir abriu a barraca às cinco e a fila já dobrava a esquina. "Hoje a <mark class="laele-hit" data-tier="pesado" data-coef="2.6">mandioca</mark> veio boa", gritava, enquanto a freguesa pedia para escolher o <mark class="laele-hit" data-tier="comum" data-coef="1.6">pepino</mark> mais <mark class="laele-hit" data-tier="leve" data-coef="1">comprido</mark> da banca.</p>
+        <p>Na barraca ao lado, dona Cida vendia <mark class="laele-hit" data-tier="comum" data-coef="1.6">linguiça</mark> caseira e jurava que o segredo é deixar a carne bem <mark class="laele-hit" data-tier="leve" data-coef="0.9">molhada</mark> no tempero. Quem chegou tarde teve que <mark class="laele-hit" data-tier="lendario" data-coef="4.5">sentar em cima</mark> do caixote e esperar a próxima leva.</p>
+        <p>Na hora de desmontar, seu Valdir pediu ao sobrinho que segurasse o <mark class="laele-hit" data-tier="pesado" data-coef="3">pau</mark> da barraca, e a <mark class="laele-hit" data-tier="comum" data-coef="1.8">banana</mark> que sobrou foi de graça para quem ajudou.</p>
+        <p>A prefeitura promete toldo novo até dezembro. Até lá, o conselho dos feirantes pede que ninguém estacione na rua de trás aos sábados.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FECHO ===================== -->
+<section class="fecho" aria-labelledby="t-fecho">
+  <div class="dentro sec">
+    <div class="sec-cab sobe">
+      <h2 id="t-fecho">Ícone e letra</h2>
+      <p>O ícone é a cara da nota B: olhos de canto e uma sobrancelha levantada, em tinta verde-garrafa sobre amarelo. Em 16 px a sobrancelha sai e o contorno engrossa.</p>
+    </div>
+    <div class="fecho-grid">
+      <div class="bf bf-ic sobe">
+        <h3>Ícone e badge</h3>
+        <div class="icones">
+          <figure><svg class="ic128" width="128" height="128" role="img" aria-label="Ícone 128 px"><use href="#icone"/></svg>128</figure>
+          <figure><svg class="ic48" width="48" height="48" role="img" aria-label="Ícone 48 px"><use href="#icone"/></svg>48</figure>
+          <figure><svg class="ic32" width="32" height="32" role="img" aria-label="Ícone 32 px"><use href="#icone"/></svg>32</figure>
+          <figure><svg class="ic16" width="16" height="16" role="img" aria-label="Ícone 16 px, sem sobrancelha"><use href="#icone16"/></svg>16</figure>
+        </div>
+        <div class="barra-chrome" data-ui><span class="url">g1.globo.com</span><span class="ext"><svg aria-hidden="true"><use href="#icone16"/></svg><span class="badge num">63k</span></span></div>
+        <p>Badge amarelo com texto verde-garrafa, usando <span class="num">setBadgeTextColor</span>.</p>
+      </div>
+      <div class="bf bf-co sobe">
+        <h3>Três cores e o branco do olho</h3>
+        <div class="cores" data-ui>
+          <div class="cor" style="--sc:var(--amarelo);--si:var(--tinta)"><b>Amarelo</b><span>#F6E016 · palco, botão, marca-texto</span></div>
+          <div class="cor" style="--sc:var(--tinta);--si:var(--papel)"><b>Verde-garrafa</b><span>#0D2A1C · todo o texto e o contorno</span></div>
+          <div class="cor" style="--sc:var(--papel);--si:var(--tinta)"><b>Papel</b><span>#F7F7F7 · fundo</span></div>
+          <div class="cor" style="--sc:var(--branco);--si:var(--tinta)"><b>Branco</b><span>#FFFFFF · só dentro do olho</span></div>
+        </div>
+      </div>
+      <div class="bf bf-le sobe">
+        <h3>Chillax, redonda como o olho</h3>
+        <p class="espec num">63.130 pts</p>
+        <p>Chillax 600 para números e títulos, 500 para destaque e 400 para texto. Letras largas e redondas, do mesmo jeito do olho. Licença gratuita da Fontshare, que permite embutir na extensão.</p>
+      </div>
+      <div class="bf bf-mo sobe">
+        <h3>Movimento</h3>
+        <dl class="movs">
+          <div><dt>Olhada</dt><span class="t num">180 ms</span><dd>A pupila do placar vira para cada palavra marcada.</dd></div>
+          <div><dt>Troca de cara</dt><span class="t num">320 ms</span><dd>Quando a soma muda de nota, a cara nova dá um pulinho de 1,25x.</dd></div>
+          <div><dt>Marca-texto</dt><span class="t num">240 ms</span><dd>Cresce da esquerda; 520 ms entre palavras no normal.</dd></div>
+          <div><dt>Abertura</dt><span class="t num">1.100 ms</span><dd>O palco amarelo abre de baixo para cima e o popup assenta.</dd></div>
+          <div><dt>Movimento reduzido</dt><span class="t num">0 ms</span><dd>Tudo aparece pronto, os olhos ficam parados.</dd></div>
+        </dl>
+      </div>
+      <p class="rodape"><span>Opção C · um motivo só, os olhos</span><span><a href="opcao-a-feira.html">Opção A, na feira</a> · <a href="opcao-b-cores.html">Opção B, em cores</a></span></p>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function () {
+  document.documentElement.classList.add('js');
+  var reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt = new Intl.NumberFormat('pt-BR');
+  var RANKS = [[300, 'D', 'Quase inocente'], [1000, 'C', 'Lá ele de leve'], [3000, 'B', 'Tá ficando safado'], [8000, 'A', 'Lá ele pesado'], [Infinity, 'S', 'Lá ele supremo']];
+  function rank(t) { if (t <= 0) return [0, '-', '']; return RANKS.filter(function (x) { return t < x[0]; })[0]; }
+  function tierDe(c) { return c < 1.5 ? 'leve' : c < 2.5 ? 'comum' : c < 3.5 ? 'pesado' : 'lendario'; }
+  function virg(n) { return String(n).replace('.', ','); }
+
+  // ---------- A cara: uma expressão por nota ----------
+  var EXPR = {
+    '-': { fechado: true },
+    D: { p: [0, 2] },
+    C: { p: [12, 4] },
+    B: { p: [12, 4], sob: 1 },
+    A: { p: [12, 10], palpebra: true },
+    S: { p: [15, 0], r: 8, ry: 31, sob: 2 }
+  };
+  var TRACO = ' fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"';
+  function desenha(svg, g) {
+    var e = EXPR[g] || EXPR['-'], vivo = svg.hasAttribute('data-vivo'), mini = svg.hasAttribute('data-mini');
+    var s = '';
+    svg.setAttribute('viewBox', mini ? '6 22 116 68' : '0 0 128 96');
+    svg.setAttribute('data-cara', g);
+    if (e.fechado) {
+      s = '<path d="M14 58Q38 76 62 58M66 58Q90 76 114 58"' + TRACO + '/>';
+    } else {
+      var ry = e.ry || 28, r = e.r || 11, p = vivo || mini ? [0, e.p[1]] : e.p;
+      [38, 90].forEach(function (cx) { s += '<ellipse cx="' + cx + '" cy="56" rx="24" ry="' + ry + '" fill="#ffffff" stroke="currentColor" stroke-width="7"/>'; });
+      [38, 90].forEach(function (cx) { s += '<circle class="pupila" cx="' + (cx + p[0]) + '" cy="' + (56 + p[1]) + '" r="' + r + '" fill="currentColor"/>'; });
+      if (e.palpebra) [38, 90].forEach(function (cx) { s += '<path d="M' + (cx - 24) + ' 56A24 ' + ry + ' 0 0 1 ' + (cx + 24) + ' 56Z" fill="currentColor"/>'; });
+      if (e.sob === 1) s += '<path d="M68 20Q90 6 114 16"' + TRACO + '/>';
+      if (e.sob === 2) s += '<path d="M14 16Q38 2 62 12M66 12Q90 2 114 16"' + TRACO + '/>';
+    }
+    svg.innerHTML = s;
+    if (svg._olhar) olha(svg, svg._olhar[0], svg._olhar[1]);
+  }
+  function olha(svg, vx, vy) {
+    svg._olhar = [vx, vy];
+    var m = Math.sqrt(vx * vx + vy * vy) || 1, k = Math.min(1, m);
+    var dx = vx / m * 12 * k, dy = vy / m * 9 * k;
+    svg.querySelectorAll('.pupila').forEach(function (p) { p.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)'; });
+  }
+  function muda(svg, g, pula) {
+    if (svg.getAttribute('data-cara') === g && !pula) return;
+    desenha(svg, g);
+    if (pula && !reduz) { svg.classList.remove('pula'); void svg.getBoundingClientRect(); svg.classList.add('pula'); }
+  }
+
+  // ---------- Laelédex: os dados ----------
+  var DEX = [
+    ['Lendário', [['segura no pau da barraca', 'lendario', 5, 1], ['sentar em cima', 'lendario', 4.5, 1], [null, 'lendario', 0, 9]]],
+    ['Pesado', [['até o talo', 'pesado', 3.4, 1], ['pau', 'pesado', 3, 3], ['de quatro', 'pesado', 3, 1], ['mandioca', 'pesado', 2.6, 4], [null, 'pesado', 0, 6]]],
+    ['Comum', [['salsicha', 'comum', 2, 1], ['banana', 'comum', 1.8, 2], ['pepino', 'comum', 1.6, 3], ['linguiça', 'comum', 1.6, 2], ['berinjela', 'comum', 1.5, 1], [null, 'comum', 0, 8]]],
+    ['Leve', [['grossa', 'leve', 1.2, 3], ['comprido', 'leve', 1, 2], ['molhada', 'leve', 0.9, 1], [null, 'leve', 0, 7]]]
+  ];
+  function montaDex(ul) {
+    var h = '';
+    DEX.forEach(function (g) {
+      h += '<li class="grupo-t" data-grupo="' + g[1][0][1] + '">' + g[0] + '</li>';
+      g[1].forEach(function (w) {
+        if (w[0]) h += '<li data-t="' + w[1] + '"><svg class="cara ol" data-cara="C" data-mini aria-hidden="true"></svg><span class="nm"><mark class="laele-hit laele-on" data-tier="' + w[1] + '">' + w[0] + '</mark></span><span class="vl num">×' + virg(w[2]) + ' · ' + w[3] + (w[3] > 1 ? ' vezes' : ' vez') + '</span></li>';
+        else h += '<li class="falta" data-t="' + w[1] + '"><svg class="cara ol" data-cara="-" data-mini aria-hidden="true"></svg><span class="nm">ainda não achada</span><span class="vl num">' + w[3] + ' letras</span></li>';
+      });
+    });
+    ul.innerHTML = h;
+  }
+  document.querySelectorAll('[data-dex], [data-dex-grande]').forEach(montaDex);
+
+  // ---------- Popups 2 e 3 são cópias do primeiro ----------
+  var modelo = document.querySelector('[data-pp]:not([data-start])');
+  document.querySelectorAll('[data-pp][data-start]').forEach(function (alvo, n) {
+    var copia = modelo.cloneNode(true);
+    copia.setAttribute('data-start', alvo.getAttribute('data-start'));
+    copia.querySelectorAll('[id]').forEach(function (el) { el.id = el.id.replace(/-1$/, '-' + (n + 2)); });
+    copia.querySelectorAll('[for]').forEach(function (el) { el.setAttribute('for', el.getAttribute('for').replace(/-1$/, '-' + (n + 2))); });
+    alvo.replaceWith(copia);
+  });
+  document.querySelectorAll('svg.cara').forEach(function (s) { desenha(s, s.getAttribute('data-cara')); });
+
+  document.querySelectorAll('[data-sw]').forEach(function (s) {
+    s.addEventListener('click', function () { s.setAttribute('aria-checked', String(s.getAttribute('aria-checked') !== 'true')); });
+  });
+
+  // Entrada das seções
+  var obs = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('visto'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 }) : null;
+  document.querySelectorAll('main > section').forEach(function (c) { if (obs) obs.observe(c); else c.classList.add('visto'); });
+
+  // ---------- Olho gigante segue o ponteiro ----------
+  var olhao = document.getElementById('olhao');
+  olha(olhao, -1, 0.3);
+  if (!reduz) document.getElementById('heroi').addEventListener('pointermove', function (ev) {
+    var r = olhao.getBoundingClientRect();
+    olha(olhao, (ev.clientX - (r.left + r.width / 2)) / 300, (ev.clientY - (r.top + r.height / 2)) / 300);
+  });
+
+  // ---------- Popups ----------
+  document.querySelectorAll('[data-pp]').forEach(function (pp) {
+    var tabs = pp.querySelectorAll('[data-tab]');
+    function abre(nome) {
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.getAttribute('data-tab') === nome)); });
+      pp.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== nome; });
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { abre(t.getAttribute('data-tab')); }); });
+    abre(pp.getAttribute('data-start') || 'rec');
+
+    var dex = pp.querySelector('[data-dex]'), vazio = pp.querySelector('[data-vazio]'), busca = pp.querySelector('[data-busca]'), filtro = 'todas';
+    function filtra() {
+      var q = (busca.value || '').trim().toLowerCase(), vis = 0;
+      dex.querySelectorAll('li').forEach(function (li) {
+        if (li.classList.contains('grupo-t')) { li.hidden = filtro !== 'todas' && li.getAttribute('data-grupo') !== filtro; return; }
+        var ok = (filtro === 'todas' || li.getAttribute('data-t') === filtro) && (!q || (!li.classList.contains('falta') && li.textContent.toLowerCase().indexOf(q) !== -1));
+        li.hidden = !ok; if (ok) vis++;
+      });
+      if (q) dex.querySelectorAll('.grupo-t').forEach(function (g) { g.hidden = true; });
+      vazio.hidden = vis > 0;
+    }
+    pp.querySelectorAll('.filtro').forEach(function (b) {
+      b.addEventListener('click', function () {
+        pp.querySelectorAll('.filtro').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+        filtro = b.getAttribute('data-f'); filtra();
+      });
+    });
+    busca.addEventListener('input', filtra);
+
+    pp.querySelectorAll('.seg [role=radio]').forEach(function (r) {
+      r.addEventListener('click', function () { pp.querySelectorAll('.seg [role=radio]').forEach(function (o) { o.setAttribute('aria-checked', String(o === r)); }); });
+    });
+    var nova = pp.querySelector('[data-nova]'), coef = pp.querySelector('[data-coef]');
+    function mostraCoef() {
+      var c = parseFloat(coef.value);
+      pp.querySelector('[data-coef-out]').textContent = '×' + virg(c);
+      pp.querySelector('[data-coef-tier]').textContent = { leve: 'leve', comum: 'comum', pesado: 'pesado', lendario: 'lendário' }[tierDe(c)];
+    }
+    coef.addEventListener('input', mostraCoef);
+    var lista = pp.querySelector('[data-proprias]');
+    function ligaX(li) { li.querySelector('.x').addEventListener('click', function () { li.remove(); }); }
+    lista.querySelectorAll('li').forEach(ligaX);
+    pp.querySelector('[data-add]').addEventListener('click', function () {
+      var w = (nova.value || '').trim();
+      if (!w) { nova.focus(); return; }
+      var c = parseFloat(coef.value), li = document.createElement('li');
+      li.innerHTML = '<span><mark class="laele-hit laele-on"></mark><span class="c">×' + virg(c) + '</span></span><button type="button" class="x"><svg aria-hidden="true"><use href="#i-x"/></svg></button>';
+      li.querySelector('mark').textContent = w;
+      li.querySelector('mark').setAttribute('data-tier', tierDe(c));
+      li.querySelector('.x').setAttribute('aria-label', 'Remover ' + w);
+      lista.prepend(li); ligaX(li); nova.value = '';
+    });
+    var idle = pp.querySelector('[data-zerar-idle]'), conf = pp.querySelector('[data-zerar-conf]');
+    pp.querySelector('[data-zerar]').addEventListener('click', function () { idle.hidden = true; conf.hidden = false; });
+    pp.querySelector('[data-zerar-nao]').addEventListener('click', function () { idle.hidden = false; conf.hidden = true; });
+    pp.querySelector('[data-zerar-sim]').addEventListener('click', function () { idle.hidden = false; conf.hidden = true; });
+
+    // Varrer: soma em escala de log, para cada cara ficar um tempo parecido na tela
+    var scan = pp.querySelector('[data-scan]'), cara = pp.querySelector('[data-cara-pp]');
+    var totalEl = pp.querySelector('[data-total]'), rankEl = pp.querySelector('[data-rank]'), letra = pp.querySelector('[data-letra]');
+    var rec = pp.querySelector('[data-rec]'), palavras = pp.querySelector('[data-palavras]'), ALVO = 63130, raf = 0;
+    function mostra(v) {
+      var r = rank(v);
+      totalEl.textContent = fmt.format(v);
+      palavras.textContent = String(Math.max(1, Math.round(85 * Math.log(v) / Math.log(ALVO))));
+      if (cara.getAttribute('data-cara') !== r[1]) {
+        muda(cara, r[1], true);
+        cara.setAttribute('aria-label', 'Nota ' + r[1]);
+        rankEl.textContent = r[2]; letra.textContent = 'nota ' + r[1];
+      }
+    }
+    scan.addEventListener('click', function () {
+      cancelAnimationFrame(raf);
+      scan.disabled = true; scan.classList.add('varrendo');
+      scan.querySelector('.lbl').textContent = 'Varrendo…'; rec.hidden = true;
+      function fim() { mostra(ALVO); palavras.textContent = '85'; rec.hidden = false; scan.disabled = false; scan.classList.remove('varrendo'); scan.querySelector('.lbl').textContent = 'Varrer página'; }
+      if (reduz) { fim(); return; }
+      var t0 = performance.now(), dur = 3400, lo = Math.log(40), hi = Math.log(ALVO);
+      cara.setAttribute('data-cara', '');
+      (function passo(t) {
+        var k = Math.min(1, (t - t0) / dur);
+        mostra(Math.round(Math.exp(lo + (hi - lo) * k)));
+        if (k < 1) raf = requestAnimationFrame(passo); else fim();
+      })(t0);
+    });
+  });
+
+  // ---------- Página de exemplo: os olhos do placar seguem cada palavra ----------
+  var site = document.getElementById('site');
+  var marks = Array.prototype.slice.call(site.querySelectorAll('mark.laele-hit'));
+  var hudCara = document.getElementById('hud-cara');
+  var el = {
+    score: document.getElementById('hud-score'), count: document.getElementById('hud-count'),
+    combo: document.getElementById('hud-combo'), mult: document.getElementById('hud-mult'),
+    rank: document.getElementById('hud-rank'), letra: document.getElementById('hud-letra'),
+    banner: document.getElementById('hud-banner')
+  };
+  var segs = document.querySelectorAll('#hud-bar i');
+  var timers = [], shown = 0, raf = 0;
+  function pinta(v) { var r = rank(v); if (hudCara.getAttribute('data-cara') !== r[1]) { muda(hudCara, r[1], true); el.letra.textContent = r[1] === '-' ? '' : 'nota ' + r[1]; } }
+  function conta(alvo) {
+    cancelAnimationFrame(raf);
+    if (reduz) { shown = alvo; el.score.textContent = fmt.format(alvo); pinta(alvo); return; }
+    var de = shown, t0 = performance.now();
+    (function passo(t) {
+      var k = Math.min(1, (t - t0) / 320);
+      shown = Math.round(de + (alvo - de) * (1 - Math.pow(1 - k, 3)));
+      el.score.textContent = fmt.format(shown); pinta(shown);
+      if (k < 1) raf = requestAnimationFrame(passo);
+    })(t0);
+  }
+  function mira(mark) {
+    if (reduz) return;
+    var a = mark.getBoundingClientRect(), b = hudCara.getBoundingClientRect();
+    olha(hudCara, (a.left + a.width / 2) - (b.left + b.width / 2), (a.top + a.height / 2) - (b.top + b.height / 2));
+  }
+  function solta(mark, pts, mult) {
+    if (reduz) return;
+    var r = mark.getBoundingClientRect(), s = site.getBoundingClientRect();
+    var f = document.createElement('span');
+    f.className = 'laele-float'; f.setAttribute('aria-hidden', 'true');
+    f.textContent = '+' + fmt.format(pts);
+    if (mult > 1) { var i = document.createElement('i'); i.textContent = 'x' + virg(mult); f.appendChild(i); }
+    f.style.left = (r.left - s.left) + 'px'; f.style.top = (r.top - s.top - 32) + 'px';
+    site.appendChild(f);
+    setTimeout(function () { f.remove(); }, 1000);
+  }
+  function limpa() {
+    timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf);
+    marks.forEach(function (m) { m.classList.remove('laele-on'); });
+    site.querySelectorAll('.laele-float').forEach(function (f) { f.remove(); });
+    shown = 0; el.score.textContent = '0'; el.count.textContent = '0';
+    el.combo.textContent = 'Combo 0'; el.mult.textContent = 'x1';
+    segs.forEach(function (s) { s.classList.remove('on'); });
+    muda(hudCara, '-'); el.letra.textContent = ''; el.rank.textContent = ''; el.banner.hidden = true;
+    olha(hudCara, 0, 0);
+  }
+  function varre() {
+    limpa();
+    var total = 0, combo = 0, ultimoP = null, passo = reduz ? 0 : 560;
+    marks.forEach(function (m, idx) {
+      var p = m.closest('p');
+      combo = p === ultimoP ? combo + 1 : 1; ultimoP = p;
+      var mult = Math.min(10, 1 + 0.5 * (combo - 1));
+      var pts = Math.round(100 * parseFloat(m.getAttribute('data-coef')) * mult), c = combo;
+      timers.push(setTimeout(function () { mira(m); }, 200 + idx * passo));
+      timers.push(setTimeout(function () {
+        m.classList.add('laele-on');
+        total += pts; conta(total);
+        el.count.textContent = String(idx + 1);
+        el.combo.textContent = 'Combo ' + c;
+        segs.forEach(function (s, i) { s.classList.toggle('on', i < c); });
+        el.mult.textContent = 'x' + virg(mult);
+        solta(m, pts, mult);
+      }, 360 + idx * passo));
+    });
+    timers.push(setTimeout(function () {
+      var r = rank(total);
+      el.rank.textContent = r[2];
+      olha(hudCara, 1, 0);
+      muda(hudCara, r[1], true);
+      el.banner.hidden = false;
+    }, 360 + marks.length * passo + (reduz ? 0 : 500)));
+  }
+  document.getElementById('varrer-demo').addEventListener('click', varre);
+  document.getElementById('hud-re').addEventListener('click', varre);
+  var visto = false;
+  var obsSite = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    if (es[0].isIntersecting && !visto) { visto = true; varre(); }
+  }, { threshold: 0.4 }) : null;
+  if (obsSite) obsSite.observe(site); else varre();
+})();
+</script>
