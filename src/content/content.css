@@ -2,13 +2,35 @@
  * Robo-LaEle - estilos dos destaques injetados na pagina.
  * Tudo com prefixo "laele" e !important onde precisa vencer CSS de sites.
  * Estado inicial: neutro (nenhuma alteracao visual nem de layout).
- * Estado aceso (.laele-on): brilho neon, fundo em gradiente translucido, sublinhado.
+ * Estado aceso (.laele-on): marca-texto da raridade crescendo da esquerda, texto escuro.
  */
+
+/* ---------- Fonte (o Chrome ignora @font-face dentro do Shadow DOM, por isso fica aqui) ---------- */
+@font-face {
+  font-family: "LaEle Inter";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/inter-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: "LaEle Inter";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/inter-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: "LaEle Inter";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/inter-600.woff2') format('woff2');
+}
 
 /* ---------- Estado neutro ---------- */
 mark.laele-hit {
-  --laele-c: #ff2e88;
-  --laele-c2: #a855f7;
+  --laele-m: #ffe38a;
   display: inline !important;
   position: static !important;
   margin: 0 !important;
@@ -19,176 +41,90 @@ mark.laele-hit {
   word-spacing: inherit !important;
   color: inherit !important;
   background-color: transparent !important;
-  background-image:
-    linear-gradient(90deg, var(--laele-c), var(--laele-c2)),
-    linear-gradient(90deg,
-      color-mix(in srgb, var(--laele-c) 30%, transparent),
-      color-mix(in srgb, var(--laele-c2) 30%, transparent)) !important;
+  /* cor solida: o "gradiente" de uma cor so existe para o background-size poder animar */
+  background-image: linear-gradient(var(--laele-m), var(--laele-m)) !important;
   background-repeat: no-repeat !important;
-  background-position: 0 100%, 0 50% !important;
-  background-size: 0% 0.14em, 0% 100% !important;
-  border-radius: 0.28em !important;
+  background-position: 0 50% !important;
+  background-size: 0% 100% !important;
+  border-radius: 3px !important;
   box-shadow: none !important;
   text-shadow: none !important;
   -webkit-box-decoration-break: clone !important;
   box-decoration-break: clone !important;
   transition:
-    background-size 0.38s cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 0.3s ease-out,
-    text-shadow 0.3s ease-out !important;
+    background-size var(--laele-wipe, 240ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 0s linear calc(var(--laele-wipe, 240ms) / 2) !important;
 }
 
-/* ---------- Cores por tier ---------- */
-mark.laele-hit[data-laele-tier="leve"] {
-  --laele-c: #34d399;
-  --laele-c2: #60a5fa;
-}
-mark.laele-hit[data-laele-tier="comum"] {
-  --laele-c: #60a5fa;
-  --laele-c2: #a855f7;
-}
-mark.laele-hit[data-laele-tier="pesado"] {
-  --laele-c: #ff2e88;
-  --laele-c2: #a855f7;
-}
-mark.laele-hit[data-laele-tier="lendario"] {
-  --laele-c: #ffd23f;
-  --laele-c2: #ff2e88;
-}
+/* ---------- Cores por raridade (marca-texto) ---------- */
+mark.laele-hit[data-laele-tier="leve"] { --laele-m: #d3efb1; }
+mark.laele-hit[data-laele-tier="comum"] { --laele-m: #ffe38a; }
+mark.laele-hit[data-laele-tier="pesado"] { --laele-m: #ffbfa8; }
+mark.laele-hit[data-laele-tier="lendario"] { --laele-m: #d6b58f; }
 
 /* ---------- Estado aceso ---------- */
 mark.laele-hit.laele-on {
-  background-size: 100% 0.14em, 100% 100% !important;
-  box-shadow:
-    0 0 0.35em color-mix(in srgb, var(--laele-c) 65%, transparent),
-    0 0 0.95em color-mix(in srgb, var(--laele-c) 35%, transparent) !important;
-  text-shadow: 0 0 0.45em color-mix(in srgb, var(--laele-c) 55%, transparent) !important;
+  background-size: 100% 100% !important;
+  color: #1d1d1f !important;
 }
 
-/* Pop: so box-shadow e brilho, sem mexer no layout. */
-mark.laele-hit.laele-on.laele-pop {
-  animation: laele-pop 0.62s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-}
-
-/*
- * Pop de escala: o JS so aplica em destaques de uma unica linha.
- * Durante a animacao o mark vira inline-block e volta a inline no fim.
- */
-mark.laele-hit.laele-on.laele-pop.laele-pop-scale {
-  display: inline-block !important;
-  animation: laele-pop-scale 0.62s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-}
-
-@keyframes laele-pop {
-  0% {
-    filter: brightness(2.1) saturate(1.5);
-    box-shadow:
-      0 0 0 0 color-mix(in srgb, var(--laele-c) 90%, transparent),
-      0 0 0 0 transparent;
-  }
-  40% {
-    filter: brightness(1.5) saturate(1.3);
-    box-shadow:
-      0 0 0 0.4em color-mix(in srgb, var(--laele-c) 30%, transparent),
-      0 0 1.5em 0.25em color-mix(in srgb, var(--laele-c) 80%, transparent);
-  }
-  100% {
-    filter: none;
-  }
-}
-
-@keyframes laele-pop-scale {
-  0% {
-    transform: scale(1);
-    filter: brightness(2.1) saturate(1.5);
-    box-shadow:
-      0 0 0 0 color-mix(in srgb, var(--laele-c) 90%, transparent),
-      0 0 0 0 transparent;
-  }
-  35% {
-    transform: scale(1.22);
-    filter: brightness(1.5) saturate(1.3);
-    box-shadow:
-      0 0 0 0.35em color-mix(in srgb, var(--laele-c) 30%, transparent),
-      0 0 1.5em 0.25em color-mix(in srgb, var(--laele-c) 80%, transparent);
-  }
-  100% {
-    transform: scale(1);
-    filter: none;
-  }
-}
-
-/* ---------- Texto flutuante (+150 / x2.5) ---------- */
+/* ---------- Etiqueta de pontos (+260 ×1,5) ---------- */
 span.laele-float {
   all: initial !important;
   position: absolute !important;
   z-index: 2147483646 !important;
   display: block !important;
   margin: 0 !important;
-  padding: 0 !important;
+  padding: 3px 7px !important;
   pointer-events: none !important;
   user-select: none !important;
   white-space: nowrap !important;
-  text-align: center !important;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
-  font-weight: 800 !important;
-  font-size: 18px !important;
-  line-height: 1 !important;
+  text-align: left !important;
+  background: #161616 !important;
+  border-radius: 6px !important;
+  font-family: "LaEle Inter", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
   font-variant-numeric: tabular-nums !important;
-  letter-spacing: 0.01em !important;
-  color: var(--laele-c, #ff2e88) !important;
-  text-shadow:
-    0 0 10px color-mix(in srgb, var(--laele-c, #ff2e88) 80%, transparent),
-    0 2px 0 rgba(15, 11, 26, 0.85),
-    0 0 2px rgba(15, 11, 26, 0.9) !important;
+  letter-spacing: 0 !important;
+  color: #f2f2f2 !important;
   transform: translate(-50%, -100%);
   opacity: 0;
-  animation: laele-float-up 1.25s cubic-bezier(0.2, 0.7, 0.3, 1) forwards !important;
+  animation: laele-float-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
 }
-
-span.laele-float[data-laele-tier="leve"] { --laele-c: #34d399; }
-span.laele-float[data-laele-tier="comum"] { --laele-c: #60a5fa; }
-span.laele-float[data-laele-tier="pesado"] { --laele-c: #ff2e88; }
-span.laele-float[data-laele-tier="lendario"] { --laele-c: #ffd23f; }
 
 span.laele-float > span.laele-float-mult {
   all: initial !important;
-  display: block !important;
-  margin: 3px 0 0 !important;
+  display: inline !important;
+  margin: 0 0 0 5px !important;
   font-family: inherit !important;
-  font-weight: 800 !important;
-  font-size: 13px !important;
-  line-height: 1 !important;
-  color: #ffd23f !important;
-  text-shadow: 0 0 8px rgba(255, 210, 63, 0.8), 0 1px 0 rgba(15, 11, 26, 0.9) !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  line-height: inherit !important;
+  font-variant-numeric: tabular-nums !important;
+  color: #c9a27c !important;
 }
 
 @keyframes laele-float-up {
   0% {
     opacity: 0;
-    transform: translate(-50%, -60%) scale(0.6);
+    transform: translate(-50%, -100%);
   }
-  15% {
+  20% {
     opacity: 1;
-    transform: translate(-50%, -110%) scale(1.25);
-  }
-  30% {
-    transform: translate(-50%, -125%) scale(1);
+    transform: translate(-50%, calc(-100% - 4px));
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -300%) scale(0.95);
+    transform: translate(-50%, calc(-100% - 30px));
   }
 }
 
-/* ---------- Movimento reduzido ---------- */
+/* ---------- Movimento reduzido: o marca-texto aparece cheio, a etiqueta nao aparece ---------- */
 @media (prefers-reduced-motion: reduce) {
   mark.laele-hit {
     transition: none !important;
-  }
-  mark.laele-hit.laele-on.laele-pop,
-  mark.laele-hit.laele-on.laele-pop.laele-pop-scale {
-    animation: none !important;
   }
   span.laele-float {
     animation: none !important;

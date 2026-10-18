@@ -38,7 +38,8 @@
   var HOST_ID = 'laele-hud-host';
   var DEFAULT_SETTINGS = { autoScan: true, animations: true, speed: 'normal', showHud: true, customWords: [] };
   var TOTAL_MS = { lento: 10000, normal: 6000, rapido: 3000 };
-  var STEP_MS = { lento: 420, normal: 260, rapido: 130 };
+  var STEP_MS = { lento: 900, normal: 520, rapido: 200 };
+  var WIPE_MS = { lento: 420, normal: 240, rapido: 120 };
   var MIN_TICK_MS = 50;
   var MAX_CHARS = 2000000;
   var MAX_FLOATS = 36;
@@ -47,8 +48,6 @@
     'canvas', 'iframe', 'object', 'embed', 'audio', 'video', 'template', 'head', 'title',
     '[contenteditable]:not([contenteditable="false"])', 'mark.laele-hit', '[data-laele-ignore]'
   ].join(',');
-
-  var GRADE_COLORS = { S: '#ffd23f', A: '#ff2e88', B: '#a855f7', C: '#60a5fa', D: '#a79bbf' };
 
   // ---------------------------------------------------------------------------
   // Utilitarios
@@ -75,7 +74,7 @@
   }
 
   function fmtMult(m) {
-    return 'x' + String(Math.round(m * 10) / 10);
+    return '×' + String(Math.round(m * 10) / 10).replace('.', ',');
   }
 
   function yieldToMain() {
@@ -396,74 +395,51 @@
     ':host { all: initial; }',
     '*, *::before, *::after { box-sizing: border-box; }',
     '.hud {',
-    '  --bg: #0f0b1a; --card: #1a1428; --card2: #231a36; --border: #2f2445;',
-    '  --text: #f4efff; --muted: #a79bbf; --pink: #ff2e88; --purple: #a855f7; --yellow: #ffd23f; --green: #34d399;',
-    '  --grad: linear-gradient(135deg, #ff2e88, #a855f7);',
-    '  position: relative; width: 290px; overflow: hidden; color: var(--text);',
-    '  font: 500 13px/1.35 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;',
-    '  background: linear-gradient(180deg, rgba(35,26,54,.97), rgba(15,11,26,.97));',
-    '  border: 1px solid var(--border); border-radius: 16px;',
-    '  box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 40px rgba(168,85,247,.2), 0 0 0 1px rgba(255,46,136,.08);',
-    '  transform-origin: 100% 100%; animation: hud-in .38s cubic-bezier(.2,.9,.3,1.15) both;',
+    '  --bg: #161616; --raised: #262626; --line: #2a2a2a; --text: #ededed; --muted: #8a8a8a;',
+    '  --bronze: #a08672; --bronze-claro: #c9a27c; --ease: cubic-bezier(.2,.8,.2,1);',
+    '  position: relative; width: 232px; padding: 12px; color: var(--text);',
+    '  font: 400 12px/1.35 "LaEle Inter", "Helvetica Neue", Arial, sans-serif;',
+    '  background: var(--bg); border: 1px solid var(--line); border-radius: 12px;',
+    '  box-shadow: 0 12px 32px rgba(0,0,0,.28);',
+    '  transition: opacity .2s, transform .2s var(--ease);',
     '  -webkit-font-smoothing: antialiased; user-select: none;',
     '}',
-    '.hud::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--grad); }',
-    '.head { display: flex; align-items: center; gap: 8px; padding: 12px 8px 4px 14px; }',
-    '.logo { font-weight: 800; font-size: 12px; letter-spacing: .12em; text-transform: uppercase;',
-    '  background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }',
-    '.status { flex: 1; min-width: 0; color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }',
-    '.mini { display: none; font-weight: 800; font-size: 14px; font-variant-numeric: tabular-nums; color: var(--text); }',
+    '.head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }',
+    '.brand { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 13px; }',
+    '.logo { display: block; flex: none; width: 22px; height: 22px; }',
+    '.pupil { transition: transform .22s var(--ease); }',
+    '.mini { display: none; flex: 1; text-align: right; font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; }',
     '.btns { display: flex; gap: 2px; }',
-    '.btn { all: unset; box-sizing: border-box; width: 26px; height: 26px; display: grid; place-items: center; cursor: pointer;',
-    '  color: var(--muted); font-size: 15px; line-height: 1; border-radius: 8px; transition: background .15s, color .15s, transform .15s; }',
-    '.btn:hover { background: var(--card2); color: var(--text); }',
-    '.btn:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }',
-    '.btn:active { transform: scale(.92); }',
+    '.btn { all: unset; box-sizing: border-box; width: 24px; height: 24px; display: grid; place-items: center; cursor: pointer;',
+    '  color: var(--muted); border-radius: 6px; transition: background .16s, color .16s; }',
+    '.btn svg { width: 13px; height: 13px; display: block; }',
+    '.btn:hover { background: var(--raised); color: #f2f2f2; }',
+    '.btn:focus-visible { outline: 2px solid var(--bronze); outline-offset: 3px; }',
     '.btn[disabled] { opacity: .35; cursor: default; pointer-events: none; }',
-    '.body { padding: 2px 14px 14px; }',
-    '.score-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; min-height: 62px; }',
+    '.main { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }',
     '.score-box { min-width: 0; }',
-    '.score { font-size: 42px; line-height: 1.05; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.02em;',
-    '  background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;',
-    '  filter: drop-shadow(0 0 14px rgba(255,46,136,.35)); transform-origin: 0 100%; display: inline-block; }',
-    '.score.bump { animation: bump .22s ease-out; }',
-    '.sub { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }',
-    '.sub b { color: var(--text); font-weight: 700; }',
-    '.stamp-wrap { width: 76px; height: 62px; display: grid; place-items: center; flex: none; }',
-    '.stamp { display: none; flex-direction: column; align-items: center; justify-content: center; width: 56px; height: 56px;',
-    '  border: 3px solid var(--sc, #ffd23f); color: var(--sc, #ffd23f); border-radius: 12px; font-weight: 900; font-size: 34px; line-height: 1;',
-    '  text-shadow: 0 0 14px var(--sc, #ffd23f); box-shadow: 0 0 18px rgba(255,255,255,.04), inset 0 0 12px rgba(255,255,255,.04);',
-    '  transform: rotate(-10deg); }',
-    '.stamp.show { display: flex; animation: stamp .55s cubic-bezier(.2,1.4,.4,1) both; }',
-    '.rank-label { margin-top: 2px; text-align: right; color: var(--muted); font-size: 11px; min-height: 14px; }',
-    '.combo { margin-top: 10px; padding: 9px 11px 10px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }',
-    '.combo-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }',
-    '.combo-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }',
-    '.combo-n { font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums; margin-left: 6px; color: var(--text); }',
-    '.mult { font-weight: 900; font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--muted); display: inline-block; transform-origin: 100% 60%; }',
-    '.mult.hot { color: var(--yellow); text-shadow: 0 0 14px rgba(255,210,63,.55); }',
-    '.mult.hotter { color: var(--pink); text-shadow: 0 0 16px rgba(255,46,136,.7); }',
-    '.mult.pulse { animation: pulse .32s ease-out; }',
-    '.bar { margin-top: 8px; height: 6px; border-radius: 99px; background: var(--border); overflow: hidden; }',
-    '.bar > i { display: block; height: 100%; width: 100%; background: var(--grad); border-radius: 99px; transform-origin: 0 50%; transform: scaleX(0); }',
-    '.banner { display: none; margin-top: 10px; padding: 8px 10px; text-align: center; font-weight: 900; font-size: 14px; letter-spacing: .1em; text-transform: uppercase;',
-    '  color: #1a1428; border-radius: 10px; background: linear-gradient(90deg, #ffd23f, #ff9f43, #ff2e88, #ffd23f); background-size: 200% 100%; }',
-    '.banner.show { display: block; animation: banner-in .5s cubic-bezier(.2,1.3,.4,1) both, shimmer 2.2s linear infinite; }',
-    '.hud.min .body, .hud.min .status { display: none; }',
-    '.hud.min .mini { display: block; flex: 1; }',
-    '.hud.min .head { padding-bottom: 12px; }',
-    '.hud.closing { animation: hud-out .25s ease-in both; }',
-    '@keyframes hud-in { from { opacity: 0; transform: translateY(14px) scale(.94); } to { opacity: 1; transform: none; } }',
-    '@keyframes hud-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(10px) scale(.96); } }',
-    '@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.07); } 100% { transform: scale(1); } }',
-    '@keyframes pulse { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 100% { transform: scale(1); } }',
-    '@keyframes stamp { 0% { opacity: 0; transform: rotate(-26deg) scale(3.2); } 55% { opacity: 1; transform: rotate(-8deg) scale(.9); } 75% { transform: rotate(-11deg) scale(1.08); } 100% { opacity: 1; transform: rotate(-10deg) scale(1); } }',
-    '@keyframes banner-in { from { opacity: 0; transform: translateY(-8px) scale(.9); } to { opacity: 1; transform: none; } }',
-    '@keyframes shimmer { from { background-position: 0 0; } to { background-position: -200% 0; } }',
+    '.score { font-size: 32px; line-height: 1; font-weight: 600; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }',
+    '.sub { margin-top: 4px; color: var(--muted); font-variant-numeric: tabular-nums; }',
+    '.stamp { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; background: var(--raised);',
+    '  font-size: 20px; font-weight: 600; transition: background .2s; }',
+    '.stamp[data-g="S"] { background: var(--bronze); color: #111111; }',
+    '.stamp.pula { animation: pula .32s var(--ease); }',
+    '.rank-label { margin-top: 8px; min-height: 16px; color: #cfcfcf; }',
+    '.combo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; margin-top: 10px; color: var(--muted); }',
+    '.combo-n { font-variant-numeric: tabular-nums; margin-left: 3px; }',
+    '.bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }',
+    '.bar > i { display: block; height: 100%; width: 100%; background: var(--bronze); transform-origin: 0 50%; transform: scaleX(0); }',
+    '.mult { color: #f2f2f2; font-weight: 500; font-variant-numeric: tabular-nums; }',
+    '.banner { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--bronze-claro); font-weight: 500; }',
+    '.banner.show { display: block; }',
+    '.hud.min .body { display: none; }',
+    '.hud.min .mini { display: block; }',
+    '.hud.min .head { margin-bottom: 0; }',
+    '.hud.closing { opacity: 0; transform: translateY(6px); pointer-events: none; }',
+    '@keyframes pula { from { transform: scale(1.3); } to { transform: none; } }',
     '@media (prefers-reduced-motion: reduce) {',
-    '  .hud, .hud.closing, .score.bump, .mult.pulse, .stamp.show, .banner.show { animation: none !important; }',
-    '  .stamp.show { opacity: 1; transform: rotate(-10deg); }',
-    '  .bar > i { transition: none !important; }',
+    '  .hud, .hud.closing, .stamp.pula { animation: none !important; transition: none !important; }',
+    '  .pupil, .btn, .stamp, .bar > i { transition: none !important; }',
     '}'
   ].join('\n');
 
@@ -475,12 +451,48 @@
     return el;
   }
 
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  var PUPIL_REACH = 8; // unidades (de 128) que a pupila anda na direcao da palavra
+  var ICON_MIN = 'M6 12h12';
+  var ICON_PLUS = 'M12 5v14M5 12h14';
+  var ICON_RESCAN = 'M19 12a7 7 0 1 1-2.1-5M19 4v4h-4';
+  var ICON_CLOSE = 'M6 6l12 12M18 6L6 18';
+
+  function svgEl(tag, attrs, parent) {
+    var el = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs) el.setAttribute(k, String(attrs[k]));
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+
+  // Icone de traco 2 px; devolve o <path> para poder trocar o desenho (minimizar/expandir).
+  function iconButton(btn, d) {
+    var s = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' }, btn);
+    return svgEl('path', { d: d, fill: 'none', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, s);
+  }
+
+  // Logo de olhos do cabecalho; as pupilas viram para a palavra marcada.
+  function buildLogo(parent) {
+    var s = svgEl('svg', { viewBox: '0 0 128 128', 'class': 'logo', 'aria-hidden': 'true', focusable: 'false' }, parent);
+    svgEl('rect', { width: 128, height: 128, rx: 30, fill: '#f2efe9' }, s);
+    svgEl('ellipse', { cx: 41, cy: 70, rx: 20, ry: 25, fill: '#ffffff', stroke: '#111111', 'stroke-width': 7 }, s);
+    svgEl('ellipse', { cx: 89, cy: 70, rx: 20, ry: 25, fill: '#ffffff', stroke: '#111111', 'stroke-width': 7 }, s);
+    var pupils = [
+      svgEl('circle', { 'class': 'pupil', cx: 41, cy: 72, r: 10, fill: '#111111' }, s),
+      svgEl('circle', { 'class': 'pupil', cx: 89, cy: 72, r: 10, fill: '#111111' }, s)
+    ];
+    svgEl('path', { d: 'M72 35Q89 25 107 31', fill: 'none', stroke: '#a08672', 'stroke-width': 7, 'stroke-linecap': 'round' }, s);
+    return { el: s, pupils: pupils };
+  }
+
   function createHud(callbacks) {
     var host = null;
     var root = null;
     var els = {};
     var shown = 0;
     var target = 0;
+    var from = 0;
+    var t0 = 0;
     var raf = 0;
     var hover = false;
     var visible = false;
@@ -508,46 +520,52 @@
       els.hud = hud;
 
       var head = h('div', 'head', null, hud);
-      h('span', 'logo', 'Lá Ele', head);
-      els.status = h('span', 'status', '', head);
+      var brand = h('span', 'brand', null, head);
+      var logo = buildLogo(brand);
+      els.logo = logo.el;
+      els.pupils = logo.pupils;
+      h('span', null, 'Lá ele', brand);
       els.mini = h('span', 'mini', '0', head);
 
       var btns = h('div', 'btns', null, head);
-      els.btnMin = h('button', 'btn', '−', btns);
+      els.btnMin = h('button', 'btn', null, btns);
       els.btnMin.type = 'button';
       els.btnMin.title = 'Minimizar';
       els.btnMin.setAttribute('aria-label', 'Minimizar');
-      els.btnRescan = h('button', 'btn', '↻', btns);
+      els.minPath = iconButton(els.btnMin, ICON_MIN);
+      els.btnRescan = h('button', 'btn', null, btns);
       els.btnRescan.type = 'button';
       els.btnRescan.title = 'Varrer de novo';
       els.btnRescan.setAttribute('aria-label', 'Varrer de novo');
-      els.btnClose = h('button', 'btn', '✕', btns);
+      iconButton(els.btnRescan, ICON_RESCAN);
+      els.btnClose = h('button', 'btn', null, btns);
       els.btnClose.type = 'button';
       els.btnClose.title = 'Fechar';
       els.btnClose.setAttribute('aria-label', 'Fechar');
+      iconButton(els.btnClose, ICON_CLOSE);
 
       var body = h('div', 'body', null, hud);
-      var row = h('div', 'score-row', null, body);
+      var row = h('div', 'main', null, body);
       var box = h('div', 'score-box', null, row);
       els.score = h('div', 'score', '0', box);
       var sub = h('div', 'sub', null, box);
-      els.count = h('b', null, '0', sub);
+      els.count = h('span', null, '0', sub);
       els.countLabel = h('span', null, ' palavras', sub);
-
-      var stampWrap = h('div', 'stamp-wrap', null, row);
-      els.stamp = h('div', 'stamp', '', stampWrap);
+      els.stamp = h('div', 'stamp', '–', row);
+      els.stamp.setAttribute('role', 'img');
+      els.stamp.setAttribute('data-g', '-');
+      els.stamp.setAttribute('aria-label', 'Sem nota');
       els.rankLabel = h('div', 'rank-label', '', body);
 
       var combo = h('div', 'combo', null, body);
-      var crow = h('div', 'combo-row', null, combo);
-      var left = h('div', null, null, crow);
-      els.comboLabel = h('span', 'combo-label', 'Combo', left);
-      els.comboN = h('span', 'combo-n', '—', left);
-      els.mult = h('span', 'mult', 'x1', crow);
+      var comboText = h('span', null, null, combo);
+      els.comboLabel = h('span', null, 'Combo', comboText);
+      els.comboN = h('span', 'combo-n', '0', comboText);
       var bar = h('div', 'bar', null, combo);
       els.barFill = h('i', null, null, bar);
+      els.mult = h('span', 'mult', '×1', combo);
 
-      els.banner = h('div', 'banner', 'Novo recorde!', body);
+      els.banner = h('div', 'banner', 'Novo recorde', body);
 
       hud.addEventListener('mouseenter', function () {
         hover = true;
@@ -561,7 +579,7 @@
       els.btnMin.addEventListener('click', function () {
         minimized = !minimized;
         hud.classList.toggle('min', minimized);
-        els.btnMin.textContent = minimized ? '+' : '−';
+        els.minPath.setAttribute('d', minimized ? ICON_PLUS : ICON_MIN);
         els.btnMin.title = minimized ? 'Expandir' : 'Minimizar';
         els.btnMin.setAttribute('aria-label', els.btnMin.title);
       });
@@ -576,47 +594,74 @@
       if (parent && host.parentNode !== parent) parent.appendChild(host);
     }
 
-    function render() {
-      var t = fmtInt(shown);
-      els.score.textContent = t;
-      els.mini.textContent = t;
-    }
-
-    function loop() {
-      raf = 0;
-      var diff = target - shown;
-      if (Math.abs(diff) < 1) {
-        shown = target;
-        render();
-        return;
-      }
-      shown += diff * 0.2 + (diff > 0 ? 0.5 : -0.5);
-      if ((diff > 0 && shown > target) || (diff < 0 && shown < target)) shown = target;
-      render();
-      raf = requestAnimationFrame(loop);
-    }
-
-    function setScore(value, instant) {
-      target = value;
-      if (instant || reducedMotion() || document.hidden) {
-        shown = value;
-        if (raf) { cancelAnimationFrame(raf); raf = 0; }
-        render();
-        return;
-      }
-      if (!raf) raf = requestAnimationFrame(loop);
-      bump(els.score);
-    }
-
     function restartAnim(el, cls) {
       el.classList.remove(cls);
       void el.offsetWidth;
       el.classList.add(cls);
     }
 
-    function bump(el) {
-      if (reducedMotion()) return;
-      restartAnim(el, 'bump');
+    // Nota no quadrado: troca a letra e pula 1,3x -> 1 quando a faixa muda.
+    function setGrade(grade, pop) {
+      var g = grade && grade !== '-' ? grade : '-';
+      if (els.stamp.getAttribute('data-g') === g) return;
+      els.stamp.setAttribute('data-g', g);
+      els.stamp.textContent = g === '-' ? '–' : g;
+      els.stamp.setAttribute('aria-label', g === '-' ? 'Sem nota' : 'Nota ' + g);
+      if (pop && !reducedMotion()) restartAnim(els.stamp, 'pula');
+    }
+
+    function render(pop) {
+      var t = fmtInt(shown);
+      els.score.textContent = t;
+      els.mini.textContent = t;
+      try {
+        var L = getLaEle();
+        if (L && L.engine && typeof L.engine.rank === 'function') {
+          var r = L.engine.rank(shown);
+          if (r) setGrade(r.grade, pop);
+        }
+      } catch (e) { /* a nota final vem do done() */ }
+    }
+
+    // Contagem dos pontos: 320 ms, ease-out.
+    function loop() {
+      raf = 0;
+      var k = Math.min(1, (now() - t0) / 320);
+      shown = Math.round(from + (target - from) * (1 - Math.pow(1 - k, 3)));
+      render(true);
+      if (k < 1) raf = requestAnimationFrame(loop);
+    }
+
+    function setScore(value, instant) {
+      target = value;
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (instant || reducedMotion() || document.hidden) {
+        shown = value;
+        render(false);
+        return;
+      }
+      from = shown;
+      t0 = now();
+      raf = requestAnimationFrame(loop);
+    }
+
+    // Olhar: pupilas andam ate 8/128 na direcao da palavra; sem alvo, voltam ao centro.
+    function look(el) {
+      if (!els.pupils) return;
+      var dx = 0;
+      var dy = 0;
+      if (el && !reducedMotion()) {
+        try {
+          var a = el.getBoundingClientRect();
+          var b = els.logo.getBoundingClientRect();
+          var vx = a.left + a.width / 2 - (b.left + b.width / 2);
+          var vy = a.top + a.height / 2 - (b.top + b.height / 2);
+          var m = Math.sqrt(vx * vx + vy * vy);
+          if (m > 0) { dx = vx / m * PUPIL_REACH; dy = vy / m * PUPIL_REACH; }
+        } catch (e) { /* sem alvo, centro */ }
+      }
+      var tf = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)';
+      for (var i = 0; i < els.pupils.length; i++) els.pupils[i].style.transform = tf;
     }
 
     function clearAutoClose() {
@@ -662,19 +707,19 @@
       finished = false;
       clearAutoClose();
       if (comboTimer) { clearTimeout(comboTimer); comboTimer = 0; }
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
       shown = 0;
       target = 0;
-      render();
+      render(false);
+      setGrade('-', false);
+      look(null);
       els.count.textContent = '0';
       els.countLabel.textContent = ' palavras';
-      els.stamp.classList.remove('show');
-      els.stamp.textContent = '';
       els.rankLabel.textContent = '';
       els.banner.classList.remove('show');
       els.comboLabel.textContent = 'Combo';
-      els.comboN.textContent = '—';
-      els.mult.textContent = 'x1';
-      els.mult.className = 'mult';
+      els.comboN.textContent = '0';
+      els.mult.textContent = '×1';
       els.barFill.style.transition = 'none';
       els.barFill.style.transform = 'scaleX(0)';
     }
@@ -683,8 +728,9 @@
       els.btnRescan.disabled = !!busy;
     }
 
+    // O texto de estado ocupa a linha da nota ate a varredura terminar.
     function setStatus(text) {
-      els.status.textContent = text;
+      els.rankLabel.textContent = text;
     }
 
     function setCount(n) {
@@ -694,10 +740,8 @@
 
     function setCombo(combo, mult, drainMs) {
       els.comboLabel.textContent = 'Combo';
-      els.comboN.textContent = combo + 'x';
+      els.comboN.textContent = String(combo);
       els.mult.textContent = fmtMult(mult);
-      els.mult.className = 'mult' + (mult >= 4 ? ' hotter' : (mult > 1 ? ' hot' : ''));
-      if (mult > 1 && !reducedMotion()) restartAnim(els.mult, 'pulse');
       var fill = els.barFill;
       fill.style.transition = 'none';
       fill.style.transform = 'scaleX(1)';
@@ -708,9 +752,8 @@
         if (comboTimer) clearTimeout(comboTimer);
         comboTimer = setTimeout(function () {
           comboTimer = 0;
-          els.comboN.textContent = '—';
-          els.mult.textContent = 'x1';
-          els.mult.className = 'mult';
+          els.comboN.textContent = '0';
+          els.mult.textContent = '×1';
         }, drainMs + 60);
       }
     }
@@ -721,26 +764,22 @@
       setScore(info.total, true);
       setCount(info.count);
       setBusy(false);
+      look(null);
       els.barFill.style.transition = 'none';
       els.barFill.style.transform = 'scaleX(0)';
       if (info.count > 0) {
         els.comboLabel.textContent = 'Melhor combo';
-        els.comboN.textContent = info.maxCombo + 'x';
+        els.comboN.textContent = String(info.maxCombo);
         els.mult.textContent = fmtMult(info.peakMult || 1);
-        els.mult.className = 'mult' + ((info.peakMult || 1) >= 4 ? ' hotter' : ((info.peakMult || 1) > 1 ? ' hot' : ''));
-        setStatus('Concluído');
+        els.rankLabel.textContent = '';
         if (info.grade && info.grade !== '-') {
-          els.stamp.textContent = info.grade;
-          els.stamp.style.setProperty('--sc', GRADE_COLORS[info.grade] || '#ffd23f');
+          setGrade(info.grade, true);
           els.rankLabel.textContent = info.gradeLabel || '';
-          restartAnim(els.stamp, 'show');
         }
       } else {
         els.comboLabel.textContent = 'Combo';
-        els.comboN.textContent = '—';
-        els.mult.textContent = 'x1';
-        els.mult.className = 'mult';
-        setStatus('Nada de lá ele por aqui... ainda');
+        els.comboN.textContent = '0';
+        els.mult.textContent = '×1';
         els.rankLabel.textContent = 'Nada de lá ele por aqui... ainda';
       }
       if (!hover) scheduleAutoClose(info.count > 0 ? 8000 : 4000);
@@ -748,7 +787,7 @@
 
     function banner(text) {
       els.banner.textContent = text;
-      restartAnim(els.banner, 'show');
+      els.banner.classList.add('show');
       if (!hover) scheduleAutoClose(12000);
     }
 
@@ -769,6 +808,7 @@
       setScore: setScore,
       setCount: setCount,
       setCombo: setCombo,
+      look: look,
       done: done,
       banner: banner,
       destroy: destroy,
@@ -787,26 +827,13 @@
   // Animacao
   // ---------------------------------------------------------------------------
 
-  function removeClassLater(els, cls, ms) {
-    setTimeout(function () {
-      for (var i = 0; i < els.length; i++) {
-        try { els[i].classList.remove(cls); } catch (e) { /* ignora */ }
-      }
-    }, ms);
-  }
-
-  function lightHit(hit, fx) {
+  // O marca-texto cresce da esquerda em wipeMs (definido por marca, lido pelo content.css).
+  function lightHit(hit, wipeMs) {
     var marks = hit.marks;
-    for (var i = 0; i < marks.length; i++) marks[i].classList.add('laele-on');
-    if (!fx) return;
-    var scale = fx.scale && marks.length === 1;
-    if (scale) {
-      try { scale = marks[0].getClientRects().length === 1; } catch (e) { scale = false; }
+    for (var i = 0; i < marks.length; i++) {
+      marks[i].style.setProperty('--laele-wipe', wipeMs + 'ms', 'important');
+      marks[i].classList.add('laele-on');
     }
-    for (var j = 0; j < marks.length; j++) marks[j].classList.add('laele-pop');
-    if (scale) marks[0].classList.add('laele-pop-scale');
-    removeClassLater(marks, 'laele-pop', 700);
-    if (scale) removeClassLater(marks, 'laele-pop-scale', 700);
   }
 
   function spawnFloat(hit, points, mult) {
@@ -887,7 +914,7 @@
 
       function lightRest() {
         for (var i = idx; i < n; i++) {
-          lightHit(order[i], null);
+          lightHit(order[i], 0);
           running += order[i].m.points || 0;
           runningCount++;
         }
@@ -911,6 +938,7 @@
         batch = Math.ceil((n * MIN_TICK_MS) / total);
       }
       var drain = Math.min(1800, Math.max(700, interval * 3));
+      var wipe = WIPE_MS[ctx.settings.speed] || WIPE_MS.normal;
       var t0 = now();
       var tick = 0;
 
@@ -937,7 +965,7 @@
         var last = null;
         for (var i = idx; i < end; i++) {
           var hit = order[i];
-          lightHit(hit, { scale: batch === 1 });
+          lightHit(hit, wipe);
           groupPoints += hit.m.points || 0;
           if (!best || (hit.m.points || 0) > (best.m.points || 0)) best = hit;
           last = hit;
@@ -951,6 +979,7 @@
           hud.setScore(running, false);
           hud.setCount(runningCount);
           hud.setCombo(last.m.combo || 1, last.m.multiplier || 1, drain);
+          hud.look(last.marks[0]);
         }
         sendProgress(running, runningCount, false);
 
@@ -1076,8 +1105,8 @@
       safeSend({ type: 'LAELE_RESULT', summary: summary, entryIds: acc.entryIds }, function (response) {
         if (myId !== state.id || !hud || !response || summary.total <= 0) return;
         try {
-          if (response.newGlobalBest) hud.banner('NOVO RECORDE!');
-          else if (response.newSiteBest) hud.banner('Recorde do site!');
+          if (response.newGlobalBest) hud.banner('Novo recorde');
+          else if (response.newSiteBest) hud.banner('Recorde do site');
         } catch (e) { /* ignora */ }
       });
     } catch (e) {
